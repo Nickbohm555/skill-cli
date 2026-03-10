@@ -1,1 +1,1 @@
-ralph loop 2 (build): verification blocked: phase 1 plan 01-01 task 1 needs Go toolchain on PATH
+ralph loop 3 (build): Record Section 2 verification blocker; confirmed skip taxonomy reuse and missing Go toolchain
