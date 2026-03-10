@@ -1,1 +1,8 @@
-Verify chunk attribution pipeline wiring with repo and content test suites
+Add chunking and attribution regression tests
+
+Built:
+- Added `internal/content/chunk_test.go` covering deterministic chunk IDs/order, token caps, table/code preservation, required attribution fields, and downstream attribution persistence.
+
+Tested:
+- `go fmt ./internal/content`
+- `go test ./internal/content -v`

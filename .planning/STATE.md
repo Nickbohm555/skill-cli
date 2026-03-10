@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 2 Plan 02-02 Task 2 is verified; the next scoped run is Task 3 execution.
+- **Current focus:** Phase 2 Plan 02-02 Task 3 is implemented; the next scoped run is Task 3 verification.
 
 ## Current Position
 
 - **Current phase:** 2 - Content Processing & Attribution
 - **Current plan:** 02-02
-- **Overall status:** Phase 1 is complete, Phase 2 Plan 02-01 is verified and summarized, and Phase 2 Plan 02-02 Task 2 is now verified.
+- **Overall status:** Phase 1 is complete, Phase 2 Plan 02-01 is verified and summarized, and Phase 2 Plan 02-02 Task 3 is now implemented.
 - **Progress:** 1/6 phases complete
 - **Progress bar:** [#-----] 17%
 
@@ -34,10 +34,11 @@
 - Verification reran the scoped chunk test filter plus broader package and repo test suites; no fixes were required, and explicit chunk regression coverage remains the later Task `3` scope.
 - Plan `02-02` Task `2` now adds metadata-first chunk attribution via `ChunkAttribution` plus `ProcessToChunks`, which skips deduped/failed pages and emits deterministic attributed chunk records ready for later summarization work.
 - Verification for Plan `02-02` Task `2` reran the repo and package test suites cleanly, and direct inspection confirmed `ProcessToChunks` still stamps attribution at chunk creation with required `source_url`, `page_title`, `heading_path`, `chunk_id`, `checksum`, and `reference` fields enforced by `HasRequiredFields`.
+- Plan `02-02` Task `3` now adds explicit chunking and pipeline regression coverage in `internal/content/chunk_test.go`, locking deterministic chunk IDs/order, token cap enforcement, table/code preservation, required attribution fields, and attribution stability when chunk text is passed into downstream summary-input constructors.
 
 ### Active Todos
 
-- Execute Plan `02-02` Task `3` from `.planning/phases/02-content-processing-attribution/02-02-PLAN.md`.
+- Verify Plan `02-02` Task `3` from `.planning/phases/02-content-processing-attribution/02-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -46,12 +47,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `02-02` Task `3` from `.planning/phases/02-content-processing-attribution/02-02-PLAN.md` within execution-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 29.
+- **Next command:** Verify Plan `02-02` Task `3` from `.planning/phases/02-content-processing-attribution/02-02-PLAN.md` within verification-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 30.
 
 ## Execution Tracking
 
 - phase=02-content-processing-attribution
 - plan=02-02
-- task=2
-- status=verified
+- task=3
+- status=implemented
