@@ -15,3 +15,20 @@ Notes:
 - Verification run output:
   - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
   - `go test ./internal/crawl -v` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
+
+## Section 2 — 01-crawl-ingestion-foundation — 01-01 — Task 1 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 1 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-01` / `task=1` / `status=verified`.
+
+Notes:
+- Re-ran the Task 1 verification commands without adding implementation scope.
+- Confirmed the skip taxonomy strings are defined only in `internal/crawl/skip_reasons.go` and consumed through `SkippedRecord.Reason`, so there are no duplicated ad hoc skip-reason literals in the codebase.
+- Verification run output:
+  - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
+  - `go test ./internal/crawl -v` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`

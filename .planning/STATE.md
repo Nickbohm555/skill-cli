@@ -9,7 +9,7 @@
 
 - **Current phase:** 1 - Crawl & Ingestion Foundation
 - **Current plan:** 01-01
-- **Overall status:** Task 1 implemented; next run should perform Task 1 verification per the implementation loop.
+- **Overall status:** Task 1 verified; next run should implement Task 2 per the implementation loop.
 - **Progress:** 0/6 phases complete
 - **Progress bar:** [------] 0%
 
@@ -31,7 +31,7 @@
 
 ### Active Todos
 
-- Verify Task 1 in the next run by re-running the phase checks and confirming the skip taxonomy remains the single source of truth.
+- Implement Task 2 next: URL normalization and same-domain boundary helpers in `internal/crawl/normalize.go`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -40,12 +40,12 @@
 
 ## Session Continuity
 
-- **Next command:** Re-run `go test ./...` and `go test ./internal/crawl -v` as the Section 2 verification session.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 2.
+- **Next command:** Read Task 2 in `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md` and inspect existing crawl helpers before implementation.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 3.
 
 ## Execution Tracking
 
 - phase=01-crawl-ingestion-foundation
 - plan=01-01
 - task=1
-- status=implemented
+- status=verified

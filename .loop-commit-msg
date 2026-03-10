@@ -1,5 +1,3 @@
-Initialize Go module and record Phase 1 Task 1 implementation
+verify phase 01 task 1 crawl contracts
 
-Tested:
-- go test ./...
-- go test ./internal/crawl -v
+Re-ran Task 1 verification checks (`go test ./...` and `go test ./internal/crawl -v`) and confirmed skip reasons remain centralized in internal/crawl/skip_reasons.go.
