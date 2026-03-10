@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 1 Plan 01-03 Task 1 is implemented; Task 1 verification is next.
+- **Current focus:** Phase 1 Plan 01-03 Task 2 execution is next.
 
 ## Current Position
 
 - **Current phase:** 1 - Crawl & Ingestion Foundation
 - **Current plan:** 01-03
-- **Overall status:** Plan 01-01 and Plan 01-02 are verified and summarized; Plan 01-03 Task 1 is implemented and awaiting verification.
+- **Overall status:** Plan 01-01 and Plan 01-02 are verified and summarized; Plan 01-03 Task 1 is verified and Task 2 execution is next.
 - **Progress:** 0/6 phases complete
 - **Progress bar:** [------] 0%
 
@@ -31,7 +31,7 @@
 
 ### Active Todos
 
-- Verify Task 1 for Plan 01-03: re-run engine verification and confirm the bounded crawl engine accounting remains correct.
+- Execute Task 2 for Plan 01-03: add engine behavior tests covering same-domain traversal, cap enforcement, explicit skip reasons, and canonical dedupe regression cases.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -40,12 +40,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Task 1 from `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md` by re-running the engine verification command and fixing only issues uncovered there.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 14.
+- **Next command:** Execute Task 2 from `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md` by adding `internal/crawl/engine_test.go` coverage for CRAWL-01..04 behaviors.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 15.
 
 ## Execution Tracking
 
 - phase=01-crawl-ingestion-foundation
 - plan=01-03
 - task=1
-- status=implemented
+- status=verified
