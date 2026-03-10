@@ -197,3 +197,22 @@ Notes:
 - No blockers came up; the task stayed test-focused and within the execution-only scope for Section 11.
 - Verification run output:
   - `go test ./internal/crawl -run Classify -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.473s`
+
+## Section 12 — 01-crawl-ingestion-foundation — 01-02 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-02` / `task=3` / `status=verified`.
+4. Create `01-02-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+
+Notes:
+- Re-ran the plan-level verification command for Task 3 and the full `internal/crawl` suite passed without any code changes.
+- Confirmed `ClassifyCandidate` still has no silent drop path: it returns either `DocsLike: true`, an explicit skip reason (`non_html_content_type` or `low_signal_page`), or an error from URL normalization that engine code can map to `invalid_url`.
+- Created `.planning/phases/01-crawl-ingestion-foundation/01-02-SUMMARY.md` and advanced `.planning/STATE.md` to Plan `01-03` / Task `1` as the next execution target.
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.499s`
