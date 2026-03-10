@@ -25,6 +25,7 @@ Skill Weaver is a Go CLI that converts a single documentation URL into a Codex s
 
 **Architecture At A Glance**
 ```mermaid
+%%{init: {"flowchart": {"nodeSpacing": 80, "rankSpacing": 90, "htmlLabels": true}, "themeVariables": {"fontSize": "18px"}}}%%
 flowchart LR
     A[Docs URL] --> B[Crawl & Ingestion]
     B --> C[Content Processing & Attribution]
