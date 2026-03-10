@@ -407,3 +407,23 @@ Notes:
   - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/content	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
   - `go test ./internal/content -v` -> `?   	github.com/Nickbohm555/skill-cli/internal/content	[no test files]`
   - `go test ./internal/content -run Normalize -v` -> `?   	github.com/Nickbohm555/skill-cli/internal/content	[no test files]`
+
+## Section 23 — 02-content-processing-attribution — 02-01 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-01-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Add extraction/normalization regression tests).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-01` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/content/extract_normalize_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/extract_normalize_test.go) with table-driven coverage for readable extraction success and deterministic failures, including a short-page fixture to confirm the readability stage does not over-strip useful docs text.
+- Locked normalization behavior with assertions for table preservation, oversized code-block truncation markers, image alt/caption retention, embedded media context lines, readable-text fallback, and stable propagation of page IDs plus checksum metadata into normalized records.
+- Added conservative dedupe regression coverage that proves exact duplicates are suppressed with explicit reasons while similar-but-distinct pages both survive, preventing false-positive deletion in this phase.
+- Initial assertions were too literal about extractor title emission and markdown table spacing; adjusted them to the actual stable behavior without weakening the intended regression coverage.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./internal/content -v` -> `=== RUN   TestExtractReadable` / `=== RUN   TestNormalizeContentPreservesStructure` / `=== RUN   TestNormalizeContentFallsBackToReadableText` / `=== RUN   TestApplyConservativeDedupe` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.593s`
