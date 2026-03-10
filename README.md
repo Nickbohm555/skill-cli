@@ -1,14 +1,25 @@
+<div style="background: linear-gradient(135deg, #0b0f1a 0%, #0a1a2f 50%, #1b0f2b 100%); border: 1px solid #15f4ee; padding: 18px 20px; border-radius: 12px; color: #e6fbff; box-shadow: 0 0 18px rgba(21, 244, 238, 0.25);">
+  <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #6fffe9;">System Banner</div>
+  <div style="font-size: 28px; font-weight: 700; color: #15f4ee;">Skill Weaver (cli-skill)</div>
+  <div style="margin-top: 6px; font-size: 14px; color: #f7b2ff;">
+    Neon-grade CLI for forging Codex skills from a single docs URL.
+  </div>
+  <div style="margin-top: 10px; font-size: 13px; color: #9ee8ff;">
+    Status: <span style="color:#faff6b;">live blueprint</span> • Mode: <span style="color:#ff7ad9;">fail-closed</span> • Output: <span style="color:#15f4ee;">Codex-ready</span>
+  </div>
+</div>
+
 # Skill Weaver (cli-skill)
 
-A cyberpunk-grade CLI for forging Codex skills from a single docs URL. Drop a link into the grid, trace the signal across the domain, and walk out with a validated, conflict-checked skill installed only after explicit approval.
+Drop a link into the grid. I map the signal, interrogate the gaps, and only then mint a validated, conflict-checked skill—installed after explicit approval and nothing earlier.
 
-**What It Is**
-Skill Weaver is a Go CLI that turns documentation into a Codex skill scaffold through an adaptive, quality-gated flow. The pipeline is local-first, fail-closed, and engineered to keep every skill atomic, auditable, and immediately usable.
+**Project Description**
+Skill Weaver is a Go CLI that converts a single documentation URL into a Codex skill scaffold using a gated pipeline: bounded crawl, structured processing, adaptive refinement, strict validation, conflict resolution, and approval-only installation. It is built to keep every skill atomic, auditable, and immediately usable without surprise writes.
 
 **Why It Exists**
-- One-page links are easy; usable Codex skills are not. Skill Weaver bridges that gap with structured refinement and strict validation.
-- Skill overlap is costly. The tool detects conflicts and forces explicit resolution before anything is written.
-- Installation safety matters. No writes happen before preview and approval.
+- One-page links are easy; usable Codex skills are not. I bridge that gap with structured refinement and strict validation.
+- Skill overlap is costly. I surface conflicts and require explicit resolution before anything is written.
+- Installation safety matters. I never write before preview and approval.
 
 **Core Principles**
 - Local-first pipeline with deterministic output boundaries.
@@ -16,6 +27,8 @@ Skill Weaver is a Go CLI that turns documentation into a Codex skill scaffold th
 - Explicit approval before any filesystem mutation.
 - Single-capability skills with explicit in-scope and out-of-scope boundaries.
 - Bounded, same-domain crawl starting from a single entry URL.
+
+<div style="margin: 14px 0; height: 2px; background: linear-gradient(90deg, #15f4ee, #ff7ad9, #faff6b); border-radius: 2px;"></div>
 
 **Architecture At A Glance**
 ```mermaid
@@ -111,7 +124,9 @@ Planned internal packages (phase-aligned):
 7. Detect overlap with installed skills and require explicit decision.
 8. Show preview/diff, require approval, install atomically.
 
-**Getting Started**
+**Boot Sequence**
+I run clean and loud when your toolchain is ready.
+
 Prerequisites:
 - Go `1.25.x` installed and on `PATH`.
 - `CODEX_HOME` set to your Codex home directory.
@@ -140,7 +155,7 @@ go build -o bin/cli-skill ./cmd/cli-skill
 go install ./cmd/cli-skill
 ```
 
-**Current Status**
+**System Status**
 - Phase 1 is in progress.
 - Task 1 for Phase 1 Plan 01-01 is implemented.
 - Verification for that task is pending.
