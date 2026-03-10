@@ -447,3 +447,23 @@ Notes:
 - Verification run output:
   - `go test ./internal/content -v` -> `=== RUN   TestExtractReadable` / `=== RUN   TestNormalizeContentPreservesStructure` / `=== RUN   TestNormalizeContentFallsBackToReadableText` / `=== RUN   TestApplyConservativeDedupe` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)`
   - `rg -n "\\b(ID|SourceChecksum|ReadableChecksum|NormalizedPage|ExtractedPage|StrictNormalizedChecksum)\\b" internal/content` -> stable identifiers and checksum fields confirmed in `types.go`, `extract.go`, `normalize.go`, `dedupe.go`, and `extract_normalize_test.go`
+
+## Section 25 — 02-content-processing-attribution — 02-02 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-02-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Implement chunking strategy with semantic-first token guardrails).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-02` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/content/chunk.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/chunk.go) with `ChunkConfig`, `Chunk`, `BuildChunks`, and `BuildChunksWithConfig`, using `langchaingo/textsplitter` for markdown-first semantic splitting, fenced-code preservation, joined-table-row handling, and token-based fallback enforcement at the configured guardrail.
+- The chunk builder now emits deterministic per-page ordering plus stable `chunk_id`-style IDs, per-chunk token counts, and content checksums so later attribution/pipeline work can attach provenance without re-deriving chunk identity.
+- Added `github.com/tmc/langchaingo@v0.1.14` and `github.com/pkoukk/tiktoken-go@v0.1.8`, then ran `go mod tidy` after verification exposed a missing `go.sum` entry for `gitlab.com/golang-commonmark/markdown` required by `langchaingo/textsplitter`.
+- No blockers remained after the dependency metadata fix. The Task 1 verification command currently reports `no tests to run` because the explicit chunking regression coverage is the next scoped testing task in Section 29 / Task 3.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./internal/content -run Chunk -v` -> `testing: warning: no tests to run` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.636s [no tests to run]`

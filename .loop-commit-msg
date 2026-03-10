@@ -1,4 +1,3 @@
-Verify Phase 2 content regression coverage and advance to plan 02-02
+Implement semantic-first content chunking with token guardrails
 
-Tested:
-- go test ./internal/content -v
+Tested: go test ./internal/content -run Chunk -v
