@@ -272,3 +272,19 @@ Notes:
 - One compile-time miss came up during verification because the new test helper initially omitted the `net/url` import; after adding it, the engine suite passed cleanly with no production-code changes required.
 - Verification run output:
   - `go test ./internal/crawl -run Engine -v` -> `=== RUN   TestEngineSameDomainSkipReasonsAndCanonicalDedupe` / `--- PASS: TestEngineSameDomainSkipReasonsAndCanonicalDedupe (0.03s)` / `=== RUN   TestEngineRespectsDefaultProcessedCap` / `--- PASS: TestEngineRespectsDefaultProcessedCap (0.01s)` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.900s`
+
+## Section 16 — 01-crawl-ingestion-foundation — 01-03 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-03` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the Task 2 engine verification exactly as specified; the behavior suite stayed green with no code changes required during this verification session.
+- The passing run confirms the recently added same-domain traversal, skip-reason accounting, canonical dedupe, and default processed-cap checks remain stable.
+- Verification run output:
+  - `go test ./internal/crawl -run Engine -v` -> `=== RUN   TestEngineSameDomainSkipReasonsAndCanonicalDedupe` / `--- PASS: TestEngineSameDomainSkipReasonsAndCanonicalDedupe (0.03s)` / `=== RUN   TestEngineRespectsDefaultProcessedCap` / `--- PASS: TestEngineRespectsDefaultProcessedCap (0.01s)` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`

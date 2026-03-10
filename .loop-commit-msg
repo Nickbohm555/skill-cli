@@ -1,3 +1,1 @@
-Add crawl engine behavior tests for same-domain, skip reasons, dedupe, and cap enforcement
-
-Tested: go test ./internal/crawl -run Engine -v
+verify engine crawl behavior tests and advance plan to task 3
