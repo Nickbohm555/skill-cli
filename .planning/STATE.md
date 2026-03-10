@@ -3,22 +3,22 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 1 Plan 01-03 Task 3 is implemented; Task 3 verification is next.
+- **Current focus:** Phase 1 is complete and summarized; Phase 2 Plan 02-01 Task 1 execution is next.
 
 ## Current Position
 
-- **Current phase:** 1 - Crawl & Ingestion Foundation
-- **Current plan:** 01-03
-- **Overall status:** Plan 01-01 and Plan 01-02 are verified and summarized; Plan 01-03 Tasks 1 and 2 are verified, and Task 3 is implemented.
-- **Progress:** 0/6 phases complete
-- **Progress bar:** [------] 0%
+- **Current phase:** 2 - Content Processing & Attribution
+- **Current plan:** 02-01
+- **Overall status:** Phase 1 is verified, summarized, and marked complete; Phase 2 Plan 02-01 Task 1 is the next execution target.
+- **Progress:** 1/6 phases complete
+- **Progress bar:** [#-----] 17%
 
 ## Performance Metrics
 
 - **v1 requirements total:** 20
 - **Mapped to phases:** 20
 - **Coverage:** 100%
-- **Validated requirements complete:** 0
+- **Validated requirements complete:** 4
 
 ## Accumulated Context
 
@@ -28,10 +28,11 @@
 - Phases are requirement-driven with one-to-one requirement mapping.
 - Install remains fail-closed until validation and conflict states are resolved.
 - Use `github.com/Nickbohm555/skill-cli` as the module path to enable Go-native verification in this repo.
+- Phase 1 is complete after verifying the runnable crawl flow end to end and updating the phase summary.
 
 ### Active Todos
 
-- Verify Task 3 for Plan 01-03 by rerunning the command and package checks, then create the plan summary if verification stays clean.
+- Execute Task 1 for Plan 02-01 by establishing Phase 2 content contracts and extraction dependencies.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -40,12 +41,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Task 3 from `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md`, then create `01-03-SUMMARY.md` and advance to the next plan if verification stays clean.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 18.
+- **Next command:** Execute Task 1 from `.planning/phases/02-content-processing-attribution/02-01-PLAN.md` and build the Phase 2 content contracts plus extraction foundation.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 19.
 
 ## Execution Tracking
 
-- phase=01-crawl-ingestion-foundation
-- plan=01-03
-- task=3
-- status=implemented
+- phase=02-content-processing-attribution
+- plan=02-01
+- task=1
+- status=ready

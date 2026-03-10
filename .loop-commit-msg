@@ -1,12 +1,1 @@
-Add crawl CLI command and summary reporting
-
-Built:
-- Cobra-based `cli-skill` entrypoint with `crawl --url`
-- Final crawl report output for processed pages, skipped reasons, and summary counts
-
-Tested:
-- `go fmt ./...`
-- `go mod tidy`
-- `go test ./...`
-- `go run ./cmd/cli-skill crawl --url http://127.0.0.1:18765/docs/index.html`
-- `go run ./cmd/cli-skill crawl --url http://127.0.0.1:1/docs`
+Verify Phase 1 crawl CLI flow and close out plan 01-03

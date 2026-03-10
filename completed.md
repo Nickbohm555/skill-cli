@@ -310,3 +310,24 @@ Notes:
   - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
   - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:18765/docs/index.html` -> processed 3 pages, skipped 5 candidates with explicit reasons (`already_seen`, `low_signal_page`, `off_domain`, `invalid_url`), summary `Discovered: 8 / Processed: 3 / Skipped: 5`
   - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:1/docs` -> `Error: crawl failed: entry url could not be fetched: http://127.0.0.1:1/docs (Get "http://127.0.0.1:1/docs": dial tcp 127.0.0.1:1: connect: connection refused)` and exited non-zero
+
+## Section 18 — 01-crawl-ingestion-foundation — 01-03 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-03` / `task=3` / `status=verified`.
+4. Create `01-03-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+5. Update `.planning/ROADMAP.md` and `.planning/STATE.md` to mark the phase complete.
+
+Notes:
+- Re-ran the full Task 3 verification scope and no code fixes were required; the Phase 1 crawl flow stayed clean under package tests and manual CLI checks.
+- Created `.planning/phases/01-crawl-ingestion-foundation/01-03-SUMMARY.md`, advanced `.planning/STATE.md` to Phase `02-content-processing-attribution` / Plan `02-01` / Task `1`, and marked Phase 1 complete in `.planning/ROADMAP.md`.
+- The local fixture run confirmed the CLI report includes processed pages, skipped pages with explicit reasons, and final discovered/processed/skipped totals; the unreachable-target run still exits non-zero with clear stderr text.
+- Verification run output:
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+  - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:59592/docs` -> processed 3 pages, skipped 4 candidates with explicit reasons (`off_domain`, `invalid_url`, `fetch_error`, `non_html_content_type`), summary `Discovered: 7 / Processed: 3 / Skipped: 4`
+  - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:9/docs` -> `Error: crawl failed: entry url could not be fetched: http://127.0.0.1:9/docs (Get "http://127.0.0.1:9/docs": dial tcp 127.0.0.1:9: connect: connection refused)` and exited non-zero
