@@ -288,3 +288,25 @@ Notes:
 - The passing run confirms the recently added same-domain traversal, skip-reason accounting, canonical dedupe, and default processed-cap checks remain stable.
 - Verification run output:
   - `go test ./internal/crawl -run Engine -v` -> `=== RUN   TestEngineSameDomainSkipReasonsAndCanonicalDedupe` / `--- PASS: TestEngineSameDomainSkipReasonsAndCanonicalDedupe (0.03s)` / `=== RUN   TestEngineRespectsDefaultProcessedCap` / `--- PASS: TestEngineRespectsDefaultProcessedCap (0.01s)` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+
+## Section 17 — 01-crawl-ingestion-foundation — 01-03 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Wire crawl command and render final user summary).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-03` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/cli/command/crawl.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/crawl.go) with a Cobra root command plus required `crawl --url`, wired to `crawl.ExecuteCrawl`, and a transparent report that prints processed pages, skipped pages with reasons/details, and final discovered/processed/skipped totals.
+- Added [`cmd/cli-skill/main.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/cmd/cli-skill/main.go) as the runnable CLI entrypoint for this repo’s active binary path, with stderr error output and non-zero exits for hard crawl failures.
+- The phase plan still references `cmd/skill-weaver/main.go`, but the repo’s operational instructions and README target `cmd/cli-skill`, so the command wiring was implemented at the current binary path instead of introducing an outdated duplicate entrypoint.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go mod tidy` -> downloaded transitive test dependencies (`github.com/stretchr/testify`, `github.com/google/go-cmp`, `github.com/pmezard/go-difflib`, `github.com/davecgh/go-spew`)
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+  - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:18765/docs/index.html` -> processed 3 pages, skipped 5 candidates with explicit reasons (`already_seen`, `low_signal_page`, `off_domain`, `invalid_url`), summary `Discovered: 8 / Processed: 3 / Skipped: 5`
+  - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:1/docs` -> `Error: crawl failed: entry url could not be fetched: http://127.0.0.1:1/docs (Get "http://127.0.0.1:1/docs": dial tcp 127.0.0.1:1: connect: connection refused)` and exited non-zero
