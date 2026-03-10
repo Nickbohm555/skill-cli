@@ -1,3 +1,4 @@
-Add Phase 2 content regression tests
+Verify Phase 2 content regression coverage and advance to plan 02-02
 
-Built extraction, normalization, and conservative dedupe regression coverage in internal/content/extract_normalize_test.go and verified it with go test ./internal/content -v.
+Tested:
+- go test ./internal/content -v

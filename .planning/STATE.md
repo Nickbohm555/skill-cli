@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 2 Plan 02-01 Task 3 is implemented; Task 3 verification is next.
+- **Current focus:** Phase 2 Plan 02-01 is verified and summarized; Plan 02-02 Task 1 is next.
 
 ## Current Position
 
 - **Current phase:** 2 - Content Processing & Attribution
-- **Current plan:** 02-01
-- **Overall status:** Phase 1 is verified, summarized, and marked complete; Phase 2 Plan 02-01 Task 3 is implemented and Task 3 verification is next.
+- **Current plan:** 02-02
+- **Overall status:** Phase 1 is complete, and Phase 2 Plan 02-01 is now verified with its summary recorded. The next scoped run is Plan 02-02 Task 1 execution.
 - **Progress:** 1/6 phases complete
 - **Progress bar:** [#-----] 17%
 
@@ -29,10 +29,11 @@
 - Install remains fail-closed until validation and conflict states are resolved.
 - Use `github.com/Nickbohm555/skill-cli` as the module path to enable Go-native verification in this repo.
 - Phase 1 is complete after verifying the runnable crawl flow end to end and updating the phase summary.
+- Phase 2 Plan `02-01` is complete after verification confirmed extraction, normalization, and conservative dedupe tests pass and stable IDs/checksums remain present in the content records.
 
 ### Active Todos
 
-- Verify Task 3 for Plan 02-01 by re-running the new extraction, normalization, and conservative dedupe regression coverage.
+- Implement Plan `02-02` Task `1` from `.planning/phases/02-content-processing-attribution/02-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -41,12 +42,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Task 3 from `.planning/phases/02-content-processing-attribution/02-01-PLAN.md` by re-running `go test ./internal/content -v` and confirming stable identifiers/checksums remain present in normalized content records.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 24.
+- **Next command:** Read `.planning/phases/02-content-processing-attribution/02-02-PLAN.md` and implement Task 1 within execution-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 25.
 
 ## Execution Tracking
 
 - phase=02-content-processing-attribution
-- plan=02-01
-- task=3
-- status=implemented
+- plan=02-02
+- task=1
+- status=pending
