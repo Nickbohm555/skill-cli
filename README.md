@@ -24,20 +24,9 @@ Skill Weaver is a Go CLI that converts a single documentation URL into a Codex s
 <div style="margin: 14px 0; height: 2px; background: linear-gradient(90deg, #15f4ee, #ff7ad9, #faff6b); border-radius: 2px;"></div>
 
 **Architecture At A Glance**
-```mermaid
-%%{init: {"flowchart": {"nodeSpacing": 80, "rankSpacing": 90, "htmlLabels": true}, "themeVariables": {"fontSize": "18px"}}}%%
-flowchart LR
-    A[Docs URL] --> B[Crawl & Ingestion]
-    B --> C[Content Processing & Attribution]
-    C --> D[Interactive Refinement]
-    D --> E[Validation & Quality Gates]
-    E --> F[Overlap & Conflict Resolution]
-    F --> G[Approval-Gated Install]
-    G --> H[Codex Skill Registry]
-
-    E -. fail closed .-> D
-    F -. unresolved .-> D
-```
+<div align="center">
+  <img src="assets/architecture-diagram.svg" alt="Skill Weaver architecture diagram" width="100%" />
+</div>
 
 **Phase Map**
 Phase 1: Crawl & Ingestion Foundation
