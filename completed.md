@@ -216,3 +216,22 @@ Notes:
 - No blockers came up during verification.
 - Verification run output:
   - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.499s`
+
+## Section 13 — 01-crawl-ingestion-foundation — 01-03 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Build bounded crawl engine with strict accounting).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-03` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/crawl/engine.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/crawl/engine.go) with `ExecuteCrawl` and `ExecuteCrawlWithOptions`, backed by a synchronous `colly/v2` collector, derived docs-root startup, canonical dedupe before enqueue/process, explicit same-domain guards, conservative low-signal filtering, and centralized discovered/processed/skipped accounting.
+- The engine records non-processed candidates with explicit skip reasons during both discovery and request execution paths, and it returns a hard error when the crawl root cannot be fetched or does not resolve to docs-like HTML.
+- Added `github.com/gocolly/colly/v2@v2.3.0` and its transitive dependencies to support the bounded crawl orchestration required by Plan `01-03`.
+- No blockers came up. The task verification command currently reports `no tests to run` because `engine_test.go` is the next scoped task in Plan `01-03`.
+- Verification run output:
+  - `go test ./internal/crawl -run Engine -v` -> `testing: warning: no tests to run` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.838s [no tests to run]`

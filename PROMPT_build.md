@@ -5,7 +5,7 @@
 
 1. Take the item in @IMPLEMENTATION_PLAN.md where it says: "Current section to work on:"
 
-2. Before making changes, search the codebase to see how it is working. If parts can be re-used, do it.
+2. Before making changes, search the codebase and search reference files in your section to see how it is working. Be thorough, take your time in understanding. If parts can be re-used, do it.
 
 3. **Run scope enforcement** (must follow):
    - One run does exactly one **Execution** OR one **Verification** session, never both.
