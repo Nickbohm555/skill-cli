@@ -1,3 +1,6 @@
-Implement semantic-first content chunking with token guardrails
+verify chunking task 1 and advance plan to section 27
 
-Tested: go test ./internal/content -run Chunk -v
+Tested:
+- go test ./internal/content -run Chunk -v
+- go test ./internal/content -v
+- go test ./...
