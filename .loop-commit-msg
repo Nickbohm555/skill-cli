@@ -1,5 +1,1 @@
-Add Phase 2 content contracts and readability extraction
-
-Tested with:
-- go fmt ./...
-- go test ./...
+Verify phase 2 extraction foundation and advance plan to section 21

@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 2 Plan 02-01 Task 1 execution is implemented; verification is next.
+- **Current focus:** Phase 2 Plan 02-01 Task 1 is verified; Task 2 execution is next.
 
 ## Current Position
 
 - **Current phase:** 2 - Content Processing & Attribution
 - **Current plan:** 02-01
-- **Overall status:** Phase 1 is verified, summarized, and marked complete; Phase 2 Plan 02-01 Task 1 is implemented and awaiting verification.
+- **Overall status:** Phase 1 is verified, summarized, and marked complete; Phase 2 Plan 02-01 Task 1 is verified and Task 2 execution is next.
 - **Progress:** 1/6 phases complete
 - **Progress bar:** [#-----] 17%
 
@@ -32,7 +32,7 @@
 
 ### Active Todos
 
-- Verify Task 1 for Plan 02-01 and fix any issues discovered in the extraction foundation.
+- Execute Task 2 for Plan 02-01 to add structure-preserving normalization and conservative dedupe.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -41,12 +41,12 @@
 
 ## Session Continuity
 
-- **Next command:** Re-run Task 1 verification from `.planning/phases/02-content-processing-attribution/02-01-PLAN.md` and confirm the new `internal/content` extraction foundation stays clean.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 20.
+- **Next command:** Execute Task 2 from `.planning/phases/02-content-processing-attribution/02-01-PLAN.md` and add normalization plus conservative dedupe to `internal/content`.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 21.
 
 ## Execution Tracking
 
 - phase=02-content-processing-attribution
 - plan=02-01
 - task=1
-- status=implemented
+- status=verified
