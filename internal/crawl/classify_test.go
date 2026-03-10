@@ -21,8 +21,18 @@ func TestClassifyDocsLikeHTML(t *testing.T) {
 			want:        true,
 		},
 		{
+			name:        "html media type remains processable with mixed casing",
+			contentType: "Text/HTML; Charset=UTF-8",
+			want:        true,
+		},
+		{
 			name:        "json is not docs-like html",
 			contentType: "application/json",
+			want:        false,
+		},
+		{
+			name:        "malformed header is not docs-like html",
+			contentType: "text/html; charset",
 			want:        false,
 		},
 		{
@@ -69,6 +79,11 @@ func TestClassifyLowSignalPage(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "well known machine file is low signal",
+			raw:  "https://docs.example.com/robots.txt",
+			want: true,
+		},
+		{
 			name: "docs article path remains processable",
 			raw:  "https://docs.example.com/docs/getting-started/install",
 			want: false,
@@ -76,6 +91,11 @@ func TestClassifyLowSignalPage(t *testing.T) {
 		{
 			name: "docs article with query remains processable",
 			raw:  "../reference/auth?lang=en",
+			want: false,
+		},
+		{
+			name: "html article path remains processable",
+			raw:  "https://docs.example.com/docs/reference/index.html",
 			want: false,
 		},
 		{
@@ -129,6 +149,18 @@ func TestClassifyCandidate(t *testing.T) {
 			want:        ClassificationOutcome{SkipReason: SkipReasonNonHTMLContentType},
 		},
 		{
+			name:        "missing content type maps to explicit skip reason",
+			raw:         "https://docs.example.com/docs/getting-started",
+			contentType: "",
+			want:        ClassificationOutcome{SkipReason: SkipReasonNonHTMLContentType},
+		},
+		{
+			name:        "malformed html content type maps to explicit skip reason",
+			raw:         "https://docs.example.com/docs/getting-started",
+			contentType: "text/html; charset",
+			want:        ClassificationOutcome{SkipReason: SkipReasonNonHTMLContentType},
+		},
+		{
 			name:        "low signal asset maps to explicit skip reason",
 			raw:         "https://docs.example.com/assets/logo.svg",
 			contentType: "text/html; charset=utf-8",
@@ -138,6 +170,12 @@ func TestClassifyCandidate(t *testing.T) {
 			name:        "docs article is accepted",
 			raw:         "../guides/install",
 			contentType: "text/html; charset=utf-8",
+			want:        ClassificationOutcome{DocsLike: true},
+		},
+		{
+			name:        "docs article with html extension stays accepted",
+			raw:         "https://docs.example.com/docs/reference/index.html?lang=en",
+			contentType: "Text/HTML; Charset=UTF-8",
 			want:        ClassificationOutcome{DocsLike: true},
 		},
 		{

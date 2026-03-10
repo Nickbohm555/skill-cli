@@ -179,3 +179,21 @@ Notes:
 - Verification run output:
   - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
   - `rg -n "ClassificationOutcome|SkipReason" internal/crawl` -> classifier outcomes and skip-reason constants are centralized in `internal/crawl/classify.go`, `internal/crawl/skip_reasons.go`, and consumed by tests/types only
+
+## Section 11 — 01-crawl-ingestion-foundation — 01-02 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Add table-driven tests for classifier edge cases).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-02` / `task=3` / `status=implemented`.
+
+Notes:
+- Extended `internal/crawl/classify_test.go` with additional table-driven classifier edge cases covering mixed-case HTML media types, malformed and missing content-type headers, well-known machine-file low-signal paths, and conservative allow cases for docs pages that include `.html` paths or query params.
+- Reused the existing `IsDocsLikeHTML`, `IsLowSignalPage`, and `ClassifyCandidate` behavior without changing production logic because the current implementation already exposed explicit outcomes with no silent drop path.
+- No blockers came up; the task stayed test-focused and within the execution-only scope for Section 11.
+- Verification run output:
+  - `go test ./internal/crawl -run Classify -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.473s`

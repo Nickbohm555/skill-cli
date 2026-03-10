@@ -1,3 +1,5 @@
-Verify crawl classifier skip mapping and advance to section 11
+Add classifier edge-case regression tests
 
-Tested: go test ./internal/crawl -v
+Built broader `internal/crawl` classification coverage for malformed headers,
+missing content types, low-signal machine files, and conservative docs allow
+cases. Tested with `go test ./internal/crawl -run Classify -v`.
