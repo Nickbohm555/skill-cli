@@ -86,3 +86,22 @@ Notes:
 - No blockers came up; the existing normalization helpers already matched the expected boundary policy, so this run stayed test-focused.
 - Verification run output:
   - `go test ./internal/crawl -run Normalize -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.483s`
+
+## Section 6 — 01-crawl-ingestion-foundation — 01-01 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-01` / `task=3` / `status=verified`.
+4. Create `01-01-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+
+Notes:
+- Re-ran the plan-level verification command for Task 3 and all normalization and same-domain tests passed without code changes.
+- Confirmed the skip-reason taxonomy remains centralized in `internal/crawl/skip_reasons.go`, with no duplicated ad hoc reason literals elsewhere in the repository.
+- Created `.planning/phases/01-crawl-ingestion-foundation/01-01-SUMMARY.md` and advanced `.planning/STATE.md` to Plan `01-02` / Task `1` as the next execution target.
+- Verification run output:
+  - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.514s`
+  - `rg -n 'off_domain|already_seen|cap_reached|non_html_content_type|invalid_url|low_signal_page|fetch_error' .` -> matches only in `internal/crawl/skip_reasons.go`

@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 1 Task 3 implementation is complete; next run should verify it.
+- **Current focus:** Phase 1 Plan 01-02 Task 1 execution is next.
 
 ## Current Position
 
 - **Current phase:** 1 - Crawl & Ingestion Foundation
-- **Current plan:** 01-01
-- **Overall status:** Task 3 implemented; next run should verify Task 3 per the implementation loop.
+- **Current plan:** 01-02
+- **Overall status:** Plan 01-01 verified and summarized; next run should execute Task 1 of Plan 01-02.
 - **Progress:** 0/6 phases complete
 - **Progress bar:** [------] 0%
 
@@ -31,7 +31,7 @@
 
 ### Active Todos
 
-- Verify Task 3 after implementation: normalization boundary coverage in `internal/crawl/normalize_test.go`.
+- Execute Task 1 for Plan 01-02: docs-root derivation policy.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -40,12 +40,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Task 3 from `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md` by re-running crawl normalization tests and confirming boundary behavior remains clean.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 6.
+- **Next command:** Execute Task 1 from `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md` by implementing docs-root derivation policy and running its plan-scoped verification.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 7.
 
 ## Execution Tracking
 
 - phase=01-crawl-ingestion-foundation
-- plan=01-01
-- task=3
-- status=implemented
+- plan=01-02
+- task=1
+- status=ready_for_execution

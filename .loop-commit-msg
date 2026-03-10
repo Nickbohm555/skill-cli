@@ -1,1 +1,3 @@
-Add crawl normalization boundary tests and verify normalize cases
+Verify crawl normalization boundaries and close out plan 01-01
+
+Tested `go test ./internal/crawl -v` and confirmed skip reasons remain centralized before advancing to section 7.
