@@ -68,3 +68,21 @@ Notes:
 - Verification run output:
   - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
   - `go test ./internal/crawl -v` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
+
+## Section 5 — 01-crawl-ingestion-foundation — 01-01 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Add table-driven normalization tests for boundary correctness).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-01` / `task=3` / `status=implemented`.
+
+Notes:
+- Added `internal/crawl/normalize_test.go` with table-driven coverage for invalid URL handling, fragment stripping, tracking query removal, stable query ordering, path cleaning, relative URL resolution, default-port normalization, and same-domain true/false cases.
+- The test fixtures use docs-like URL shapes (`/docs/...`, relative links from a docs base, mixed host casing, tracking params) so boundary behavior stays aligned with the phase research notes.
+- No blockers came up; the existing normalization helpers already matched the expected boundary policy, so this run stayed test-focused.
+- Verification run output:
+  - `go test ./internal/crawl -run Normalize -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.483s`

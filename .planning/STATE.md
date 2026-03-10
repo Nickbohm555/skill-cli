@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 1 verification is in progress.
+- **Current focus:** Phase 1 Task 3 implementation is complete; next run should verify it.
 
 ## Current Position
 
 - **Current phase:** 1 - Crawl & Ingestion Foundation
 - **Current plan:** 01-01
-- **Overall status:** Task 2 verified; next run should implement Task 3 per the implementation loop.
+- **Overall status:** Task 3 implemented; next run should verify Task 3 per the implementation loop.
 - **Progress:** 0/6 phases complete
 - **Progress bar:** [------] 0%
 
@@ -31,7 +31,6 @@
 
 ### Active Todos
 
-- Implement Task 3 next: table-driven normalization tests in `internal/crawl/normalize_test.go`.
 - Verify Task 3 after implementation: normalization boundary coverage in `internal/crawl/normalize_test.go`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
@@ -41,12 +40,12 @@
 
 ## Session Continuity
 
-- **Next command:** Implement Task 3 from `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md` by adding table-driven normalization tests in `internal/crawl/normalize_test.go`.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 5.
+- **Next command:** Verify Task 3 from `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md` by re-running crawl normalization tests and confirming boundary behavior remains clean.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 6.
 
 ## Execution Tracking
 
 - phase=01-crawl-ingestion-foundation
 - plan=01-01
-- task=2
-- status=verified
+- task=3
+- status=implemented

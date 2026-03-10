@@ -1,5 +1,1 @@
-Verify crawl URL normalization helpers and advance loop to Task 3
-
-Tested:
-- go test ./...
-- go test ./internal/crawl -v
+Add crawl normalization boundary tests and verify normalize cases
