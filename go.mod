@@ -3,12 +3,15 @@ module github.com/Nickbohm555/skill-cli
 go 1.25.0
 
 require (
+	codeberg.org/readeck/go-readability/v2 v2.1.1
+	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.0
 	github.com/gocolly/colly/v2 v2.3.0
 	github.com/spf13/cobra v1.10.2
+	golang.org/x/net v0.47.0
 )
 
 require (
-	codeberg.org/readeck/go-readability/v2 v2.1.1 // indirect
+	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/PuerkitoBio/goquery v1.11.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/antchfx/htmlquery v1.3.5 // indirect
@@ -27,7 +30,6 @@ require (
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
-	golang.org/x/net v0.47.0 // indirect
 	golang.org/x/text v0.31.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect

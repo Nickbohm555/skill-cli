@@ -368,3 +368,23 @@ Notes:
 - Verification run output:
   - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/content	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
   - `go test ./internal/content -v` -> `?   	github.com/Nickbohm555/skill-cli/internal/content	[no test files]`
+
+## Section 21 — 02-content-processing-attribution — 02-01 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-01-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Implement structure-preserving normalization and conservative dedupe).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-01` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/content/normalize.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/normalize.go) with `NormalizeContent`, a readable-HTML normalization stage that converts extracted content to markdown via `html-to-markdown/v2` plus the table plugin, preserves relative-link/media context with the page domain, truncates oversized code blocks with an explicit marker, and returns deterministic normalization errors instead of silently dropping content.
+- Added [`internal/content/dedupe.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/dedupe.go) with `ApplyConservativeDedupe` and `StrictNormalizedChecksum`, keeping duplicate suppression intentionally narrow: exact `SourceChecksum` matches first, then exact strict-normalized markdown/plain-text checksum matches, with `Deduped`, `DuplicateOf`, and `DuplicateReason` set for auditability.
+- Ran `go mod tidy` after adding `github.com/JohannesKaufmann/html-to-markdown/v2@v2.5.0` so the module graph reflects the new direct normalization dependency used by the content package.
+- No blockers came up. There are still no `internal/content` tests in this section because the explicit regression coverage is the next scoped execution item in Section 23 / Task 3.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/content	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`

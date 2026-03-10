@@ -1,1 +1,3 @@
-Verify phase 2 extraction foundation and advance plan to section 21
+Add content normalization and conservative dedupe
+
+Built the Phase 2 normalization pipeline with markdown conversion, table/code/media preservation, and high-confidence dedupe metadata. Tested with `go fmt ./...` and `go test ./...`.
