@@ -1,3 +1,4 @@
-Verify crawl normalization boundaries and close out plan 01-01
+Implement docs-root derivation policy
 
-Tested `go test ./internal/crawl -v` and confirmed skip reasons remain centralized before advancing to section 7.
+Built deterministic crawl docs-root derivation with explicit segment precedence and added docs-root fixture coverage.
+Tested with `go test ./internal/crawl -run DocsRoot -v`.

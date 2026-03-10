@@ -105,3 +105,21 @@ Notes:
 - Verification run output:
   - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.514s`
   - `rg -n 'off_domain|already_seen|cap_reached|non_html_content_type|invalid_url|low_signal_page|fetch_error' .` -> matches only in `internal/crawl/skip_reasons.go`
+
+## Section 7 — 01-crawl-ingestion-foundation — 01-02 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Implement docs-root derivation policy).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-02` / `task=1` / `status=implemented`.
+
+Notes:
+- Added `internal/crawl/docs_root.go` with a deterministic `DeriveDocsRoot` helper that normalizes the entry URL first, then applies explicit path-segment precedence: `docs`, `documentation`, `guide`, `guides`, with fallback to site root.
+- Added `internal/crawl/docs_root_test.go` with table-driven fixtures for top-level docs, nested documentation roots, guide roots, precedence behavior, site-root fallback, and invalid URL handling.
+- No blockers came up; the existing normalization helpers were reused directly so the docs-root policy stays aligned with the canonical URL boundary.
+- Verification run output:
+  - `go test ./internal/crawl -run DocsRoot -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.486s`
