@@ -1,4 +1,3 @@
-verify crawl engine task 1
+Add crawl engine behavior tests for same-domain, skip reasons, dedupe, and cap enforcement
 
-Re-ran Section 14 verification for Plan 01-03 Task 1 and confirmed the crawl package still passes package-level Go tests.
-Noted that `go test ./internal/crawl -run Engine -v` still reports no engine tests yet; Task 2 remains the scoped step for adding engine behavior coverage.
+Tested: go test ./internal/crawl -run Engine -v

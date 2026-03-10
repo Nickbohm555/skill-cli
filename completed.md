@@ -254,3 +254,21 @@ Notes:
   - `go test ./internal/crawl -run Engine -v` -> `testing: warning: no tests to run` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached) [no tests to run]`
   - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.870s`
   - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.703s`
+
+## Section 15 — 01-crawl-ingestion-foundation — 01-03 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Add engine behavior tests for CRAWL-01..04).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-03` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/crawl/engine_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/crawl/engine_test.go) with local `httptest` coverage for same-domain-only traversal, explicit skip reasons (`off_domain`, `low_signal_page`, `non_html_content_type`, `invalid_url`, `already_seen`), summary integrity, and canonical duplicate collapse.
+- Added a separate cap-enforcement fixture proving the default processed-page ceiling stays at 50 and that overflow candidates are surfaced as `cap_reached` skips instead of being processed.
+- One compile-time miss came up during verification because the new test helper initially omitted the `net/url` import; after adding it, the engine suite passed cleanly with no production-code changes required.
+- Verification run output:
+  - `go test ./internal/crawl -run Engine -v` -> `=== RUN   TestEngineSameDomainSkipReasonsAndCanonicalDedupe` / `--- PASS: TestEngineSameDomainSkipReasonsAndCanonicalDedupe (0.03s)` / `=== RUN   TestEngineRespectsDefaultProcessedCap` / `--- PASS: TestEngineRespectsDefaultProcessedCap (0.01s)` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.900s`
