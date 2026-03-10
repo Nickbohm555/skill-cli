@@ -107,6 +107,14 @@ Planned internal packages (phase-aligned):
 7. Detect overlap with installed skills and require explicit decision.
 8. Show preview/diff, require approval, install atomically.
 
+**How To Use In Codex**
+1. Set `CODEX_HOME` to your Codex home directory.
+2. Build or install the CLI: `go install ./cmd/cli-skill`.
+3. Run the generator with your docs URL and follow prompts: `cli-skill generate <docs-url>`.
+4. Resolve validation fixes and any overlap decisions when prompted.
+5. Approve the preview/diff when you want the skill installed.
+6. Verify the skill appears in Codex and use it in your next session.
+
 **Boot Sequence**
 I run clean and loud when your toolchain is ready.
 
