@@ -1,5 +1,1 @@
-Implement chunk attribution pipeline and verify repo tests
-
-- add metadata-first chunk attribution records and stable heading/checksum/reference helpers
-- add ProcessToChunks orchestration over normalized pages with skip handling for deduped and failed pages
-- verify with go test ./... and direct ProcessToChunks output inspection
+Verify chunk attribution pipeline wiring with repo and content test suites

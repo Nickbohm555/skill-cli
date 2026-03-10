@@ -506,3 +506,21 @@ Notes:
 - Verification run output:
   - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
   - `go run ./tmp_pipeline_inspect.go` (temporary verification program, removed after use) -> emitted three chunks and each included non-empty `source`, `title`, `headings`, `checksum`, and `reference` fields, for example `chunk=page-install-1-cd4c82a42397 source=https://docs.example.com/guides/install title=Install Guide headings=[Install Guide] ...`
+
+## Section 28 — 02-content-processing-attribution — 02-02 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-02-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-02` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the plan-level verification within verification-only scope; no implementation fixes were required because the current chunk attribution and pipeline wiring continue to compile and pass the repo test suite cleanly.
+- Confirmed by direct inspection that `ProcessToChunks` stamps attribution at chunk creation via `NewChunkAttribution`, and only emits records whose `source_url`, `page_title`, `heading_path`, `chunk_id`, `checksum`, and `reference` fields satisfy `HasRequiredFields`.
+- No blockers came up during verification. Explicit chunk/pipeline regression coverage remains the next scoped execution item in Section 29 / Task 3.
+- Verification run output:
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+  - `go test ./internal/content -v` -> `=== RUN   TestExtractReadable` / `=== RUN   TestNormalizeContentPreservesStructure` / `=== RUN   TestNormalizeContentFallsBackToReadableText` / `=== RUN   TestApplyConservativeDedupe` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.659s`
