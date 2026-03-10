@@ -1,3 +1,5 @@
-Implement crawl URL normalization helpers
+Verify crawl URL normalization helpers and advance loop to Task 3
 
-Built `internal/crawl/normalize.go` for entry URL canonicalization, stable dedupe keys, and same-domain checks. Tested with `go fmt ./...` and `go test ./...`.
+Tested:
+- go test ./...
+- go test ./internal/crawl -v

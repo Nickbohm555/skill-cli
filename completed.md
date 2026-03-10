@@ -50,3 +50,21 @@ Notes:
 - Verification run output:
   - `go fmt ./...` -> no output
   - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
+
+## Section 4 — 01-crawl-ingestion-foundation — 01-01 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-01` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the Task 2 verification commands without expanding implementation scope because this run is verification-only.
+- Confirmed skip-reason literals exist only in `internal/crawl/skip_reasons.go` and are consumed via `SkippedRecord.Reason`, with no duplicated ad hoc string usage elsewhere in the repository.
+- Verified the current normalization helpers still compile cleanly before Task 3 adds explicit table-driven coverage.
+- Verification run output:
+  - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
+  - `go test ./internal/crawl -v` -> `? github.com/Nickbohm555/skill-cli/internal/crawl [no test files]`
