@@ -87,32 +87,32 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CRAWL-01 | TBD | Pending |
-| CRAWL-02 | TBD | Pending |
-| CRAWL-03 | TBD | Pending |
-| CRAWL-04 | TBD | Pending |
-| CONT-01 | TBD | Pending |
-| CONT-02 | TBD | Pending |
-| CONT-03 | TBD | Pending |
-| INT-01 | TBD | Pending |
-| INT-02 | TBD | Pending |
-| INT-03 | TBD | Pending |
-| VAL-01 | TBD | Pending |
-| VAL-02 | TBD | Pending |
-| VAL-03 | TBD | Pending |
-| OVLP-01 | TBD | Pending |
-| OVLP-02 | TBD | Pending |
-| OVLP-03 | TBD | Pending |
-| INST-01 | TBD | Pending |
-| INST-02 | TBD | Pending |
-| INST-03 | TBD | Pending |
-| INST-04 | TBD | Pending |
+| CRAWL-01 | Phase 1 | Pending |
+| CRAWL-02 | Phase 1 | Pending |
+| CRAWL-03 | Phase 1 | Pending |
+| CRAWL-04 | Phase 1 | Pending |
+| CONT-01 | Phase 2 | Pending |
+| CONT-02 | Phase 2 | Pending |
+| CONT-03 | Phase 2 | Pending |
+| INT-01 | Phase 3 | Pending |
+| INT-02 | Phase 3 | Pending |
+| INT-03 | Phase 3 | Pending |
+| VAL-01 | Phase 4 | Pending |
+| VAL-02 | Phase 4 | Pending |
+| VAL-03 | Phase 4 | Pending |
+| OVLP-01 | Phase 5 | Pending |
+| OVLP-02 | Phase 5 | Pending |
+| OVLP-03 | Phase 5 | Pending |
+| INST-01 | Phase 6 | Pending |
+| INST-02 | Phase 6 | Pending |
+| INST-03 | Phase 6 | Pending |
+| INST-04 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 20 total
-- Mapped to phases: 0
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-10*
-*Last updated: 2026-03-10 after initial definition*
+*Last updated: 2026-03-10 after roadmap creation*
