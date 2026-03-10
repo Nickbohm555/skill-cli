@@ -123,3 +123,20 @@ Notes:
 - No blockers came up; the existing normalization helpers were reused directly so the docs-root policy stays aligned with the canonical URL boundary.
 - Verification run output:
   - `go test ./internal/crawl -run DocsRoot -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.486s`
+
+## Section 8 — 01-crawl-ingestion-foundation — 01-02 — Task 1 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 1 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-02` / `task=1` / `status=verified`.
+
+Notes:
+- Re-ran the Task 1 docs-root verification command without changing implementation scope because this run is verification-only.
+- Confirmed `DeriveDocsRoot` remains deterministic and only depends on the shared normalization helper plus the explicit segment precedence in `internal/crawl/docs_root.go`.
+- No blockers came up; all existing docs-root fixtures still pass unchanged.
+- Verification run output:
+  - `go test ./internal/crawl -run DocsRoot -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`

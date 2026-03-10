@@ -1,4 +1,1 @@
-Implement docs-root derivation policy
-
-Built deterministic crawl docs-root derivation with explicit segment precedence and added docs-root fixture coverage.
-Tested with `go test ./internal/crawl -run DocsRoot -v`.
+verify docs-root task and advance to classifier implementation
