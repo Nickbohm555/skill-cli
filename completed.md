@@ -140,3 +140,24 @@ Notes:
 - No blockers came up; all existing docs-root fixtures still pass unchanged.
 - Verification run output:
   - `go test ./internal/crawl -run DocsRoot -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+
+## Section 9 — 01-crawl-ingestion-foundation — 01-02 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Implement docs-like and low-signal classifiers).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-02` / `task=2` / `status=implemented`.
+
+Notes:
+- Added `internal/crawl/classify.go` with reusable classifier helpers: `IsDocsLikeHTML`, `IsLowSignalPage`, and `ClassifyCandidate`, so later engine code can make explicit skip decisions instead of silently filtering candidates.
+- Kept the policy conservative by accepting only parsed HTML/XHTML content types and flagging only obvious low-signal assets or well-known machine files by normalized path, while reusing the existing shared URL normalization logic.
+- Added the minimum task-scoped coverage in `internal/crawl/classify_test.go` for HTML vs non-HTML inputs, low-signal asset paths, accepted docs paths, and explicit skip-reason outcomes; broader malformed-header and edge-case coverage can stay in Task 3.
+- No blockers came up; the existing docs-root and normalization helpers were reused directly, so the classifier behavior stays aligned with the same canonical URL policy.
+- Verification run output:
+  - `go fmt ./...` -> `internal/crawl/classify.go`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.502s`
+  - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.495s`

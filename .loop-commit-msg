@@ -1,1 +1,4 @@
-verify docs-root task and advance to classifier implementation
+Add crawl classifiers and task-scoped tests
+
+Built conservative docs-like and low-signal classification helpers with explicit
+skip-reason outcomes, then verified with `go test ./...` and `go test ./internal/crawl -v`.
