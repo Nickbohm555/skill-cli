@@ -1,1 +1,5 @@
-Verify Phase 1 crawl CLI flow and close out plan 01-03
+Add Phase 2 content contracts and readability extraction
+
+Tested with:
+- go fmt ./...
+- go test ./...

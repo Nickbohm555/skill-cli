@@ -331,3 +331,22 @@ Notes:
   - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
   - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:59592/docs` -> processed 3 pages, skipped 4 candidates with explicit reasons (`off_domain`, `invalid_url`, `fetch_error`, `non_html_content_type`), summary `Discovered: 7 / Processed: 3 / Skipped: 4`
   - `go run ./cmd/cli-skill crawl --url http://127.0.0.1:9/docs` -> `Error: crawl failed: entry url could not be fetched: http://127.0.0.1:9/docs (Get "http://127.0.0.1:9/docs": dial tcp 127.0.0.1:9: connect: connection refused)` and exited non-zero
+
+## Section 19 — 02-content-processing-attribution — 02-01 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-01-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Establish content contracts and extraction dependencies).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-01` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/content/types.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/types.go) with Phase 2 contracts for `CrawledPage`, `ExtractedPage`, `NormalizedPage`, `NormalizationStats`, dedupe markers, metadata, and deterministic sentinel errors for invalid URLs, invalid HTML, and unreadable extraction output.
+- Added [`internal/content/extract.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/extract.go) with `ExtractReadable`, using `codeberg.org/readeck/go-readability/v2` to produce readable HTML/text plus stable page IDs and checksums needed by later normalization, dedupe, and attribution work.
+- The extractor validates source URLs and canonical URLs up front, rejects empty or structurally empty HTML input, and returns explicit wrapped errors instead of silently dropping unreadable pages.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/content	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
