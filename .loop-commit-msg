@@ -1,0 +1,5 @@
+Initialize Go module and record Phase 1 Task 1 implementation
+
+Tested:
+- go test ./...
+- go test ./internal/crawl -v
