@@ -486,3 +486,23 @@ Notes:
   - `go test ./internal/content -run Chunk -v` -> `testing: warning: no tests to run` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached) [no tests to run]`
   - `go test ./internal/content -v` -> `=== RUN   TestExtractReadable` ... `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.860s`
   - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/cmd/cli-skill [no test files]` / `? github.com/Nickbohm555/skill-cli/internal/cli/command [no test files]` / `ok github.com/Nickbohm555/skill-cli/internal/content 0.690s` / `ok github.com/Nickbohm555/skill-cli/internal/crawl (cached)`
+
+## Section 27 — 02-content-processing-attribution — 02-02 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-02-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Attach attribution at chunk creation and wire pipeline orchestration).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-02` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/content/attribution.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/attribution.go) with `ChunkAttribution`, `AttributedChunk`, and `NewChunkAttribution`, so each chunk now carries metadata-first provenance including `source_url`, `page_title`, `heading_path`, `chunk_id`, `checksum`, and a stable reference string at creation time.
+- Added [`internal/content/pipeline.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/pipeline.go) with `ProcessToChunks` and `ProcessToChunksWithConfig`, which preserve input order, reuse the existing chunk builder, and skip deduped pages, normalization failures, and empty content instead of emitting partial records.
+- Heading-path attribution is derived deterministically from markdown headings inside each chunk, with stable fallbacks to the page title or canonical/source URL so every emitted chunk retains a non-empty attribution contract even when a chunk does not start on a heading boundary.
+- No product code blockers came up. A first verification attempt used a temp Go file outside the module tree and hit Go's `internal/` import restriction, so the pipeline inspection was rerun from a temp program inside the repo and then cleaned up.
+- Verification run output:
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+  - `go run ./tmp_pipeline_inspect.go` (temporary verification program, removed after use) -> emitted three chunks and each included non-empty `source`, `title`, `headings`, `checksum`, and `reference` fields, for example `chunk=page-install-1-cd4c82a42397 source=https://docs.example.com/guides/install title=Install Guide headings=[Install Guide] ...`

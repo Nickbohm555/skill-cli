@@ -1,6 +1,5 @@
-verify chunking task 1 and advance plan to section 27
+Implement chunk attribution pipeline and verify repo tests
 
-Tested:
-- go test ./internal/content -run Chunk -v
-- go test ./internal/content -v
-- go test ./...
+- add metadata-first chunk attribution records and stable heading/checksum/reference helpers
+- add ProcessToChunks orchestration over normalized pages with skip handling for deduped and failed pages
+- verify with go test ./... and direct ProcessToChunks output inspection
