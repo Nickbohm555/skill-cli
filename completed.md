@@ -161,3 +161,21 @@ Notes:
   - `go fmt ./...` -> `internal/crawl/classify.go`
   - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.502s`
   - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	0.495s`
+
+## Section 10 — 01-crawl-ingestion-foundation — 01-02 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md`
+- Reference: `.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=01-crawl-ingestion-foundation` / `plan=01-02` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the plan-level verification command for Task 2 and all docs-root, normalization, and classifier suites passed without code changes.
+- Confirmed `ClassifyCandidate` has no silent drop path: it returns either `DocsLike: true`, an explicit skip reason (`non_html_content_type` or `low_signal_page`), or an error from URL normalization that engine code can map to `invalid_url`.
+- No blockers came up; Task 3 remains the next scoped execution item for broader classifier edge-case coverage.
+- Verification run output:
+  - `go test ./internal/crawl -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+  - `rg -n "ClassificationOutcome|SkipReason" internal/crawl` -> classifier outcomes and skip-reason constants are centralized in `internal/crawl/classify.go`, `internal/crawl/skip_reasons.go`, and consumed by tests/types only

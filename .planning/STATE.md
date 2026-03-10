@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 1 Plan 01-02 Task 2 is implemented; Task 2 verification is next.
+- **Current focus:** Phase 1 Plan 01-02 Task 2 is verified; Task 3 execution is next.
 
 ## Current Position
 
 - **Current phase:** 1 - Crawl & Ingestion Foundation
 - **Current plan:** 01-02
-- **Overall status:** Plan 01-01 verified and summarized; Plan 01-02 Task 2 is implemented and awaiting verification.
+- **Overall status:** Plan 01-01 verified and summarized; Plan 01-02 Task 2 is verified and Task 3 execution is next.
 - **Progress:** 0/6 phases complete
 - **Progress bar:** [------] 0%
 
@@ -31,7 +31,7 @@
 
 ### Active Todos
 
-- Verify Task 2 for Plan 01-02: rerun classifier and docs-root checks and confirm explicit skip-reason mapping remains intact.
+- Execute Task 3 for Plan 01-02: add table-driven classifier edge-case coverage for malformed and missing headers plus conservative allow cases.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -40,12 +40,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Task 2 from `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md` by rerunning the classifier package checks and confirming there are no silent classifier drop paths.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 10.
+- **Next command:** Execute Task 3 from `.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md` by extending `internal/crawl/classify_test.go` with classifier edge-case coverage and running the task-scoped classification test command.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 11.
 
 ## Execution Tracking
 
 - phase=01-crawl-ingestion-foundation
 - plan=01-02
 - task=2
-- status=implemented
+- status=verified

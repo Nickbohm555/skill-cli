@@ -1,4 +1,3 @@
-Add crawl classifiers and task-scoped tests
+Verify crawl classifier skip mapping and advance to section 11
 
-Built conservative docs-like and low-signal classification helpers with explicit
-skip-reason outcomes, then verified with `go test ./...` and `go test ./internal/crawl -v`.
+Tested: go test ./internal/crawl -v
