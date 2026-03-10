@@ -9,6 +9,15 @@ Drop a link into the grid. I map the signal, interrogate the gaps, and only then
 **Project Description**
 Skill Weaver is a Go CLI that converts a single documentation URL into a Codex skill scaffold using a gated pipeline: bounded crawl, structured processing, adaptive refinement, strict validation, conflict resolution, and approval-only installation. It is built to keep every skill atomic, auditable, and immediately usable without surprise writes.
 
+**How To Use In Codex**
+1. Set `CODEX_HOME` to your Codex home directory.
+2. Build or install the CLI: `go install ./cmd/cli-skill`.
+3. Run the generator with your docs URL and follow prompts: `cli-skill generate <docs-url>`.
+4. Resolve validation fixes and any overlap decisions when prompted.
+5. Approve the preview/diff when you want the skill installed.
+6. Start or refresh your Codex session so it detects the new skill.
+7. Use the skill in your session by name when prompting Codex.
+
 **Why It Exists**
 - One-page links are easy; usable Codex skills are not. I bridge that gap with structured refinement and strict validation.
 - Skill overlap is costly. I surface conflicts and require explicit resolution before anything is written.
@@ -106,14 +115,6 @@ Planned internal packages (phase-aligned):
 6. Validate structure and scope; fix one blocking issue at a time.
 7. Detect overlap with installed skills and require explicit decision.
 8. Show preview/diff, require approval, install atomically.
-
-**How To Use In Codex**
-1. Set `CODEX_HOME` to your Codex home directory.
-2. Build or install the CLI: `go install ./cmd/cli-skill`.
-3. Run the generator with your docs URL and follow prompts: `cli-skill generate <docs-url>`.
-4. Resolve validation fixes and any overlap decisions when prompted.
-5. Approve the preview/diff when you want the skill installed.
-6. Verify the skill appears in Codex and use it in your next session.
 
 **Boot Sequence**
 I run clean and loud when your toolchain is ready.
