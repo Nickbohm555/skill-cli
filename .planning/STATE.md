@@ -9,7 +9,7 @@
 
 - **Current phase:** 1 - Crawl & Ingestion Foundation
 - **Current plan:** 01-01
-- **Overall status:** Task 1 verified; next run should implement Task 2 per the implementation loop.
+- **Overall status:** Task 2 implemented; next run should verify Task 2 per the implementation loop.
 - **Progress:** 0/6 phases complete
 - **Progress bar:** [------] 0%
 
@@ -31,7 +31,8 @@
 
 ### Active Todos
 
-- Implement Task 2 next: URL normalization and same-domain boundary helpers in `internal/crawl/normalize.go`.
+- Verify Task 2 next: URL normalization and same-domain boundary helpers in `internal/crawl/normalize.go`.
+- Implement Task 3 after verification: table-driven normalization tests in `internal/crawl/normalize_test.go`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -40,12 +41,12 @@
 
 ## Session Continuity
 
-- **Next command:** Read Task 2 in `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md` and inspect existing crawl helpers before implementation.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 3.
+- **Next command:** Re-run Task 2 verification from `.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md` and inspect `internal/crawl/normalize.go` behavior against the plan.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 4.
 
 ## Execution Tracking
 
 - phase=01-crawl-ingestion-foundation
 - plan=01-01
-- task=1
-- status=verified
+- task=2
+- status=implemented
