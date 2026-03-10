@@ -1,13 +1,15 @@
-<div style="background: linear-gradient(135deg, #0b0f1a 0%, #0a1a2f 50%, #1b0f2b 100%); border: 1px solid #15f4ee; padding: 18px 20px; border-radius: 12px; color: #e6fbff; box-shadow: 0 0 18px rgba(21, 244, 238, 0.25);">
-  <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #6fffe9;">System Banner</div>
-  <div style="font-size: 28px; font-weight: 700; color: #15f4ee;">Skill Weaver (cli-skill)</div>
-  <div style="margin-top: 6px; font-size: 14px; color: #f7b2ff;">
-    Neon-grade CLI for forging Codex skills from a single docs URL.
-  </div>
-  <div style="margin-top: 10px; font-size: 13px; color: #9ee8ff;">
-    Status: <span style="color:#faff6b;">live blueprint</span> • Mode: <span style="color:#ff7ad9;">fail-closed</span> • Output: <span style="color:#15f4ee;">Codex-ready</span>
-  </div>
-</div>
+<table>
+  <tr>
+    <td bgcolor="#0b0f1a">
+      <font color="#6fffe9">SYSTEM BANNER</font><br>
+      <font color="#15f4ee" size="+2"><strong>Skill Weaver (cli-skill)</strong></font><br>
+      <font color="#f7b2ff">Neon-grade CLI for forging Codex skills from a single docs URL.</font><br>
+      <font color="#9ee8ff">Status:</font> <font color="#faff6b">live blueprint</font>
+      <font color="#9ee8ff"> • Mode:</font> <font color="#ff7ad9">fail-closed</font>
+      <font color="#9ee8ff"> • Output:</font> <font color="#15f4ee">Codex-ready</font>
+    </td>
+  </tr>
+</table>
 
 # Skill Weaver (cli-skill)
 
@@ -28,10 +30,17 @@ Skill Weaver is a Go CLI that converts a single documentation URL into a Codex s
 - Single-capability skills with explicit in-scope and out-of-scope boundaries.
 - Bounded, same-domain crawl starting from a single entry URL.
 
-<div style="margin: 14px 0; height: 2px; background: linear-gradient(90deg, #15f4ee, #ff7ad9, #faff6b); border-radius: 2px;"></div>
+<table>
+  <tr>
+    <td bgcolor="#15f4ee"> </td>
+    <td bgcolor="#ff7ad9"> </td>
+    <td bgcolor="#faff6b"> </td>
+  </tr>
+</table>
 
 **Architecture At A Glance**
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#0b0f1a", "primaryTextColor": "#e6fbff", "primaryBorderColor": "#15f4ee", "lineColor": "#ff7ad9", "secondaryColor": "#1b0f2b", "tertiaryColor": "#0a1a2f"}}}%%
 flowchart LR
     A[Docs URL] --> B[Crawl & Ingestion]
     B --> C[Content Processing & Attribution]
@@ -66,6 +75,7 @@ Phase 6: Approval-Gated Install & Activation
 
 **Dataflow Contract**
 ```mermaid
+%%{init: {"theme": "base", "themeVariables": {"primaryColor": "#0b0f1a", "primaryTextColor": "#e6fbff", "primaryBorderColor": "#15f4ee", "lineColor": "#faff6b", "secondaryColor": "#1b0f2b", "tertiaryColor": "#0a1a2f"}}}%%
 sequenceDiagram
     autonumber
     participant U as User
