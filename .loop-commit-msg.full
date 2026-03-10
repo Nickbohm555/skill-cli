@@ -1,1 +1,1 @@
-ralph loop 1 (build): Implement crawl result contracts and skip taxonomy; verification blocked because Go is unavailable on PATH
+ralph loop 2 (build): verification blocked: phase 1 plan 01-01 task 1 needs Go toolchain on PATH
