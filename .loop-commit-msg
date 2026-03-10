@@ -1,3 +1,6 @@
-Add content normalization and conservative dedupe
+Verify phase 2 task 2 normalization pipeline
 
-Built the Phase 2 normalization pipeline with markdown conversion, table/code/media preservation, and high-confidence dedupe metadata. Tested with `go fmt ./...` and `go test ./...`.
+Re-ran Task 2 verification for Phase 02 Plan 02-01 and confirmed the
+normalization and conservative dedupe pipeline still compiles cleanly.
+Updated plan/state tracking, recorded the verification in completed.md,
+and advanced the implementation plan to Section 23.
