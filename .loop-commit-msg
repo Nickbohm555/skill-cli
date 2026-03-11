@@ -1,5 +1,4 @@
-verify install approval gates and advance to 06-02 task 1
+Add deterministic install preview and diff rendering
 
-Tested:
-- go test ./internal/install -v
-- go test ./internal/install -run 'Preflight|Approval' -count=2 -v
+Built read-only install preview/diff helpers in internal/install and added focused Preview|Diff tests.
+Tested with: go test ./internal/install -run "Preview|Diff" -v

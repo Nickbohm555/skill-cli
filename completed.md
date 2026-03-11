@@ -1636,3 +1636,22 @@ Notes:
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `go test ./internal/install -run 'Preflight|Approval' -count=2 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.632s`
   - `rg -n '\$CODEX_HOME/skills|os\.(WriteFile|Rename|Mkdir|MkdirAll|Create|OpenFile)|afero\.|filepath\.Join\(.*CODEX_HOME|RootDir|SkillDir' internal/install` -> matches only `RootDir`/`SkillDir` model fields in `internal/install/model.go` and fixture paths in `internal/install/model_test.go`
+
+## Section 85 — 06-approval-gated-install-activation — 06-02 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Build deterministic preview and diff rendering before approval).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-02` / `task=1` / `status=implemented`.
+
+Notes:
+- Added `internal/install/preview_diff.go` with read-only preview helpers that deterministically render install mode, target path, candidate source metadata, and key skill sections in stable order before any approval prompt or write path exists.
+- Added `RenderCandidateSkillMarkdown` plus `RenderDiff` backed by `github.com/sergi/go-diff/diffmatchpatch`, so update/merge scenarios can show a stable human-readable diff against existing installed skill content without touching the filesystem.
+- Added `internal/install/preview_diff_test.go` with create-preview and update-diff coverage, including repeated-call determinism checks and ANSI-normalized diff assertions for the pretty-text renderer.
+- No blockers came up. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, summary, and source files only.
+- Verification run output:
+  - `go test ./internal/install -run "Preview|Diff" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.559s`
