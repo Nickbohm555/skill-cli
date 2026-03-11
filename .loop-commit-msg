@@ -1,5 +1,3 @@
-verify activation install contract
+Add Phase 06 install stage orchestration and scoped InstallStage tests
 
-Re-ran Phase 06 Plan 06-03 Task 1 verification.
-Tested `go test ./internal/install -run Activate -v` and `go test ./internal/install -v`.
-Updated implementation plan, completed log, and state to advance to Section 93.
+Tested: go test ./internal/app/generate -run InstallStage -v

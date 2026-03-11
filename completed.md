@@ -1790,3 +1790,22 @@ Notes:
 - Verification run output:
   - `go test ./internal/install -run Activate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.766s`
+
+## Section 93 — 06-approval-gated-install-activation — 06-03 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Wire strict install sequence into generation pipeline stage).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-03` / `task=2` / `status=implemented`.
+
+Notes:
+- Added `internal/app/generate/install_stage.go` with a dependency-injected `InstallStage` that enforces the Phase 06 order `Preflight -> RenderPreview/RenderDiff -> RequestApproval -> ExecuteTransaction -> VerifyInstalledSkill`, while returning structured stage data for preflight status, approval source, install target, transaction result, and activation outcome.
+- Added `internal/app/generate/install_stage_test.go` with task-scoped coverage for strict success-path sequencing, preflight short-circuit blocking before any preview/write work, and approval-decline short-circuit blocking before transaction/activation.
+- Reused the existing `internal/install` primitives directly instead of duplicating gate, preview, transaction, or activation logic; the default stage approval hook simply consumes a recorded approval decision and still fails closed when no explicit approval exists.
+- No blockers came up during implementation. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, state, and install/generate package sources only.
+- Verification run output:
+  - `go fmt ./internal/app/generate` -> `internal/app/generate/install_stage.go`, `internal/app/generate/install_stage_test.go`
+  - `go test ./internal/app/generate -run InstallStage -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.659s`
