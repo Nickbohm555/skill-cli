@@ -1,3 +1,3 @@
-verify overlap task 2 indexer
+Implement overlap detection and severity classification
 
-Verified Phase 5 Plan 05-01 Task 2 by rerunning the full internal/overlap suite, repeating tests for deterministic results, and confirming the package remains read-only with respect to $CODEX_HOME/skills.
+Built deterministic overlap detection for installed skill comparisons, including exact path/name/content checks, weighted structural scoring, and signal-rich overlap reports. Tested with `go test ./internal/overlap -run Detect -v`.

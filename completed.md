@@ -1359,3 +1359,22 @@ Notes:
   - `go test ./internal/overlap -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.869s`
   - `go test ./internal/overlap -count=2` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.642s`
   - `rg -n '\b(os\.(WriteFile|Create|OpenFile)|afero\.|filepath\.Walk|WalkDir|Mkdir(All)?|Remove(All)?|Rename)\b|\.codex/skills|\$CODEX_HOME/skills' internal/overlap` -> fixture-only writes in `internal/overlap/index_installed_test.go`, inert `.codex/skills` strings in `internal/overlap/model_report_test.go`, and read-only `filepath.WalkDir` usage in `internal/overlap/index_installed.go`
+
+## Section 71 — 05-overlap-conflict-resolution — 05-01 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Implement layered overlap detection and severity classification).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-01` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/overlap/classify.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/classify.go), [`internal/overlap/detect.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect.go), and [`internal/overlap/detect_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect_test.go) to implement the read-only overlap detector, score classification thresholds, and Task 3 fixtures for no-overlap, medium overlap, high exact-name collision, exact-content match, and deterministic finding order.
+- The detector now compares normalized candidate and installed `SkillProfile` values in layered order: exact path collision, exact-content match, exact-name collision, then weighted description/in-scope/out-of-scope/command overlap. Findings retain signal-level explanation metadata and return through `OverlapReport` without any auto-resolution or write behavior.
+- Reused the overlap package normalization helpers from indexing instead of introducing a second parsing/comparison path, and made the detector accept `InstalledIndex` so indexing warnings flow into the same report contract that later decision work will consume.
+- One issue came up during execution: exact-content matching originally fired on name-only collisions because the remaining fields were all empty. Tightened that rule to require substantive non-name content, and updated the score assertion to use float tolerance so the focused detect suite passes consistently.
+- Verification run output:
+  - `go fmt ./internal/overlap/...` -> `internal/overlap/classify.go` / `internal/overlap/detect.go`
+  - `go test ./internal/overlap -run Detect -v` -> `=== RUN   TestDetectNoOverlapReturnsEmptyReport` / `=== RUN   TestDetectClassifiesMediumOverlapWithSignals` / `=== RUN   TestDetectClassifiesHighExactNameCollision` / `=== RUN   TestDetectClassifiesExactContentMatch` / `=== RUN   TestDetectOrdersFindingsDeterministically` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.543s`

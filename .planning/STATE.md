@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 5 Plan 05-01 Task 2 is verified; the next scoped run is Task 3 execution.
+- **Current focus:** Phase 5 Plan 05-01 Task 3 is implemented; the next scoped run is Task 3 verification.
 
 ## Current Position
 
 - **Current phase:** 5 - Overlap & Conflict Resolution
 - **Current plan:** 05-01
-- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 Task 2 verified and Task 3 queued for execution.
+- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 Task 3 implemented and queued for verification.
 - **Progress:** 4/6 phases complete
 - **Progress bar:** [####--] 67%
 
@@ -116,10 +116,13 @@
 - [`internal/overlap/index_installed_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed_test.go) now locks Task `2` behavior with focused fixtures for valid skill indexing, malformed `SKILL.md` warning behavior, `CODEX_HOME` default-root resolution, case-insensitive `SKILL.md` discovery, and case/path normalization of profile fields.
 - Task `2` verification in execution scope ran `go fmt ./internal/overlap/...` and `go test ./internal/overlap -run Index -v` cleanly after tightening command detection so dependency text like `Go 1.25.x` does not get misclassified as a command overlap signal.
 - Verification for Plan `05-01` Task `2` reran the full `internal/overlap` suite cleanly, repeated the package test run with `-count=2` to confirm deterministic repeatability, and statically confirmed the package still has no write-path behavior into `$CODEX_HOME/skills` beyond test fixtures and the read-only `WalkDir` scan.
+- Plan `05-01` Task `3` now adds [`internal/overlap/classify.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/classify.go), [`internal/overlap/detect.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect.go), and [`internal/overlap/detect_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect_test.go), implementing a deterministic read-only overlap detector that compares a candidate profile against indexed installed skills using hard path/name collisions, exact-content matching, weighted structural scoring, scope-conflict checks, and stable signal-level explanations.
+- The new detector consumes `InstalledIndex` directly so index warnings carry into the final `OverlapReport`, normalizes both candidate and installed profiles with the existing overlap package helpers, and keeps findings order stable regardless of input ordering by re-sorting profiles before classification.
+- Task `3` verification in execution scope ran `go fmt ./internal/overlap/...` and `go test ./internal/overlap -run Detect -v` cleanly after tightening exact-content matching to require substantive non-name content and relaxing one score assertion to tolerate floating-point math.
 
 ### Active Todos
 
-- Execute Plan `05-01` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`.
+- Verify Plan `05-01` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -128,12 +131,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `05-01` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 71.
+- **Next command:** Verify Plan `05-01` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 72.
 
 ## Execution Tracking
 
 - phase=05-overlap-conflict-resolution
 - plan=05-01
-- task=2
-- status=verified
+- task=3
+- status=implemented
