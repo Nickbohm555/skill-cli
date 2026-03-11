@@ -1,3 +1,3 @@
-build overlap installed-skill indexer with normalized profile extraction
+verify overlap task 2 indexer
 
-Tests: go test ./internal/overlap -run Index -v
+Verified Phase 5 Plan 05-01 Task 2 by rerunning the full internal/overlap suite, repeating tests for deterministic results, and confirming the package remains read-only with respect to $CODEX_HOME/skills.

@@ -1340,3 +1340,22 @@ Notes:
 - Verification run output:
   - `go fmt ./internal/overlap/...` -> `internal/overlap/index_installed.go` / `internal/overlap/index_installed_test.go`
   - `go test ./internal/overlap -run Index -v` -> `=== RUN   TestIndexInstalledSkillsBuildsNormalizedProfiles` / `=== RUN   TestIndexInstalledSkillsWarnsOnMalformedSkillFile` / `=== RUN   TestIndexInstalledSkillsUsesDefaultCodexHomeRoot` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.573s`
+
+## Section 70 — 05-overlap-conflict-resolution — 05-01 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-01` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the broader overlap-package verification required by the plan instead of only the original `Index` filter; the full `internal/overlap` suite passed cleanly with no code changes required.
+- Repeated the same package test run with `-count=2` to confirm deterministic repeatability, and the package stayed stable across both runs.
+- Static verification confirmed the overlap package still does not write into `$CODEX_HOME/skills`; the only matched write APIs are test fixture setup in [`internal/overlap/index_installed_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed_test.go), while production code only performs read-only scanning via [`internal/overlap/index_installed.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed.go).
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/overlap -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.869s`
+  - `go test ./internal/overlap -count=2` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.642s`
+  - `rg -n '\b(os\.(WriteFile|Create|OpenFile)|afero\.|filepath\.Walk|WalkDir|Mkdir(All)?|Remove(All)?|Rename)\b|\.codex/skills|\$CODEX_HOME/skills' internal/overlap` -> fixture-only writes in `internal/overlap/index_installed_test.go`, inert `.codex/skills` strings in `internal/overlap/model_report_test.go`, and read-only `filepath.WalkDir` usage in `internal/overlap/index_installed.go`
