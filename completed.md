@@ -999,3 +999,24 @@ Notes:
 - No blockers surfaced during verification. The next scoped run is the execution session for `03-03` Task `3`.
 - Verification run output:
   - `go test ./internal/refinement -run 'Flow|Revise' -v` -> `=== RUN   TestFlowRunProgressesToCommitReadyReview` / `=== RUN   TestFlowHandoffOccursBeforeDeepeningSequence` / `=== RUN   TestFlowSequenceStopsAtDeepeningAttemptCap` / `=== RUN   TestFlowReviseReasksDirectDependentsOnly` / `=== RUN   TestFlowReviseRejectsInvalidTarget` / `=== RUN   TestFlowReviseBlocksCommitUntilImpactedFieldsAreResolved` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
+
+## Section 53 — 03-interactive-refinement-loop — 03-03 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Wire refine CLI command and enforce final commit gate).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-03` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/cli/command/refine.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine.go), which wires a new `cli-skill refine` command around the existing refinement domain flow, reuses the prompt adapter plans for primary/deepening/revision prompts, renders the existing sectioned review view, and calls `flow.Commit()` as the only final gate.
+- Added [`internal/cli/command/refine_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine_test.go) with scripted stdin/stdout coverage for summarize-first deepening, blocked commit after `revise <field>` reopens impacted answers, and final committed payload emission once readiness is green again.
+- Updated [`internal/cli/command/crawl.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/crawl.go) so the root command now exposes `refine` alongside the existing `crawl` and `process` commands. The plan referenced `cmd/skill-weaver/main.go`, but this repository uses `cmd/cli-skill/main.go` and the shared root command wiring there, so no separate main-package change was needed.
+- No blockers came up. The command currently uses deterministic line-based stdin/stdout prompting driven by the existing prompt plan metadata, which kept the CLI transport thin while staying compatible with scripted verification.
+- Verification run output:
+  - `go fmt ./...` -> `internal/cli/command/refine.go`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/cli/command	0.902s` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
+  - `go run ./cmd/cli-skill refine` (scripted stdin smoke) -> review rendered by section, `commit` was blocked after `revise purpose_summary` reopened `example_outputs`, `revise example_outputs` restored readiness, and the command emitted a deterministic committed JSON payload for generation handoff

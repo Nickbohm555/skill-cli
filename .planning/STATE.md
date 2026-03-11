@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-03 Task 2 is verified, and the next scoped run is the execution session for Task 3.
+- **Current focus:** Phase 3 Plan 03-03 Task 3 is implemented, and the next scoped run is the verification session for Task 3.
 
 ## Current Position
 
@@ -76,10 +76,13 @@
 - Plan `03-03` Task `2` now adds [`internal/refinement/revise.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/revise.go), introducing strict `revise <field>` parsing plus revision-target validation so review-mode edits stay deterministic and constrained to known refinement fields.
 - [`internal/refinement/flow.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go) now exposes a revision path that applies answer updates through the field graph, resets revision/deepening state for the edited branch, re-asks only direct dependents, and leaves broader impacted descendants marked `needs_attention` so stale-ready states cannot slip through commit.
 - [`internal/refinement/flow_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go) now covers valid revision reopening behavior, invalid target/command errors, and commit blocking after readiness drift from a revision.
+- Plan `03-03` Task `3` now adds [`internal/cli/command/refine.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine.go), wiring `cli-skill refine` to the refinement domain flow with prompt-adapter-driven questioning, sectioned review rendering, `revise <field>` handling in review mode, and a fail-closed final commit path that delegates to `flow.Commit()` instead of CLI-side readiness checks.
+- [`internal/cli/command/refine_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine_test.go) now locks the command behavior with scripted stdin/stdout coverage for summarize-first follow-up prompting, blocked commit after revision impact drift, and deterministic committed payload emission once all required fields return to ready.
+- Manual smoke verification for Task `3` confirmed `go run ./cmd/cli-skill refine` renders grouped review output, blocks `commit` after a revision reopens impacted fields, accepts a follow-up `revise example_outputs`, and emits a deterministic JSON refinement payload only after readiness is fully green.
 
 ### Active Todos
 
-- Execute Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
+- Verify Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -88,12 +91,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 53.
+- **Next command:** Verify Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 54.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-03
-- task=2
-- status=verified
+- task=3
+- status=implemented
