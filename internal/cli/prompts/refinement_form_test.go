@@ -1,6 +1,7 @@
 package prompts
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -56,50 +57,89 @@ func TestPromptDeepeningRoutingIsDeterministic(t *testing.T) {
 	t.Parallel()
 
 	adapter := DefaultRefinementFormAdapter()
-	field := fieldWithAnswer(t, refinement.FieldConstraints, "Maybe keep it flexible and stuff.")
+	testCases := []struct {
+		name             string
+		fieldID          refinement.FieldID
+		answer           string
+		attempts         int
+		wantKind         PromptKind
+		wantPromptCount  int
+		wantControl      ControlType
+		wantRequireOther bool
+		wantDescription  string
+	}{
+		{
+			name:            "low clarity first pass stays in targeted free text",
+			fieldID:         refinement.FieldConstraints,
+			answer:          "Maybe keep it flexible and stuff.",
+			attempts:        0,
+			wantKind:        PromptKindDeepeningFreeText,
+			wantPromptCount: 1,
+			wantControl:     ControlTypeInput,
+			wantDescription: "Add the missing specificity",
+		},
+		{
+			name:             "second low clarity pass switches to structured options",
+			fieldID:          refinement.FieldConstraints,
+			answer:           "Maybe keep it flexible and stuff.",
+			attempts:         1,
+			wantKind:         PromptKindDeepeningSelect,
+			wantPromptCount:  2,
+			wantControl:      ControlTypeSelect,
+			wantRequireOther: true,
+			wantDescription:  "Add the missing specificity",
+		},
+		{
+			name:             "attempt cap forces fallback wording",
+			fieldID:          refinement.FieldConstraints,
+			answer:           "Maybe keep it flexible and stuff.",
+			attempts:         2,
+			wantKind:         PromptKindDeepeningFallback,
+			wantPromptCount:  2,
+			wantControl:      ControlTypeSelect,
+			wantRequireOther: true,
+			wantDescription:  "Pick the closest structured option",
+		},
+		{
+			name:            "high clarity answer skips deepening",
+			fieldID:         refinement.FieldPurposeSummary,
+			answer:          "Generate a Codex skill from one docs URL, including install steps, scope boundaries, and example requests for later review.",
+			attempts:        0,
+			wantKind:        PromptKindNoop,
+			wantPromptCount: 0,
+		},
+	}
 
-	firstPlan, err := adapter.DeepeningPlan(field, 0)
-	if err != nil {
-		t.Fatalf("DeepeningPlan(attempt=0) error = %v", err)
-	}
-	if firstPlan.Kind != PromptKindDeepeningFreeText {
-		t.Fatalf("DeepeningPlan(attempt=0) kind = %q, want %q", firstPlan.Kind, PromptKindDeepeningFreeText)
-	}
-	if len(firstPlan.Prompts) != 1 || firstPlan.Prompts[0].Control != ControlTypeInput {
-		t.Fatalf("DeepeningPlan(attempt=0) prompts = %+v, want one input", firstPlan.Prompts)
-	}
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 
-	secondPlan, err := adapter.DeepeningPlan(field, 1)
-	if err != nil {
-		t.Fatalf("DeepeningPlan(attempt=1) error = %v", err)
-	}
-	if secondPlan.Kind != PromptKindDeepeningSelect {
-		t.Fatalf("DeepeningPlan(attempt=1) kind = %q, want %q", secondPlan.Kind, PromptKindDeepeningSelect)
-	}
-	if !secondPlan.RequireOther {
-		t.Fatalf("DeepeningPlan(attempt=1) RequireOther = false, want true")
-	}
+			field := fieldWithAnswer(t, tc.fieldID, tc.answer)
+			plan, err := adapter.DeepeningPlan(field, tc.attempts)
+			if err != nil {
+				t.Fatalf("DeepeningPlan() error = %v", err)
+			}
 
-	gotOptions := secondPlan.Prompts[0].Options
-	wantOptions := []PromptOption{
-		{Label: "Input or source limitations", Value: "input_limitations"},
-		{Label: "Behavior the skill must avoid", Value: "forbidden_behavior"},
-		{Label: "Environment or tooling requirement", Value: "environment_requirement"},
-		{Label: "Other (describe)", Value: OtherOptionValue},
-	}
-	if !reflect.DeepEqual(gotOptions, wantOptions) {
-		t.Fatalf("DeepeningPlan(attempt=1) options = %v, want %v", gotOptions, wantOptions)
-	}
-
-	finalPlan, err := adapter.DeepeningPlan(field, 2)
-	if err != nil {
-		t.Fatalf("DeepeningPlan(attempt=2) error = %v", err)
-	}
-	if finalPlan.Kind != PromptKindDeepeningFallback {
-		t.Fatalf("DeepeningPlan(attempt=2) kind = %q, want %q", finalPlan.Kind, PromptKindDeepeningFallback)
-	}
-	if !strings.Contains(finalPlan.Prompts[0].Description, "Pick the closest structured option") {
-		t.Fatalf("DeepeningPlan(attempt=2) description = %q, want final-attempt guidance", finalPlan.Prompts[0].Description)
+			if plan.Kind != tc.wantKind {
+				t.Fatalf("DeepeningPlan() kind = %q, want %q", plan.Kind, tc.wantKind)
+			}
+			if len(plan.Prompts) != tc.wantPromptCount {
+				t.Fatalf("DeepeningPlan() prompts = %d, want %d", len(plan.Prompts), tc.wantPromptCount)
+			}
+			if tc.wantPromptCount == 0 {
+				return
+			}
+			if plan.Prompts[0].Control != tc.wantControl {
+				t.Fatalf("DeepeningPlan() first control = %q, want %q", plan.Prompts[0].Control, tc.wantControl)
+			}
+			if plan.RequireOther != tc.wantRequireOther {
+				t.Fatalf("DeepeningPlan() RequireOther = %t, want %t", plan.RequireOther, tc.wantRequireOther)
+			}
+			if !strings.Contains(plan.Prompts[0].Description, tc.wantDescription) {
+				t.Fatalf("DeepeningPlan() description = %q, want substring %q", plan.Prompts[0].Description, tc.wantDescription)
+			}
+		})
 	}
 }
 
@@ -132,6 +172,70 @@ func TestPromptDeepeningSkipsWhenClarityPasses(t *testing.T) {
 	}
 }
 
+func TestPromptStructuredChoiceOptionsStayStable(t *testing.T) {
+	t.Parallel()
+
+	adapter := DefaultRefinementFormAdapter()
+	testCases := []struct {
+		fieldID      refinement.FieldID
+		answer       string
+		wantOptions  []PromptOption
+		wantKind     PromptKind
+		wantOtherKey string
+	}{
+		{
+			fieldID:  refinement.FieldConstraints,
+			answer:   "Maybe keep it flexible and stuff.",
+			wantKind: PromptKindDeepeningSelect,
+			wantOptions: []PromptOption{
+				{Label: "Input or source limitations", Value: "input_limitations"},
+				{Label: "Behavior the skill must avoid", Value: "forbidden_behavior"},
+				{Label: "Environment or tooling requirement", Value: "environment_requirement"},
+				{Label: "Other (describe)", Value: OtherOptionValue},
+			},
+			wantOtherKey: "constraints_other",
+		},
+		{
+			fieldID:  refinement.FieldOutOfScope,
+			answer:   "Things maybe.",
+			wantKind: PromptKindDeepeningSelect,
+			wantOptions: []PromptOption{
+				{Label: "Disallowed source expansion", Value: "source_exclusion"},
+				{Label: "Unsupported workflow or capability", Value: "workflow_exclusion"},
+				{Label: "Speculative or invented content", Value: "speculation_exclusion"},
+				{Label: "Other (describe)", Value: OtherOptionValue},
+			},
+			wantOtherKey: "out_of_scope_other",
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(string(tc.fieldID), func(t *testing.T) {
+			t.Parallel()
+
+			field := fieldWithAnswer(t, tc.fieldID, tc.answer)
+			plan, err := adapter.DeepeningPlan(field, 1)
+			if err != nil {
+				t.Fatalf("DeepeningPlan() error = %v", err)
+			}
+
+			if plan.Kind != tc.wantKind {
+				t.Fatalf("DeepeningPlan() kind = %q, want %q", plan.Kind, tc.wantKind)
+			}
+			if len(plan.Prompts) != 2 {
+				t.Fatalf("DeepeningPlan() prompts = %d, want 2", len(plan.Prompts))
+			}
+			if !reflect.DeepEqual(plan.Prompts[0].Options, tc.wantOptions) {
+				t.Fatalf("DeepeningPlan() options = %v, want %v", plan.Prompts[0].Options, tc.wantOptions)
+			}
+			if plan.Prompts[1].Key != tc.wantOtherKey {
+				t.Fatalf("DeepeningPlan() other key = %q, want %q", plan.Prompts[1].Key, tc.wantOtherKey)
+			}
+		})
+	}
+}
+
 func TestPromptBuildDeepeningFieldsSupportsOtherPath(t *testing.T) {
 	t.Parallel()
 
@@ -157,6 +261,59 @@ func TestPromptBuildDeepeningFieldsSupportsOtherPath(t *testing.T) {
 	if plan.Prompts[0].Options[len(plan.Prompts[0].Options)-1].Value != OtherOptionValue {
 		t.Fatalf("BuildDeepeningFields() last option = %q, want %q", plan.Prompts[0].Options[len(plan.Prompts[0].Options)-1].Value, OtherOptionValue)
 	}
+}
+
+func TestPromptOtherPathValidationIsSafe(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name      string
+		selected  *string
+		value     string
+		wantError string
+	}{
+		{
+			name:     "non other choice allows empty custom detail",
+			selected: stringPtr("usage_output"),
+			value:    "",
+		},
+		{
+			name:      "other choice requires explicit detail",
+			selected:  stringPtr(OtherOptionValue),
+			value:     "   ",
+			wantError: fmt.Sprintf("%s requires additional detail", refinement.FieldExampleOutputs),
+		},
+		{
+			name:     "other choice accepts custom detail",
+			selected: stringPtr(OtherOptionValue),
+			value:    "Include one shell example plus one unsupported-path example.",
+		},
+		{
+			name:  "nil selection does not block plain input validation",
+			value: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+
+			err := requiredOther(refinement.FieldExampleOutputs, tc.selected)(tc.value)
+			switch {
+			case tc.wantError == "" && err != nil:
+				t.Fatalf("requiredOther() error = %v, want nil", err)
+			case tc.wantError != "" && err == nil:
+				t.Fatalf("requiredOther() error = nil, want %q", tc.wantError)
+			case tc.wantError != "" && err.Error() != tc.wantError:
+				t.Fatalf("requiredOther() error = %q, want %q", err.Error(), tc.wantError)
+			}
+		})
+	}
+}
+
+func stringPtr(value string) *string {
+	return &value
 }
 
 func fieldWithAnswer(t *testing.T, fieldID refinement.FieldID, answer string) refinement.FieldState {

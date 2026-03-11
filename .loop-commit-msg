@@ -1,3 +1,1 @@
-Verify Phase 3 plan 03-02 task 2 review rendering
-
-Tests: go test ./... && go test ./internal/cli/prompts -v
+Add deterministic prompt-routing regression tests

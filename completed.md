@@ -884,3 +884,24 @@ Notes:
   - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
   - `go test ./internal/cli/prompts -v` -> `=== RUN   TestPromptPrimaryPlansCoverRequiredFields` / `=== RUN   TestPromptDeepeningRoutingIsDeterministic` / `=== RUN   TestPromptDeepeningSkipsWhenClarityPasses` / `=== RUN   TestPromptBuildDeepeningFieldsSupportsOtherPath` / `=== RUN   TestBuildReviewModelGroupsSectionsAndReadiness` / `=== RUN   TestRenderReviewIncludesGroupedSectionsStatusesAndRevisionHints` / `=== RUN   TestRenderReviewShowsReadySummaryWhenCommitGatePasses` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	0.522s`
   - `rg -n "DefaultClarityPolicy|DeepeningDecision|ValidationReport|ReadinessStatus|DefaultValidator|SectionID|FieldState" internal/cli/prompts` -> prompt-layer files only reference refinement domain types/policy entry points; no local scoring or readiness policy implementation was added
+
+## Section 47 — 03-interactive-refinement-loop — 03-02 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Test deepening fallback behavior and deterministic option routing).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-02` / `task=3` / `status=implemented`.
+
+Notes:
+- Expanded [`internal/cli/prompts/refinement_form_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/refinement_form_test.go) with table-driven deepening routing coverage for four deterministic outcomes: high-clarity answers short-circuit to `noop`, first low-clarity follow-up stays free-text, the next retry switches to structured choice, and the capped retry uses the explicit fallback wording.
+- Added stable option-order assertions for representative structured-choice fields so labels and values remain fixed, with the `Other (describe)` option always appended last rather than drifting by map or iteration order.
+- Added explicit `other`-path validation coverage to prove blank custom detail is only rejected when the user actually chose `other`, while concrete custom detail is accepted safely.
+- Reused the existing prompt adapter and domain clarity policy without production-code changes because the current implementation already satisfied the plan; this run stayed test-focused within the Section 47 execution scope.
+- Verification run output:
+  - `gofmt -w internal/cli/prompts/refinement_form_test.go` -> no output
+  - `go test ./internal/cli/prompts -v` -> `=== RUN   TestPromptPrimaryPlansCoverRequiredFields` / `=== RUN   TestPromptDeepeningRoutingIsDeterministic` / `=== RUN   TestPromptDeepeningSkipsWhenClarityPasses` / `=== RUN   TestPromptStructuredChoiceOptionsStayStable` / `=== RUN   TestPromptBuildDeepeningFieldsSupportsOtherPath` / `=== RUN   TestPromptOtherPathValidationIsSafe` / `=== RUN   TestBuildReviewModelGroupsSectionsAndReadiness` / `=== RUN   TestRenderReviewIncludesGroupedSectionsStatusesAndRevisionHints` / `=== RUN   TestRenderReviewShowsReadySummaryWhenCommitGatePasses` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)`
+  - `rg -n "DefaultClarityPolicy|DeepeningDecision|ClarityPolicy|ReadinessStatus|ValidationReport|threshold|score|ambigu|specific" internal/cli/prompts internal/refinement` -> thresholds/scoring remain in `internal/refinement/clarity.go`; `internal/cli/prompts` only references `ClarityPolicy`, `DeepeningDecision`, `ReadinessStatus`, and `ValidationReport`
