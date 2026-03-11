@@ -1,3 +1,5 @@
-Build refinement readiness validator and commit-gate tests
+verify phase 3 plan 03-01 and advance to 03-02
 
-Tested: go test ./internal/refinement -v
+- reran `go test ./internal/refinement -v`
+- confirmed refinement domain remains transport-free
+- added 03-01 summary and advanced state/plan tracking to section 43
