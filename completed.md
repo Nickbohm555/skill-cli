@@ -844,3 +844,24 @@ Notes:
 - Verification run output:
   - `go test ./internal/cli/prompts -v` -> `=== RUN   TestPromptPrimaryPlansCoverRequiredFields` / `=== RUN   TestPromptDeepeningRoutingIsDeterministic` / `=== RUN   TestPromptDeepeningSkipsWhenClarityPasses` / `=== RUN   TestPromptBuildDeepeningFieldsSupportsOtherPath` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	0.540s`
   - `rg -n "DeepeningDecision|DefaultClarityPolicy|ClarityPolicy|ReviewReport|FieldStatus|CommitReady|threshold|ambigu|specific|score" internal/cli/prompts internal/refinement` -> `internal/cli/prompts/refinement_form.go` only references `refinement.ClarityPolicy`, `DefaultClarityPolicy`, and `DeepeningDecision`; all threshold/scoring logic remains in `internal/refinement/clarity.go`
+
+## Section 45 — 03-interactive-refinement-loop — 03-02 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Render sectioned final review with readiness indicators).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-02` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/cli/prompts/review_renderer.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/review_renderer.go) with a review-model builder and plain-text renderer that consume `refinement.ValidationReport`, keep section order stable (`purpose`, `constraints`, `examples`, `boundaries`), and label every field as `ready`, `needs attention`, or `missing` with an overall commit-readiness banner.
+- Added [`internal/cli/prompts/review_renderer_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/review_renderer_test.go) with grouped-output assertions covering section ordering, missing-field placeholders, ready-state summary text, and revision-impact hints for fields reopened by dependency invalidation.
+- Reused the existing validator output and readiness reasons directly instead of adding parallel CLI-side readiness logic; change-impact hints now come from `ValidationReasonNeedsRevalidation`, while missing and low-clarity guidance stays aligned with domain validation results.
+- No blockers came up. This run stayed in execution scope and did not create the `03-02` plan summary, which remains deferred until the plan verification completion step.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `?   	github.com/Nickbohm555/skill-cli/internal/cli/command	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	0.609s` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	0.476s`
+  - `rg -n "internal/refinement|ValidationReport|FieldValidation|ValidationReason|ReadinessStatus|ClarityPolicy|DeepeningDecision" internal/cli/prompts` -> prompt-layer files reference `internal/refinement` policy/report types directly; no duplicate clarity thresholds or readiness rule implementations were added under `internal/cli/prompts`
