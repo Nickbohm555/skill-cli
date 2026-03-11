@@ -1,4 +1,5 @@
-test install approval sequencing
+verify install sequencing and close out plan 06-02
 
-Added sequence/no-write-before-approval coverage for preview and transaction flows.
-Tested with `go test ./internal/install -run "Sequence|NoWriteBeforeApproval|Decline" -v` and `go test ./internal/install -v`.
+Re-ran the Phase 06-02 Task 3 sequence and install verification suites,
+confirmed no-write-before-approval behavior and transactional cleanup,
+and advanced planning state to 06-03 Task 1 with the 06-02 summary recorded.
