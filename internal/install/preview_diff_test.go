@@ -1,6 +1,8 @@
 package install
 
 import (
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -98,6 +100,36 @@ Generate a skill from older docs.
 		if !strings.Contains(normalized, want) {
 			t.Fatalf("RenderDiff() missing %q\noutput:\n%s", want, normalized)
 		}
+	}
+}
+
+func TestSequencePreviewAndDiffDoNotRequireApprovalOrWrite(t *testing.T) {
+	t.Parallel()
+
+	rootDir := t.TempDir()
+	request := previewTestRequest()
+	request.Target = InstallTarget{
+		RootDir:      rootDir,
+		SkillDir:     filepath.Join(rootDir, "go-docs-skill"),
+		SkillID:      "go-docs-skill",
+		ExistingPath: filepath.Join(rootDir, "go-docs-skill", "SKILL.md"),
+	}
+	request.Approval = ApprovalDecision{}
+
+	preview := RenderPreview(request)
+	diff := RenderDiff(request, "")
+
+	if !strings.Contains(preview, "Install Preview") {
+		t.Fatalf("RenderPreview() missing header\noutput:\n%s", preview)
+	}
+	if !strings.Contains(diff, "Install Diff") {
+		t.Fatalf("RenderDiff() missing header\noutput:\n%s", diff)
+	}
+	if request.ReadyForWrite() {
+		t.Fatal("request.ReadyForWrite() = true, want false before approval")
+	}
+	if _, err := os.Stat(request.Target.SkillDir); !os.IsNotExist(err) {
+		t.Fatalf("Stat(target skill dir) error = %v, want not exist after preview-only calls", err)
 	}
 }
 

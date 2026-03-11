@@ -1711,3 +1711,24 @@ Notes:
   - `go test ./internal/install -run Transaction -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.771s`
   - `rg -n "TestTransaction|assertNoTransactionArtifacts|ErrInstallApprovalRequired|activate staged install|backup" internal/install/transaction_test.go internal/install/transaction.go` -> matches confirm explicit-approval enforcement plus stage/backup cleanup and rollback coverage in the transaction implementation and tests
+
+## Section 89 — 06-approval-gated-install-activation — 06-02 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Prove sequence integrity and no-write-before-approval behavior).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-02` / `task=3` / `status=implemented`.
+
+Notes:
+- Added sequence-level coverage in `internal/install/preview_diff_test.go` proving `RenderPreview` and `RenderDiff` both run against an unapproved request without making the target skill directory writable or creating it on disk.
+- Extended `internal/install/transaction_test.go` with a preview-first sequence test plus decline and interruption cases that route denied `ApprovalDecision` values into `InstallTransaction`, which still returns `ErrInstallApprovalRequired` and leaves existing installed content unchanged.
+- Reused the existing approval collector and transaction helpers instead of introducing new orchestration code, and added shared helpers for explicit approved decisions plus installed-skill content assertions to keep the new tests deterministic.
+- One compile issue came up during verification because the new interrupted-approval test needed `io.EOF`; adding the missing `io` import resolved it without changing production behavior.
+- `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, state, summary, and install-package sources only.
+- Verification run output:
+  - `go fmt ./internal/install/...` -> no output
+  - `go test ./internal/install -run "Sequence|NoWriteBeforeApproval|Decline" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.617s`
+  - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.788s`

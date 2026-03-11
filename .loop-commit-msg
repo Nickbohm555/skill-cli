@@ -1,1 +1,4 @@
-Verify atomic install transaction gating and cleanup with full internal/install suite
+test install approval sequencing
+
+Added sequence/no-write-before-approval coverage for preview and transaction flows.
+Tested with `go test ./internal/install -run "Sequence|NoWriteBeforeApproval|Decline" -v` and `go test ./internal/install -v`.

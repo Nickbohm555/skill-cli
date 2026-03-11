@@ -2,6 +2,7 @@ package install
 
 import (
 	"errors"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -123,6 +124,93 @@ func TestTransactionBlocksMissingExplicitApproval(t *testing.T) {
 	}
 }
 
+func TestSequenceInstallRequiresExplicitApprovalAfterPreview(t *testing.T) {
+	rootDir := t.TempDir()
+	request := transactionTestRequest(rootDir)
+	request.Approval = ApprovalDecision{}
+
+	preview := RenderPreview(request)
+	diff := RenderDiff(request, "")
+	if preview == "" {
+		t.Fatal("RenderPreview() = empty, want non-empty preview before approval")
+	}
+	if diff == "" {
+		t.Fatal("RenderDiff() = empty, want non-empty diff before approval")
+	}
+
+	if _, err := InstallTransaction(request); !errors.Is(err, ErrInstallApprovalRequired) {
+		t.Fatalf("InstallTransaction() error = %v, want %v", err, ErrInstallApprovalRequired)
+	}
+	if _, statErr := os.Stat(request.Target.SkillDir); !errors.Is(statErr, os.ErrNotExist) {
+		t.Fatalf("Stat(targetDir) error = %v, want not exist before explicit approval", statErr)
+	}
+
+	request.Approval = explicitApprovedDecision()
+	result, err := InstallTransaction(request)
+	if err != nil {
+		t.Fatalf("InstallTransaction() after approval error = %v, want nil", err)
+	}
+	if result.TargetDir != request.Target.SkillDir {
+		t.Fatalf("InstallTransaction().TargetDir = %q, want %q", result.TargetDir, request.Target.SkillDir)
+	}
+
+	assertNoTransactionArtifacts(t, rootDir)
+}
+
+func TestNoWriteBeforeApprovalDeclineLeavesExistingTargetUnchanged(t *testing.T) {
+	rootDir := t.TempDir()
+	request := transactionTestRequest(rootDir)
+	original := writeExistingInstalledSkill(t, rootDir, "decline-original")
+
+	collector := NewApprovalCollector(ApprovalPrompterFunc(func(prompt ApprovalPrompt) (bool, error) {
+		return false, nil
+	}))
+	collector.Now = func() time.Time {
+		return time.Date(2026, time.March, 11, 23, 30, 0, 0, time.UTC)
+	}
+
+	decision, err := collector.Collect(ApprovalPolicy{Interactive: true})
+	if !errors.Is(err, ErrInstallDeclined) {
+		t.Fatalf("Collect() error = %v, want %v", err, ErrInstallDeclined)
+	}
+	request.Approval = decision
+
+	_, err = InstallTransaction(request)
+	if !errors.Is(err, ErrInstallApprovalRequired) {
+		t.Fatalf("InstallTransaction() error = %v, want %v", err, ErrInstallApprovalRequired)
+	}
+
+	assertInstalledSkillContent(t, request.Target.SkillDir, original)
+	assertNoTransactionArtifacts(t, rootDir)
+}
+
+func TestNoWriteBeforeApprovalInterruptedLeavesExistingTargetUnchanged(t *testing.T) {
+	rootDir := t.TempDir()
+	request := transactionTestRequest(rootDir)
+	original := writeExistingInstalledSkill(t, rootDir, "interrupted-original")
+
+	collector := NewApprovalCollector(ApprovalPrompterFunc(func(prompt ApprovalPrompt) (bool, error) {
+		return false, io.EOF
+	}))
+	collector.Now = func() time.Time {
+		return time.Date(2026, time.March, 11, 23, 31, 0, 0, time.UTC)
+	}
+
+	decision, err := collector.Collect(ApprovalPolicy{Interactive: true})
+	if !errors.Is(err, ErrInstallDeclined) {
+		t.Fatalf("Collect() error = %v, want %v", err, ErrInstallDeclined)
+	}
+	request.Approval = decision
+
+	_, err = InstallTransaction(request)
+	if !errors.Is(err, ErrInstallApprovalRequired) {
+		t.Fatalf("InstallTransaction() error = %v, want %v", err, ErrInstallApprovalRequired)
+	}
+
+	assertInstalledSkillContent(t, request.Target.SkillDir, original)
+	assertNoTransactionArtifacts(t, rootDir)
+}
+
 type renameFailFS struct {
 	transactionFS
 	failTarget string
@@ -153,14 +241,50 @@ func transactionTestRequest(rootDir string) InstallRequest {
 		Blocking:         false,
 		SelectedAt:       &selectedAt,
 	}
-	request.Approval = ApprovalDecision{
+	request.Approval = explicitApprovedDecisionAt(approvedAt)
+
+	return request
+}
+
+func explicitApprovedDecision() ApprovalDecision {
+	return explicitApprovedDecisionAt(time.Date(2026, time.March, 11, 21, 20, 0, 0, time.UTC))
+}
+
+func explicitApprovedDecisionAt(approvedAt time.Time) ApprovalDecision {
+	return ApprovalDecision{
 		Approved:       true,
 		ApprovalSource: ApprovalSourceInteractiveConfirm,
 		DecisionAt:     &approvedAt,
 		Explanation:    "User explicitly approved install after preview.",
 	}
+}
 
-	return request
+func writeExistingInstalledSkill(t *testing.T, rootDir, marker string) string {
+	t.Helper()
+
+	targetDir := filepath.Join(rootDir, "go-docs-skill")
+	if err := os.MkdirAll(targetDir, 0o755); err != nil {
+		t.Fatalf("MkdirAll(existing target) error = %v", err)
+	}
+
+	content := "---\nname: go-docs-skill\ndescription: old\n---\n\n# Old Skill\n\n" + marker + "\n"
+	if err := os.WriteFile(filepath.Join(targetDir, "SKILL.md"), []byte(content), 0o644); err != nil {
+		t.Fatalf("WriteFile(existing skill) error = %v", err)
+	}
+
+	return content
+}
+
+func assertInstalledSkillContent(t *testing.T, targetDir, want string) {
+	t.Helper()
+
+	got, err := os.ReadFile(filepath.Join(targetDir, "SKILL.md"))
+	if err != nil {
+		t.Fatalf("ReadFile(installed skill) error = %v", err)
+	}
+	if string(got) != want {
+		t.Fatalf("installed SKILL.md mismatch\n got:\n%s\nwant:\n%s", string(got), want)
+	}
 }
 
 func assertNoTransactionArtifacts(t *testing.T, rootDir string) {

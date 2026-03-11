@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-02 Task 2 is verified; the next scoped run is Phase 6 Plan 06-02 Task 3 execution.
+- **Current focus:** Phase 6 Plan 06-02 Task 3 is implemented; the next scoped run is Phase 6 Plan 06-02 Task 3 verification.
 
 ## Current Position
 
 - **Current phase:** 6 - Approval-Gated Install & Activation
 - **Current plan:** 06-02
-- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plan 06-01 complete and Plan 06-02 Task 1 verified.
+- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plan 06-01 complete and Plan 06-02 Task 3 implemented.
 - **Progress:** 5/6 phases complete
 - **Progress bar:** [#####-] 83%
 
@@ -154,10 +154,13 @@
 - [`internal/install/transaction_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction_test.go) now locks create, update, rollback-on-activation-failure, and missing-approval blocked cases, including checks that stage and backup artifacts are cleaned up from the target root after each run.
 - Task `2` verification in execution scope ran `go test ./internal/install -run Transaction -v` cleanly; no blockers came up, and the only install-package mutation path now stays behind `Preflight(...)` plus explicit approval enforcement.
 - Verification for Plan `06-02` Task `2` reran the focused transaction suite plus the full `internal/install` package tests cleanly, and static inspection confirmed approval gating plus artifact cleanup coverage are still enforced by `TestTransactionBlocksMissingExplicitApproval` and `assertNoTransactionArtifacts` in [`internal/install/transaction_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction_test.go).
+- Plan `06-02` Task `3` now extends the install-package regression coverage in [`internal/install/preview_diff_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preview_diff_test.go) and [`internal/install/transaction_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction_test.go) to prove preview/diff rendering stays available before approval while the transaction boundary still rejects writes until `Approved=true`.
+- The new sequence tests lock three fail-closed paths: preview/diff-only calls leave the target directory absent, declined approval leaves an existing installed skill unchanged, and interrupted approval leaves an existing installed skill unchanged with no leaked stage or backup artifacts.
+- Task `3` verification in execution scope ran `go fmt ./internal/install/...`, `go test ./internal/install -run "Sequence|NoWriteBeforeApproval|Decline" -v`, and `go test ./internal/install -v` cleanly after adding a missing `io` import in the new interrupted-approval test.
 
 ### Active Todos
 
-- Execute Plan `06-02` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`.
+- Verify Plan `06-02` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -166,12 +169,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `06-02` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 89.
+- **Next command:** Verify Plan `06-02` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 90.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-02
-- task=2
-- status=verified
+- task=3
+- status=implemented
