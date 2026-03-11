@@ -1,1 +1,3 @@
-verify install preflight gates and broader internal/install suite
+Add fail-closed install approval flow and tests
+
+Implemented Phase 06 Plan 06-01 Task 3 by adding an install approval collector with interactive `huh/v2` confirmation, deny-by-default non-interactive policy, and typed declined/non-interactive errors. Tested with `go test ./internal/install -run Approval -v` and `go test ./internal/install -v`.

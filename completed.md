@@ -1595,3 +1595,23 @@ Notes:
   - `go test ./internal/install -run Preflight -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.616s`
   - `rg -n '\$CODEX_HOME/skills|CODEX_HOME|Mkdir|Rename|WriteFile|Create|OpenFile|afero\.(WriteFile|NewOsFs|NewMemMapFs)' internal/install` -> no matches
+
+## Section 83 — 06-approval-gated-install-activation — 06-01 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Add explicit approval flow with deny-by-default non-interactive policy).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-01` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/install/approval_prompt.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/approval_prompt.go) with `ApprovalCollector`, a `huh/v2`-backed `HuhApprovalPrompter`, default prompt normalization, and fail-closed approval handling that only returns explicit approval for interactive confirm or explicit non-interactive flag usage.
+- Added [`internal/install/approval_prompt_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/approval_prompt_test.go) covering interactive approve, interactive decline, interrupted prompt (`io.EOF`), non-interactive missing-flag denial, and non-interactive explicit-approve pass-through.
+- Kept the task write-agnostic: production `internal/install` code still has no `$CODEX_HOME/skills` path handling or filesystem mutation primitives. No blockers came up; the package already had the typed approval/error contracts needed for the collector to plug in cleanly.
+- Verification run output:
+  - `go fmt ./internal/install/...` -> no output
+  - `go test ./internal/install -run Approval -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.788s`
+  - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.672s`
+  - `rg -n "\\.codex/skills|CODEX_HOME/skills|afero\\.New|os\\.(WriteFile|Rename|Mkdir|MkdirAll|Create|OpenFile|Remove|RemoveAll)|filepath\\.Join\\(.*skills" internal/install` -> matches only in `internal/install/model_test.go`
