@@ -1,5 +1,3 @@
-verify refinement session contracts
+Implement refinement clarity scoring and deepening safeguards
 
-- rerun Task 1 session verification
-- confirm no prompt-library/stdin usage in internal/refinement
-- advance state to section 39
+Tested: go test ./internal/refinement -run Clarity -v

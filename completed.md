@@ -726,3 +726,24 @@ Notes:
 - Verification run output:
   - `go test ./internal/refinement -run Session -v` -> `=== RUN   TestSessionStateInitializesRequiredFieldsAndSections` / `=== RUN   TestSessionFieldGraphRevisionMarksImpactedFieldsNeedsAttention` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
   - `rg -n "charm.land/huh|github.com/AlecAivazis/survey|github.com/charmbracelet/bubbletea|prompt|bufio|os.Stdin|stdin" internal/refinement` -> only `internal/refinement/session.go:69` comment match; no prompt-library imports or stdin usage
+
+## Section 39 — 03-interactive-refinement-loop — 03-01 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Implement clarity scoring and deepening safeguards).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-01` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/refinement/clarity.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/clarity.go) with a deterministic `ClarityPolicy` that scores answers from stable length bands, specificity markers, concrete-detail signals, and ambiguity penalties, plus per-field clarity thresholds for the required refinement fields.
+- The same policy now exposes `DeepeningDecision`, which escalates low-clarity answers from targeted free-text follow-up to structured-choice clarification with an explicit `other` path before returning a capped state once the retry limit is reached.
+- Added [`internal/refinement/clarity_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/clarity_test.go) with focused fixture coverage for high-clarity pass cases, short/ambiguous fail cases, structured example answers, and the attempt escalation/cap behavior required to avoid infinite deepening loops.
+- No blockers came up. The implementation reused the existing `FieldID` contracts from [`internal/refinement/session.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/session.go) so later validator work can consume the same thresholds and decision API without duplicating field metadata.
+- Verification run output:
+  - `go fmt ./internal/refinement/...` -> no output
+  - `go test ./internal/refinement -run Clarity -v` -> `=== RUN   TestClarityAssessmentHighSpecificityPasses` / `=== RUN   TestClarityAssessmentShortAmbiguousFails` / `=== RUN   TestClarityAssessmentStructuredExamplePasses` / `=== RUN   TestClarityDeepeningDecisionEscalatesAndCaps` / `=== RUN   TestClarityDeepeningDecisionStopsForClearAnswer` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	0.567s`
+  - `rg -n "huh|survey|stdin|bufio|prompt|bubbletea|bubble tea" internal/refinement` -> only `internal/refinement/session.go:69` comment match; no prompt-library imports or stdin usage
