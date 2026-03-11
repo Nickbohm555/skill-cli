@@ -1,3 +1,4 @@
-Verify Phase 4 prompt mapping
+Add one-issue validation fix loop
 
-Re-ran repo and focused validation tests for Plan 04-02 Task 1, confirmed rule-to-prompt coverage and deterministic fallback behavior, and updated planning state/completion tracking.
+Built the new internal/app/generate remediation loop with immediate revalidation and added focused FixLoop tests.
+Tested with: go test ./internal/app/generate -run FixLoop -v

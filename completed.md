@@ -1204,3 +1204,23 @@ Notes:
 - Verification run output:
   - `go test ./...` -> full repo suite passed, including `ok  	github.com/Nickbohm555/skill-cli/internal/validation	(cached)`
   - `go test ./internal/validation -run 'PromptForRule|Structural|Semantic|ValidationReport' -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.635s`
+
+## Section 63 — 04-validation-quality-gates — 04-02 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Add one-issue-at-a-time fix loop with immediate revalidation).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-02` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/app/generate/fix_loop.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/fix_loop.go) with a reusable remediation loop plus a default `ValidateCandidate` pass that merges structural and semantic validation, selects exactly one blocking issue per iteration, maps that issue to a targeted prompt, applies one focused edit, and revalidates immediately until the candidate passes or the user cancels.
+- Added [`internal/app/generate/fix_loop_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/fix_loop_test.go) with focused behavior coverage for multi-issue candidates being prompted one issue at a time, immediate revalidation on every cycle, deterministic prompt selection from `validation.PromptForRule`, and explicit cancel handling that stops before later edits are applied.
+- Reused the existing [`internal/validation/report.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/report.go) ordering/blocking helpers and [`internal/validation/followup_prompt.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/followup_prompt.go) mapping instead of creating a second issue or prompt model inside the generation layer.
+- No blockers surfaced. The planned `internal/app/generate` package did not exist yet, so this run created the package boundary needed for later gate wiring without reaching into Task `3`.
+- Verification run output:
+  - `go fmt ./internal/app/generate` -> no output
+  - `go test ./internal/app/generate -run FixLoop -v` -> `=== RUN   TestFixLoopPromptsOneBlockingIssuePerIteration` / `=== RUN   TestFixLoopReturnsUserCanceledAfterFirstBlockingIssue` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.552s`
