@@ -115,7 +115,7 @@ This roadmap delivers Skill Weaver as a quality-gated, local-first CLI that turn
 | 3 | Interactive Refinement Loop | Complete | 3 |
 | 4 | Validation & Quality Gates | Complete | 3 |
 | 5 | Overlap & Conflict Resolution | Complete | 3 |
-| 6 | Approval-Gated Install & Activation | Pending | 4 |
+| 6 | Approval-Gated Install & Activation | Complete | 4 |
 
 ## Coverage Check
 

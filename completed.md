@@ -1845,3 +1845,23 @@ Notes:
 - No blockers remain. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, state, and install/generate sources only.
 - Verification run output:
   - `go test ./internal/install ./internal/app/generate -run "InstallStage|Activate|INST" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)` and `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.661s`
+
+## Section 96 — 06-approval-gated-install-activation — 06-03 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-03` / `task=3` / `status=verified`.
+4. Create `06-03-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+5. Update `.planning/ROADMAP.md` and `.planning/STATE.md` to mark the phase complete.
+
+Notes:
+- Re-ran Task `3` in verification scope without expanding implementation scope because Section 96 is verification-only.
+- `go test ./internal/install ./internal/app/generate -v` passed cleanly, so no code fixes were required.
+- The blocked install scenarios remain assertion-backed in `internal/app/generate/install_stage_test.go`, proving unresolved validation/conflict states and missing explicit approval never reach transaction write logic.
+- The successful activation path remains assertion-backed in `internal/install/activate_verify_test.go` and `internal/app/generate/install_stage_test.go`, proving the normal path returns immediate-usability while restart guidance appears only for the exceptional discoverability-lag case.
+- Created `.planning/phases/06-approval-gated-install-activation/06-03-SUMMARY.md`, marked Phase 6 complete in `.planning/ROADMAP.md`, advanced `.planning/STATE.md` to overall completion, and moved `IMPLEMENTATION_PLAN.md` to Section `97`. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so verification used the available plan, research, state, and source files only.
+- Verification run output:
+  - `go test ./internal/install ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.896s` and `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.724s`

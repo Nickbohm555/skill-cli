@@ -3,22 +3,22 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-03 Task 3 is implemented; the next scoped run is Phase 6 Plan 06-03 Task 3 verification.
+- **Current focus:** Phase 6 Plan 06-03 Task 3 is verified, and all roadmap phases are complete.
 
 ## Current Position
 
 - **Current phase:** 6 - Approval-Gated Install & Activation
 - **Current plan:** 06-03
-- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plans 06-01 and 06-02 complete.
-- **Progress:** 5/6 phases complete
-- **Progress bar:** [#####-] 83%
+- **Overall status:** Phases 1, 2, 3, 4, 5, and 6 are complete.
+- **Progress:** 6/6 phases complete
+- **Progress bar:** [######] 100%
 
 ## Performance Metrics
 
 - **v1 requirements total:** 20
 - **Mapped to phases:** 20
 - **Coverage:** 100%
-- **Validated requirements complete:** 18
+- **Validated requirements complete:** 20
 
 ## Accumulated Context
 
@@ -170,11 +170,12 @@
 - Plan `06-03` Task `3` now adds explicit Phase 06 acceptance coverage in [`internal/app/generate/install_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage_test.go) and [`internal/install/activate_verify_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go), mapping `INST-01..INST-04` to deterministic end-to-end test cases for preview-before-approval, no-write-without-explicit-approval, unresolved validation/conflict blocking, immediate-usability success, and exceptional restart fallback guidance.
 - The new acceptance tests reuse the real install-stage and activation path where it matters, while stubbing only the approval edge needed to prove preview/diff happen before a blocked no-write outcome; fixture updates also make the real-path candidate structurally valid for post-install verification.
 - Task `3` verification in execution scope ran `go test ./internal/install ./internal/app/generate -run "InstallStage|Activate|INST" -v` cleanly after correcting the initial test fixture gap where the real install-stage activation path surfaced missing required sections in the candidate skill.
+- Verification for Plan `06-03` Task `3` reran the full `internal/install` and `internal/app/generate` package suites cleanly, confirming the acceptance coverage still enforces preview-before-approval, no-write-without-explicit-approval, unresolved validation/conflict blocking, immediate-usability success, and exceptional restart fallback guidance with no code changes required.
+- Phase 6 Plan `06-03` is now complete after writing `.planning/phases/06-approval-gated-install-activation/06-03-SUMMARY.md`, and Phase 6 is marked complete in `.planning/ROADMAP.md`.
 
 ### Active Todos
 
-- Verify Plan `06-03` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
-- Continue keeping phase progress and requirement status in sync during delivery.
+- None. The current roadmap is complete.
 
 ### Blockers
 
@@ -182,12 +183,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `06-03` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 96.
+- **Next command:** None. All planned phases and plan summaries are complete.
+- **When resuming:** Start from a new user-scoped task; `IMPLEMENTATION_PLAN.md` has been advanced past the final section.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-03
 - task=3
-- status=implemented
+- status=verified
