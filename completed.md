@@ -1476,3 +1476,24 @@ Notes:
   - `go test ./internal/app/generate -run OverlapStageSummary -v` -> `=== RUN   TestOverlapStageSummaryIncludesSelectedModeAndReadyStatus` / `=== RUN   TestOverlapStageSummaryStaysBlockedWhenDecisionIsMissing` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
   - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
   - `rg -n "Resolution Summary|Selected mode:|Target skill:|Status:|Proceed to Phase 06|BLOCKED before pre-install handoff|READY for pre-install handoff" internal/overlap internal/app/generate` -> summary and pre-install status references remain centralized in `internal/overlap/resolution_summary.go`, `internal/app/generate/overlap_stage.go`, and `internal/app/generate/overlap_stage_test.go`
+
+## Section 77 — 05-overlap-conflict-resolution — 05-02 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Enforce generate-pipeline gating on unresolved conflict states).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-02` / `task=3` / `status=implemented`.
+
+Notes:
+- Extended [`internal/app/generate/overlap_stage.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage.go) with an explicit gate decision plus optional `InstallHandoff` payload, making the overlap stage the single pre-install authority for whether Phase 06 can be reached.
+- The new gate blocks with explicit reasons for missing decisions, blocking decisions, and `abort`, and only returns a Phase 06 handoff when the decision is fully resolved and non-blocking; `new_install` stays allowed only for the no-overlap path.
+- Expanded [`internal/app/generate/overlap_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go) to cover the required proceed and blocked paths: no-overlap proceed, overlap with explicit merge proceed, missing-decision blocked, and abort blocked.
+- No blockers came up. I reused the existing typed `ConflictResolutionDecision`, `IsResolved`, and summary contracts instead of inventing a parallel install-stage model, so the gate reason and handoff payload stay derived from the same overlap artifact already shown to the user.
+- Verification run output:
+  - `go fmt ./internal/app/generate ./internal/overlap` -> `internal/app/generate/overlap_stage.go`
+  - `go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v` -> `=== RUN   TestGateAllowsWarningOnlyReports` / `=== RUN   TestGateBlocksOnFirstErrorDeterministically` / `=== RUN   TestGateMatchesValidateCandidateProgressionPolicy` / `=== RUN   TestOverlapStageSummaryIncludesSelectedModeAndReadyStatus` / `=== RUN   TestOverlapStageSummaryStaysBlockedWhenDecisionIsMissing` / `=== RUN   TestOverlapStageGateAllowsNoOverlapNewInstallHandoff` / `=== RUN   TestOverlapStageGateBlocksAbortDecision` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.735s`
+  - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.735s`
+  - `rg -n "Update existing skill|Merge with existing skill|Abort|explicitResolutionOptions|ResolutionUpdate|ResolutionMerge|ResolutionAbort|Resolution Summary|Selected mode:|Target skill:|Status:|Proceed to Phase 06|BLOCKED before pre-install handoff|READY for pre-install handoff" internal/overlap internal/app/generate` -> explicit prompt options remain centralized in `internal/overlap/decision_flow.go`, and summary/status output remains centralized in `internal/overlap/resolution_summary.go` plus `internal/app/generate/overlap_stage.go`

@@ -1,3 +1,5 @@
-Verify overlap resolution summary handoff contract
+phase 5 task 3: gate overlap handoff on resolved decisions
 
-Re-ran the 05-02 Task 2 verification suite, including focused overlap-stage summary tests and broader overlap/generate package tests. Confirmed the dedicated resolution summary still exposes selected mode, target skill, next step, and explicit pre-install status before Phase 06 handoff.
+Tested:
+- go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v
+- go test ./internal/overlap ./internal/app/generate -v

@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 5 Plan 05-02 Task 2 is verified; the next scoped run is Plan 05-02 Task 3 execution.
+- **Current focus:** Phase 5 Plan 05-02 Task 3 is implemented; the next scoped run is Plan 05-02 Task 3 verification.
 
 ## Current Position
 
 - **Current phase:** 5 - Overlap & Conflict Resolution
 - **Current plan:** 05-02
-- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 complete and Plan 05-02 Task 2 verified.
+- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 complete and Plan 05-02 Task 3 implemented.
 - **Progress:** 4/6 phases complete
 - **Progress bar:** [####--] 67%
 
@@ -129,10 +129,13 @@
 - [`internal/app/generate/overlap_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go) now locks the Task `2` contract with focused checks for resolved and unresolved summaries, including the selected mode, target skill, next-step line, and explicit pre-install status line.
 - Task `2` verification in execution scope ran `go fmt ./internal/overlap ./internal/app/generate`, `go test ./internal/app/generate -run OverlapStageSummary -v`, and `go test ./internal/overlap ./internal/app/generate -v` cleanly; no blockers came up while adding the summary artifact and overlap-stage orchestration.
 - Verification for Plan `05-02` Task `2` reran the focused overlap-stage summary suite and the broader `internal/overlap` plus `internal/app/generate` suites cleanly, and static inspection confirmed the dedicated resolution summary still exposes the selected mode, target skill, next-step line, and explicit pre-install status before any later phase handoff.
+- Plan `05-02` Task `3` now extends [`internal/app/generate/overlap_stage.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage.go) into the actual pre-install gate, returning an explicit allow/block reason plus a Phase 06 handoff payload only when the overlap decision is fully resolved and non-blocking.
+- [`internal/app/generate/overlap_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go) now locks the gating boundary with no-overlap proceed, resolved-overlap proceed, missing-decision blocked, and abort blocked cases so no downstream install handoff can exist without an explicit resolved choice.
+- Task `3` verification in execution scope ran `go fmt ./internal/app/generate ./internal/overlap`, `go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v`, and `go test ./internal/overlap ./internal/app/generate -v` cleanly; static inspection also confirmed the prompt surface still exposes only `update`, `merge`, and `abort` choices, and the summary/pre-install status lines remain centralized.
 
 ### Active Todos
 
-- Execute Plan `05-02` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`.
+- Verify Plan `05-02` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -141,12 +144,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `05-02` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 77.
+- **Next command:** Verify Plan `05-02` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 78.
 
 ## Execution Tracking
 
 - phase=05-overlap-conflict-resolution
 - plan=05-02
-- task=2
-- status=verified
+- task=3
+- status=implemented
