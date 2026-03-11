@@ -806,3 +806,23 @@ Notes:
 - Verification run output:
   - `go test ./internal/refinement -v` -> `=== RUN   TestClarityAssessmentHighSpecificityPasses` / `=== RUN   TestClarityAssessmentShortAmbiguousFails` / `=== RUN   TestClarityAssessmentStructuredExamplePasses` / `=== RUN   TestClarityDeepeningDecisionEscalatesAndCaps` / `=== RUN   TestClarityDeepeningDecisionStopsForClearAnswer` / `=== RUN   TestSessionStateInitializesRequiredFieldsAndSections` / `=== RUN   TestSessionFieldGraphRevisionMarksImpactedFieldsNeedsAttention` / `=== RUN   TestValidatorEvaluateCommitGateBehavior` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
   - `rg -n "cobra|viper|huh|prompt|survey|stdin|stdout|fmt\\.Print|os\\.Stdin|os\\.Stdout" internal/refinement` -> only `internal/refinement/session.go:69` comment match; no prompt-library imports or stdin/stdout usage
+
+## Section 43 — 03-interactive-refinement-loop — 03-02 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Build huh-based adapters for primary and deepening questions).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-02` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/cli/prompts/refinement_form.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/refinement_form.go) with a spec-first `RefinementFormAdapter` that converts refinement field metadata plus `ClarityPolicy.DeepeningDecision` outputs into consistent `huh/v2` prompt plans and concrete fields for primary answers, targeted free-text follow-ups, structured-choice clarifications, and capped fallback prompts.
+- The adapter reuses the domain-layer deepening policy instead of duplicating clarity logic in the CLI package, keeps structured option ordering deterministic per field, and always appends the stable `other` path through `OtherOptionValue` plus conditional validation for custom detail capture.
+- Added [`internal/cli/prompts/refinement_form_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/refinement_form_test.go) with focused coverage for required-field primary prompt generation, deterministic deepening routing across attempts, no-op behavior when clarity already passes, and preservation of the explicit `other` path in built prompt plans.
+- Added `charm.land/huh/v2@v2.0.3` to the module so the prompt package can expose real `huh` field builders. No blockers came up during implementation.
+- Verification run output:
+  - `go fmt ./internal/cli/prompts` -> `internal/cli/prompts/refinement_form.go`
+  - `go test ./internal/cli/prompts -run Prompt -v` -> `=== RUN   TestPromptPrimaryPlansCoverRequiredFields` / `=== RUN   TestPromptDeepeningRoutingIsDeterministic` / `=== RUN   TestPromptDeepeningSkipsWhenClarityPasses` / `=== RUN   TestPromptBuildDeepeningFieldsSupportsOtherPath` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	0.667s`

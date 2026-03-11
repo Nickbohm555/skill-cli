@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-01 is complete; the next scoped run is the execution session for Plan 03-02 Task 1.
+- **Current focus:** Phase 3 Plan 03-02 Task 1 is implemented; the next scoped run is the verification session for Plan 03-02 Task 1.
 
 ## Current Position
 
@@ -58,10 +58,13 @@
 - Verification for Plan `03-01` Task `3` reran `go test ./internal/refinement -v` cleanly, confirming the session, graph, clarity, and validator suites all pass together and `CommitReady` still fails closed unless every required field is complete and clear.
 - Static verification for Plan `03-01` Task `3` confirmed `internal/refinement` remains transport-free; the only `prompt` match is a boundary comment in [`internal/refinement/session.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/session.go), with no prompt-library imports or stdin usage in the domain package.
 - Phase 3 Plan `03-01` is now complete after creating the plan summary and advancing state to Plan `03-02` / Task `1`.
+- Plan `03-02` Task `1` now adds `internal/cli/prompts/refinement_form.go`, introducing a spec-first `RefinementFormAdapter` that maps refinement field metadata plus `ClarityPolicy.DeepeningDecision` outputs into consistent `huh/v2` prompt plans for primary, targeted deepening, and capped fallback questioning.
+- The prompt adapter keeps option ordering deterministic, appends a stable `other` path for structured clarification, and exposes `BuildPrimaryFields` / `BuildDeepeningFields` so later orchestration can use one transport surface instead of mixed raw-stdin prompt flows.
+- `internal/cli/prompts/refinement_form_test.go` now locks the Task 1 behavior with focused coverage for required-field primary prompt generation, deterministic deepening routing across attempt counts, no-op behavior when clarity already passes, and preservation of the explicit `other` path.
 
 ### Active Todos
 
-- Execute Plan `03-02` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`.
+- Verify Plan `03-02` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -70,12 +73,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `03-02` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md` within execution-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 43.
+- **Next command:** Verify Plan `03-02` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md` within verification-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 44.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-02
 - task=1
-- status=ready
+- status=implemented
