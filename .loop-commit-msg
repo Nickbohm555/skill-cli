@@ -1,3 +1,5 @@
-Add Phase 06 install stage orchestration and scoped InstallStage tests
+verify install stage sequencing and phase 06 trackers
 
-Tested: go test ./internal/app/generate -run InstallStage -v
+- reran InstallStage and broader install/generate verification suites
+- confirmed fail-closed short-circuit behavior and ready-now activation path
+- updated implementation plan pointer, completed log, and state to section 95

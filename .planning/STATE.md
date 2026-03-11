@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-03 Task 2 is implemented; the next scoped run is Phase 6 Plan 06-03 Task 2 verification.
+- **Current focus:** Phase 6 Plan 06-03 Task 2 is verified; the next scoped run is Phase 6 Plan 06-03 Task 3 execution.
 
 ## Current Position
 
@@ -166,10 +166,11 @@
 - Plan `06-03` Task `2` now adds [`internal/app/generate/install_stage.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage.go), introducing a strict Phase 06 orchestration stage that reuses install-package primitives to enforce `Preflight -> RenderPreview/RenderDiff -> RequestApproval -> ExecuteTransaction -> VerifyInstalledSkill` with no bypass path.
 - [`internal/app/generate/install_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage_test.go) now locks success-path ordering plus fail-closed preflight and approval-decline short-circuit behavior, including assertions that blocked states never reach transaction or activation.
 - Task `2` verification in execution scope ran `go fmt ./internal/app/generate` and `go test ./internal/app/generate -run InstallStage -v` cleanly; no blockers came up, and `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent.
+- Verification for Plan `06-03` Task `2` reran the focused `InstallStage` suite plus the broader `internal/install` and `internal/app/generate` package suites cleanly, confirming the strict stage order still short-circuits blocked preflight and declined approval before transaction or activation, while the success path still reports immediate-usability activation state with no code changes required.
 
 ### Active Todos
 
-- Verify Plan `06-03` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
+- Execute Plan `06-03` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -178,12 +179,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `06-03` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 94.
+- **Next command:** Execute Plan `06-03` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 95.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-03
 - task=2
-- status=implemented
+- status=verified
