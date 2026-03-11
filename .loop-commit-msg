@@ -1,3 +1,3 @@
-Add overlap resolution summary and pre-install stage contract
+Verify overlap resolution summary handoff contract
 
-Built a read-only overlap stage that renders a dedicated resolution summary block before install handoff and tested it with focused summary-stage and broader overlap/generate package coverage.
+Re-ran the 05-02 Task 2 verification suite, including focused overlap-stage summary tests and broader overlap/generate package tests. Confirmed the dedicated resolution summary still exposes selected mode, target skill, next step, and explicit pre-install status before Phase 06 handoff.

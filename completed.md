@@ -1457,3 +1457,22 @@ Notes:
   - `go fmt ./internal/overlap ./internal/app/generate` -> no output
   - `go test ./internal/app/generate -run OverlapStageSummary -v` -> `=== RUN   TestOverlapStageSummaryIncludesSelectedModeAndReadyStatus` / `=== RUN   TestOverlapStageSummaryStaysBlockedWhenDecisionIsMissing` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.618s`
   - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.745s` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.558s`
+
+## Section 76 — 05-overlap-conflict-resolution — 05-02 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-02` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the focused Task `2` verification in verification scope without expanding implementation scope because Section 76 is verification-only.
+- Broader package verification for `internal/overlap` and `internal/app/generate` stayed clean, so no production code changes were required.
+- Static inspection confirmed the dedicated resolution summary contract still surfaces the selected mode, target skill, next-step line, and explicit pre-install status before any later install-capable handoff.
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/app/generate -run OverlapStageSummary -v` -> `=== RUN   TestOverlapStageSummaryIncludesSelectedModeAndReadyStatus` / `=== RUN   TestOverlapStageSummaryStaysBlockedWhenDecisionIsMissing` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
+  - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
+  - `rg -n "Resolution Summary|Selected mode:|Target skill:|Status:|Proceed to Phase 06|BLOCKED before pre-install handoff|READY for pre-install handoff" internal/overlap internal/app/generate` -> summary and pre-install status references remain centralized in `internal/overlap/resolution_summary.go`, `internal/app/generate/overlap_stage.go`, and `internal/app/generate/overlap_stage_test.go`
