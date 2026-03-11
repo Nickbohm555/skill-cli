@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-02 is complete; the next scoped run is Phase 6 Plan 06-03 Task 1 execution.
+- **Current focus:** Phase 6 Plan 06-03 Task 1 is implemented; the next scoped run is Phase 6 Plan 06-03 Task 1 verification.
 
 ## Current Position
 
@@ -159,10 +159,13 @@
 - Task `3` verification in execution scope ran `go fmt ./internal/install/...`, `go test ./internal/install -run "Sequence|NoWriteBeforeApproval|Decline" -v`, and `go test ./internal/install -v` cleanly after adding a missing `io` import in the new interrupted-approval test.
 - Verification for Plan `06-02` Task `3` reran the scoped sequence/no-write-before-approval suite plus the full `internal/install` package tests cleanly, and static inspection confirmed all production filesystem mutation primitives remain isolated to [`internal/install/transaction.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction.go), still gated by `Preflight(...)` and explicit approval.
 - Phase 6 Plan `06-02` is now complete after writing `.planning/phases/06-approval-gated-install-activation/06-02-SUMMARY.md` and advancing state to Plan `06-03` / Task `1`.
+- Plan `06-03` Task `1` now adds [`internal/install/activate_verify.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify.go), introducing a post-install activation verifier that confirms installed path presence, reparses `SKILL.md`, reruns structural plus semantic validation, and emits either an immediate-usability `ReadyNow` signal or an exceptional restart fallback guidance path when discoverability is missing.
+- [`internal/install/activate_verify_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go) now locks ready-now success, parse-invalid fail-closed behavior, and the rare discoverability-lag fallback case so later pipeline wiring can depend on a deterministic activation contract without adding a second write phase.
+- Task `1` verification in execution scope ran `go fmt ./internal/install/...` and `go test ./internal/install -run Activate -v` cleanly after tightening the legacy transaction fixture to produce a structurally valid installed skill for activation checks; no blockers came up, and `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent.
 
 ### Active Todos
 
-- Execute Plan `06-03` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
+- Verify Plan `06-03` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -171,12 +174,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `06-03` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 91.
+- **Next command:** Verify Plan `06-03` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 92.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-03
 - task=1
-- status=pending_execution
+- status=implemented

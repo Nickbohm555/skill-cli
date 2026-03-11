@@ -1753,3 +1753,22 @@ Notes:
   - `go test ./internal/install -run "Sequence|NoWriteBeforeApproval|Decline" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `rg -n "Mkdir(All|Temp)|WriteFile|Rename|RemoveAll|os\\." internal/install` -> production write primitives appear only in `internal/install/transaction.go`; preview/diff and approval files expose no write path
+
+## Section 91 — 06-approval-gated-install-activation — 06-03 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Implement post-install activation verification contract).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-03` / `task=1` / `status=implemented`.
+
+Notes:
+- Added `internal/install/activate_verify.go` with a reusable `ActivationVerifier` and `VerifyInstalledSkill(...)` contract that confirms installed path presence, reparses `SKILL.md`, reruns structural plus semantic validation, checks expected `metadata.name`, and reports either `ReadyNow` or an exceptional restart-fallback state without introducing any second write phase.
+- Added `internal/install/activate_verify_test.go` covering ready-now success, parse-invalid fail-closed behavior, and the rare discoverability-lag fallback path where installation succeeded but immediate discoverability is still missing.
+- Tightened the activation test fixture so the installed candidate includes the required sections needed for structural validation; the first verification attempt exposed that the older transaction fixture was sufficient for write tests but not for post-install parse-and-validate checks.
+- No blockers came up after correcting the validation entry point and fixture shape. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, state, and install-package sources only.
+- Verification run output:
+  - `go fmt ./internal/install/...` -> no output
+  - `go test ./internal/install -run Activate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.632s`

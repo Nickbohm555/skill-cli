@@ -1,5 +1,5 @@
-verify install sequencing and close out plan 06-02
+Add post-install activation verification contract and tests
 
-Re-ran the Phase 06-02 Task 3 sequence and install verification suites,
-confirmed no-write-before-approval behavior and transactional cleanup,
-and advanced planning state to 06-03 Task 1 with the 06-02 summary recorded.
+Tested:
+- go fmt ./internal/install/...
+- go test ./internal/install -run Activate -v
