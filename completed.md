@@ -602,6 +602,26 @@ Notes:
 - Moved `cloneAttribution` into production code in [`internal/content/attribution.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/attribution.go) and removed the duplicate test-only helper from [`internal/content/chunk_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/chunk_test.go), because the summarizer package built under `go test` but failed under `go build ./...` due to relying on a `_test.go` symbol.
 - No blockers remained after those fixes. The next scoped run is the execution session for `02-03` Task `2`.
 - Verification run output:
-  - `go fmt ./internal/content` -> no output
-  - `go test -count=1 ./internal/content -run Summarize -v` -> `=== RUN   TestSummarizeChunksUsesStructuredProviderOutput` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderUnavailable` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderReturnsInvalidRecord` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderErrors` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.787s`
-  - `go build ./...` -> no output
+- `go fmt ./internal/content` -> no output
+- `go test -count=1 ./internal/content -run Summarize -v` -> `=== RUN   TestSummarizeChunksUsesStructuredProviderOutput` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderUnavailable` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderReturnsInvalidRecord` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderErrors` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.787s`
+- `go build ./...` -> no output
+
+## Section 33 — 02-content-processing-attribution — 02-03 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-03-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Build summary-first review model with raw expansion references).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-03` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/content/review_view.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/review_view.go) with `ReviewChunk`, `ExpandTarget`, `RawChunkView`, `ReviewView`, and `BuildReviewView`, so summary-first review rows can be built from `ChunkSummary` plus raw `AttributedChunk` inputs without re-deriving provenance.
+- The projection keeps `summary`, `source_url`, and `chunk_id` on each row by default, preserves full `ChunkAttribution`, and stores raw chunk text behind an explicit expansion lookup table keyed by stable `source_url#chunk_id` targets for later CLI/UI expansion.
+- Added [`internal/content/review_view_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/review_view_test.go) with focused coverage for single-chunk review projection, multi-source provenance preservation, and missing-raw-expansion failure behavior so this task is locked before Task 3 wires CLI output.
+- No blockers came up; the implementation reused the existing summarization and attribution contracts directly, which kept the review model aligned with the current Phase 2 pipeline.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/cmd/cli-skill [no test files]` / `? github.com/Nickbohm555/skill-cli/internal/cli/command [no test files]` / `ok github.com/Nickbohm555/skill-cli/internal/content 1.857s` / `ok github.com/Nickbohm555/skill-cli/internal/crawl (cached)`
