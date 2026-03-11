@@ -6,6 +6,67 @@ import (
 	"testing"
 )
 
+func TestActivateINST04ImmediateUsabilityAndExceptionalFallback(t *testing.T) {
+	t.Parallel()
+
+	t.Run("ready now is default success path", func(t *testing.T) {
+		rootDir := t.TempDir()
+		request := activationTestRequest(rootDir)
+
+		transaction, err := InstallTransaction(request)
+		if err != nil {
+			t.Fatalf("InstallTransaction() error = %v, want nil", err)
+		}
+
+		result, err := VerifyInstalledSkill(request, transaction)
+		if err != nil {
+			t.Fatalf("VerifyInstalledSkill() error = %v, want nil", err)
+		}
+		if !result.ReadyNow {
+			t.Fatal("ReadyNow = false, want true")
+		}
+		if result.RestartFallback {
+			t.Fatal("RestartFallback = true, want false for normal success path")
+		}
+		if result.FallbackGuidance != "" {
+			t.Fatalf("FallbackGuidance = %q, want empty on normal success path", result.FallbackGuidance)
+		}
+	})
+
+	t.Run("restart guidance appears only when discoverability signal is missing", func(t *testing.T) {
+		rootDir := t.TempDir()
+		request := activationTestRequest(rootDir)
+
+		transaction, err := InstallTransaction(request)
+		if err != nil {
+			t.Fatalf("InstallTransaction() error = %v, want nil", err)
+		}
+
+		verifier := NewActivationVerifier()
+		verifier.discoverable = func(probe ActivationProbe) (DiscoverabilitySignal, error) {
+			return DiscoverabilitySignal{
+				Discoverable: false,
+				Signal:       "codex_registry_missing",
+				Message:      "Installed skill parsed correctly, but the discoverability signal is not visible yet.",
+			}, nil
+		}
+
+		result, err := verifier.Verify(request, transaction)
+		if err != nil {
+			t.Fatalf("Verify() error = %v, want nil", err)
+		}
+		if result.ReadyNow {
+			t.Fatal("ReadyNow = true, want false when discoverability signal is missing")
+		}
+		if !result.RestartFallback {
+			t.Fatal("RestartFallback = false, want true when discoverability signal is missing")
+		}
+		if result.FallbackGuidance != restartCodexGuidance {
+			t.Fatalf("FallbackGuidance = %q, want %q", result.FallbackGuidance, restartCodexGuidance)
+		}
+	})
+}
+
 func TestActivateReadyNowSuccess(t *testing.T) {
 	t.Parallel()
 

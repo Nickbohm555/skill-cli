@@ -1827,3 +1827,21 @@ Notes:
 - Verification run output:
   - `go test ./internal/app/generate -run InstallStage -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
   - `go test ./internal/install ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)` and `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.820s`
+
+## Section 95 — 06-approval-gated-install-activation — 06-03 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Add end-to-end tests for INST-01..INST-04 acceptance paths).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-03` / `task=3` / `status=implemented`.
+
+Notes:
+- Added explicit requirement-mapped acceptance tests in `internal/app/generate/install_stage_test.go` for `INST-01` preview-before-approval sequencing, `INST-02` no-write-without-explicit-approval plus explicit-approval write success, `INST-03` unresolved validation/conflict blocking, and `INST-04` immediate-usability success.
+- Added explicit `INST-04` activation coverage in `internal/install/activate_verify_test.go` to prove restart guidance is exceptional and not part of the default success path.
+- The first verification attempt exposed that the existing install-stage fixture was not structurally valid enough for real activation verification, so the candidate fixture was expanded to include the required sections instead of weakening the production validation path.
+- No blockers remain. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, state, and install/generate sources only.
+- Verification run output:
+  - `go test ./internal/install ./internal/app/generate -run "InstallStage|Activate|INST" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)` and `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.661s`

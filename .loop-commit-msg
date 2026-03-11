@@ -1,5 +1,4 @@
-verify install stage sequencing and phase 06 trackers
+Add Phase 06 INST acceptance tests and verify install activation paths
 
-- reran InstallStage and broader install/generate verification suites
-- confirmed fail-closed short-circuit behavior and ready-now activation path
-- updated implementation plan pointer, completed log, and state to section 95
+Tested:
+- go test ./internal/install ./internal/app/generate -run "InstallStage|Activate|INST" -v
