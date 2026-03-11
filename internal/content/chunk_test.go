@@ -266,11 +266,3 @@ func newSummaryInput(chunk AttributedChunk) summaryInput {
 		Attribution: cloneAttribution(chunk.Attribution),
 	}
 }
-
-func cloneAttribution(in ChunkAttribution) ChunkAttribution {
-	out := in
-	if in.HeadingPath != nil {
-		out.HeadingPath = append([]string(nil), in.HeadingPath...)
-	}
-	return out
-}

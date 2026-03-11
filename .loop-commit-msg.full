@@ -1,1 +1,1 @@
-ralph loop 31 (build): Implement chunk summarization with structured OpenAI output and deterministic fallback
+ralph loop 32 (build): verify summarize task with real tests and fix production cloneAttribution build issue

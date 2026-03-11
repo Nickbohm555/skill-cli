@@ -20,6 +20,14 @@ type AttributedChunk struct {
 	Attribution ChunkAttribution
 }
 
+func cloneAttribution(in ChunkAttribution) ChunkAttribution {
+	out := in
+	if in.HeadingPath != nil {
+		out.HeadingPath = append([]string(nil), in.HeadingPath...)
+	}
+	return out
+}
+
 // NewChunkAttribution stamps metadata directly from the normalized page and
 // chunk so attribution does not need to be reconstructed later.
 func NewChunkAttribution(page NormalizedPage, chunk Chunk) ChunkAttribution {

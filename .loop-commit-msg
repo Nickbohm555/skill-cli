@@ -1,3 +1,1 @@
-Implement chunk summarization with structured OpenAI output and deterministic fallback
-
-Tested: go test ./internal/content -run Summarize -v
+verify summarize task with real tests and fix production cloneAttribution build issue
