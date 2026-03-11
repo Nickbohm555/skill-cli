@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 2 is complete; the next scoped run is Phase 3 Plan 03-01 Task 1 execution.
+- **Current focus:** Phase 3 Plan 03-01 Task 1 is implemented; the next scoped run is the verification session for that task.
 
 ## Current Position
 
 - **Current phase:** 3 - Interactive Refinement Loop
 - **Current plan:** 03-01
-- **Overall status:** Phases 1 and 2 are complete. Phase 2 Plan 02-03 Task 3 is verified, summarized, and Phase 2 is now marked complete; the next scoped run is Plan 03-01 Task 1 execution.
+- **Overall status:** Phases 1 and 2 are complete. Phase 2 Plan 02-03 Task 3 is verified, summarized, and Phase 2 is now marked complete; Phase 3 Plan 03-01 Task 1 is now implemented and awaiting verification.
 - **Progress:** 2/6 phases complete
 - **Progress bar:** [##----] 33%
 
@@ -46,10 +46,12 @@
 - `internal/content/summarize_test.go` now adds regression coverage for two-line summary bounding and schema-validation fallback when the provider omits required identifiers, alongside the existing provider-error fallback checks.
 - Verification for Plan `02-03` Task `3` reran `go test ./...` and the focused `Summarize` / `ReviewView` suites cleanly, then manually confirmed `go run ./cmd/cli-skill process --url https://go.dev/doc/` emits summary-first rows with persistent `source_url`, `expand_target`, and `reference` fields while `--include-raw` exposes `raw_excerpt` output.
 - Phase 2 is now complete after creating the `02-03` summary, marking the roadmap status complete, and advancing state to Phase 3 Plan `03-01` Task `1`.
+- Plan `03-01` Task `1` now adds `internal/refinement/session.go` and `internal/refinement/field_graph.go`, establishing a deterministic required-field registry, section grouping (`purpose`, `constraints`, `examples`, `boundaries`), explicit readiness states, answer revision metadata, and a transitive dependency graph for impact-aware revision handling.
+- `internal/refinement/session_test.go` now locks the Task 1 behavior with focused session/graph coverage: default field registry initialization, ordered section mapping, missing-by-default readiness, and `ReviseAnswer` reopening only the transitive impacted downstream fields.
 
 ### Active Todos
 
-- Execute Plan `03-01` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`.
+- Verify Plan `03-01` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -58,12 +60,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `03-01` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md` within execution-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 37.
+- **Next command:** Verify Plan `03-01` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md` within verification-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 38.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-01
 - task=1
-- status=queued
+- status=implemented

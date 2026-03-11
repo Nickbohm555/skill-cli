@@ -688,3 +688,23 @@ Notes:
   - `go test ./internal/content -run 'Summarize|ReviewView' -v` -> `=== RUN   TestBuildReviewViewIncludesSummaryAttributionAndExpansion` / `=== RUN   TestBuildReviewViewSupportsMultipleSourcesWithoutCollapsingProvenance` / `=== RUN   TestBuildReviewViewErrorsWhenRawExpansionIsMissing` / `=== RUN   TestSummarizeChunksUsesStructuredProviderOutput` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderUnavailable` / `=== RUN   TestSummarizeChunksBoundsProviderSummaryToTwoLines` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderReturnsInvalidRecord` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderOmitsSourceURL` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderErrors` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.804s`
   - `go run ./cmd/cli-skill process --url https://go.dev/doc/` -> emitted summary-first review rows with per-chunk `source_url`, `expand_target`, and `reference` attribution fields
   - `go run ./cmd/cli-skill process --url https://go.dev/doc/effective_go --include-raw` -> emitted summary-first review rows plus per-chunk `raw_excerpt` expansion output
+
+## Section 37 — 03-interactive-refinement-loop — 03-01 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Define session and field dependency contracts).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-01` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/refinement/session.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/session.go) with a deterministic required-field registry, stable section mapping for `purpose`, `constraints`, `examples`, and `boundaries`, explicit readiness states (`ready`, `needs_attention`, `missing`), answer storage, and revision metadata via monotonic per-session revisions.
+- Added [`internal/refinement/field_graph.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/field_graph.go) with direct dependency declarations and deterministic transitive `ImpactedBy` lookup so later `revise <field>` flows can reopen downstream fields without embedding that policy in CLI code.
+- Added [`internal/refinement/session_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/session_test.go) to lock the Task 1 contracts: stable section ordering, missing-by-default required fields, and revision behavior that marks only the transitive impacted fields back to `needs_attention`.
+- No blockers came up. There was no reusable refinement package in the repo yet, so this run established the phase-3 domain baseline from scratch while keeping the contracts transport-free for later prompt and validator work.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./internal/refinement -run Session -v` -> `=== RUN   TestSessionStateInitializesRequiredFieldsAndSections` / `=== RUN   TestSessionFieldGraphRevisionMarksImpactedFieldsNeedsAttention` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	0.456s`
