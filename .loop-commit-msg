@@ -1,4 +1,1 @@
-Add one-issue validation fix loop
-
-Built the new internal/app/generate remediation loop with immediate revalidation and added focused FixLoop tests.
-Tested with: go test ./internal/app/generate -run FixLoop -v
+verify fix-loop remediation task and advance plan state
