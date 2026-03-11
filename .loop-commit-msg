@@ -1,3 +1,3 @@
-verify validation plan 04-01 task 3
+Add deterministic validation follow-up prompt mapping
 
-Re-ran internal/validation verification, confirmed deterministic blocking order and warning-only non-blocking behavior, wrote the 04-01 summary, and advanced state to 04-02 task 1.
+Built stable rule-to-follow-up prompts for all current blocking Phase 4 validation rules, added fallback coverage for unknown rules, and verified with go fmt ./... and go test ./....

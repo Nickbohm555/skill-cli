@@ -174,6 +174,49 @@ func TestValidationReportWarningsDoNotBlock(t *testing.T) {
 	}
 }
 
+func TestPromptForRuleCoversAllBlockingPhaseFourRules(t *testing.T) {
+	t.Parallel()
+
+	blockingRules := []string{
+		ruleStructuralInternal,
+		"VAL.STRUCT.METADATA_NAME_REQUIRED",
+		"VAL.STRUCT.METADATA_DESCRIPTION_REQUIRED",
+		"VAL.STRUCT.TITLE_REQUIRED",
+		"VAL.STRUCT.PURPOSE_SUMMARY_REQUIRED",
+		"VAL.STRUCT.PRIMARY_TASKS_REQUIRED",
+		"VAL.STRUCT.SUCCESS_CRITERIA_REQUIRED",
+		"VAL.STRUCT.CONSTRAINTS_REQUIRED",
+		"VAL.STRUCT.DEPENDENCIES_REQUIRED",
+		"VAL.STRUCT.EXAMPLE_REQUESTS_REQUIRED",
+		"VAL.STRUCT.EXAMPLE_OUTPUTS_REQUIRED",
+		"VAL.STRUCT.IN_SCOPE_REQUIRED",
+		"VAL.STRUCT.OUT_OF_SCOPE_REQUIRED",
+		ruleInScopeEntryTooBrief,
+		ruleInScopeCatchAll,
+		ruleOutOfScopeEntryTooBrief,
+		ruleOutOfScopeCatchAll,
+	}
+
+	for _, ruleID := range blockingRules {
+		prompt := PromptForRule(ruleID)
+		if prompt == "" {
+			t.Fatalf("PromptForRule(%q) = empty, want targeted prompt", ruleID)
+		}
+		if prompt == unknownRulePrompt {
+			t.Fatalf("PromptForRule(%q) returned fallback prompt, want targeted prompt", ruleID)
+		}
+	}
+}
+
+func TestPromptForRuleFallsBackDeterministically(t *testing.T) {
+	t.Parallel()
+
+	got := PromptForRule("VAL.UNKNOWN.RULE")
+	if got != unknownRulePrompt {
+		t.Fatalf("PromptForRule() fallback = %q, want %q", got, unknownRulePrompt)
+	}
+}
+
 func TestStructuralValidationAcceptsValidCandidate(t *testing.T) {
 	t.Parallel()
 

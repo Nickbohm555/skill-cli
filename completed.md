@@ -1161,3 +1161,28 @@ Notes:
 - Verification run output:
   - `go test ./internal/validation -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.602s`
   - `go test ./internal/validation -run 'Test(ValidationReportOrderingIsDeterministic|StructuralValidationOrderingIsDeterministic|SemanticValidationOrderingIsDeterministic|ValidationReportWarningsDoNotBlock)$' -count=5 -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.746s`
+
+## Section 61 — 04-validation-quality-gates — 04-02 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Implement stable rule-to-follow-up prompt mapping).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-02` / `task=1` / `status=implemented`.
+
+Notes:
+- Added `internal/validation/followup_prompt.go` with a deterministic mapping for every current blocking `VAL.STRUCT.*` and `VAL.SCOPE.*` rule, plus a stable fallback prompt for unknown rule IDs so later remediation flow can stay fail-closed.
+- Extended `internal/validation/validation_test.go` with coverage that asserts every blocking Phase 4 rule returns a non-empty targeted prompt and that unknown rules always resolve to the same fallback prompt.
+- No blockers came up; there is still no `internal/app/generate` package yet, so this execution run stayed scoped to the validation-layer prompt mapping required by Task `1`.
+- Verification run output:
+  - `go fmt ./...` -> `internal/validation/followup_prompt.go`
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/cli/command	1.314s`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/content	1.829s`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
+  - `go test ./...` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.804s`
