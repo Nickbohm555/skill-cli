@@ -3,22 +3,22 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 2 Plan 02-03 Task 3 is implemented; the next scoped run is Task 3 verification.
+- **Current focus:** Phase 2 is complete; the next scoped run is Phase 3 Plan 03-01 Task 1 execution.
 
 ## Current Position
 
-- **Current phase:** 2 - Content Processing & Attribution
-- **Current plan:** 02-03
-- **Overall status:** Phase 1 is complete, and Phase 2 Plans 02-01 and 02-02 are verified and summarized. Plan 02-03 Task 3 is now implemented, and Task 3 verification is the next scoped run.
-- **Progress:** 1/6 phases complete
-- **Progress bar:** [#-----] 17%
+- **Current phase:** 3 - Interactive Refinement Loop
+- **Current plan:** 03-01
+- **Overall status:** Phases 1 and 2 are complete. Phase 2 Plan 02-03 Task 3 is verified, summarized, and Phase 2 is now marked complete; the next scoped run is Plan 03-01 Task 1 execution.
+- **Progress:** 2/6 phases complete
+- **Progress bar:** [##----] 33%
 
 ## Performance Metrics
 
 - **v1 requirements total:** 20
 - **Mapped to phases:** 20
 - **Coverage:** 100%
-- **Validated requirements complete:** 4
+- **Validated requirements complete:** 7
 
 ## Accumulated Context
 
@@ -44,10 +44,12 @@
 - Plan `02-03` Task `3` now adds `internal/cli/command/process.go`, wiring `cli-skill process --url ...` through crawl, fetch, extraction, normalization, conservative dedupe, chunking, summarization, and review rendering so the Phase 2 pipeline is visible as summary-first CLI output.
 - The new `process` command prints per-chunk `summary`, `source_url`, `expand_target`, and attribution reference by default, with `--include-raw` exposing raw chunk excerpts without replacing the concise review-first output.
 - `internal/content/summarize_test.go` now adds regression coverage for two-line summary bounding and schema-validation fallback when the provider omits required identifiers, alongside the existing provider-error fallback checks.
+- Verification for Plan `02-03` Task `3` reran `go test ./...` and the focused `Summarize` / `ReviewView` suites cleanly, then manually confirmed `go run ./cmd/cli-skill process --url https://go.dev/doc/` emits summary-first rows with persistent `source_url`, `expand_target`, and `reference` fields while `--include-raw` exposes `raw_excerpt` output.
+- Phase 2 is now complete after creating the `02-03` summary, marking the roadmap status complete, and advancing state to Phase 3 Plan `03-01` Task `1`.
 
 ### Active Todos
 
-- Verify Plan `02-03` Task `3` from `.planning/phases/02-content-processing-attribution/02-03-PLAN.md`.
+- Execute Plan `03-01` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -56,12 +58,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `02-03` Task `3` from `.planning/phases/02-content-processing-attribution/02-03-PLAN.md` within verification-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 36.
+- **Next command:** Execute Plan `03-01` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md` within execution-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 37.
 
 ## Execution Tracking
 
-- phase=02-content-processing-attribution
-- plan=02-03
-- task=3
-- status=implemented
+- phase=03-interactive-refinement-loop
+- plan=03-01
+- task=1
+- status=queued

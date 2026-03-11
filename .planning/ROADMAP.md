@@ -111,7 +111,7 @@ This roadmap delivers Skill Weaver as a quality-gated, local-first CLI that turn
 | Phase | Name | Status | Requirements |
 |------|------|--------|--------------|
 | 1 | Crawl & Ingestion Foundation | Complete | 4 |
-| 2 | Content Processing & Attribution | Pending | 3 |
+| 2 | Content Processing & Attribution | Complete | 3 |
 | 3 | Interactive Refinement Loop | Pending | 3 |
 | 4 | Validation & Quality Gates | Pending | 3 |
 | 5 | Overlap & Conflict Resolution | Pending | 3 |

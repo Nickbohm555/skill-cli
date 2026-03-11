@@ -664,3 +664,27 @@ Notes:
   - `go fmt ./...` -> no output
   - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/cmd/cli-skill [no test files]` / `? github.com/Nickbohm555/skill-cli/internal/cli/command [no test files]` / `ok github.com/Nickbohm555/skill-cli/internal/content 1.792s` / `ok github.com/Nickbohm555/skill-cli/internal/crawl (cached)`
   - `go run ./cmd/cli-skill process --url http://127.0.0.1:8765/docs/index.html --include-raw` -> emitted summary-first review rows with per-chunk `source_url` attribution plus raw excerpts for two locally served docs pages
+
+## Section 36 — 02-content-processing-attribution — 02-03 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-03-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-03` / `task=3` / `status=verified`.
+4. Create `02-03-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+5. Update `.planning/ROADMAP.md` and `.planning/STATE.md` to mark the phase complete.
+
+Notes:
+- Re-ran the plan-level verification within verification-only scope and no code fixes were required because the current process command, summarization, and review projection paths stayed green.
+- Confirmed `go test ./...` still passes, the focused `Summarize` and `ReviewView` suites still enforce bounded summary shape plus attribution/expansion linkage, and manual CLI runs showed summary-first rows with persistent `source_url`, `expand_target`, and `reference` fields.
+- Confirmed the optional raw expansion path remains intact: `go run ./cmd/cli-skill process --url https://go.dev/doc/effective_go --include-raw` emitted `raw_excerpt` entries alongside the concise review rows.
+- Created `.planning/phases/02-content-processing-attribution/02-03-SUMMARY.md`, advanced `.planning/STATE.md` to Phase `03` / Plan `03-01` / Task `1`, and updated `.planning/ROADMAP.md` to mark Phase 2 complete.
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/cmd/cli-skill [no test files]` / `? github.com/Nickbohm555/skill-cli/internal/cli/command [no test files]` / `ok github.com/Nickbohm555/skill-cli/internal/content (cached)` / `ok github.com/Nickbohm555/skill-cli/internal/crawl (cached)`
+  - `go test ./internal/content -run 'Summarize|ReviewView' -v` -> `=== RUN   TestBuildReviewViewIncludesSummaryAttributionAndExpansion` / `=== RUN   TestBuildReviewViewSupportsMultipleSourcesWithoutCollapsingProvenance` / `=== RUN   TestBuildReviewViewErrorsWhenRawExpansionIsMissing` / `=== RUN   TestSummarizeChunksUsesStructuredProviderOutput` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderUnavailable` / `=== RUN   TestSummarizeChunksBoundsProviderSummaryToTwoLines` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderReturnsInvalidRecord` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderOmitsSourceURL` / `=== RUN   TestSummarizeChunksFallsBackWhenProviderErrors` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.804s`
+  - `go run ./cmd/cli-skill process --url https://go.dev/doc/` -> emitted summary-first review rows with per-chunk `source_url`, `expand_target`, and `reference` attribution fields
+  - `go run ./cmd/cli-skill process --url https://go.dev/doc/effective_go --include-raw` -> emitted summary-first review rows plus per-chunk `raw_excerpt` expansion output
