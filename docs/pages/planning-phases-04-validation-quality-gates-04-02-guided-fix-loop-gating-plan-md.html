@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Section 2: Guided remediation and progression gate wiring · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Section 2: Guided remediation and progression gate wiring</h1>
+      <p>.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#section-2-guided-remediation-and-progression-gate-wiring">Section 2: Guided remediation and progression gate wiring</a></li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Section 2: Guided remediation and progression gate wiring</h2>
+        <p>Rendered from <code>.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <hr />
+<p>phase: 04-validation-quality-gates
+plan: 02
+type: execute
+wave: 2
+depends_on:
+  - 04-01
+files_modified:
+  - internal/validation/followup_prompt.go
+  - internal/app/generate/fix_loop.go
+  - internal/app/generate/gate.go
+  - internal/app/generate/fix_loop_test.go
+  - internal/app/generate/gate_test.go
+autonomous: true
+must_haves:
+  truths:
+    - "When validation fails, user receives a targeted follow-up prompt tied to the first blocking rule."
+    - "The system requests one focused edit at a time, then revalidates immediately."
+    - "Progression remains blocked until the candidate has zero blocking errors."
+  artifacts:
+    - path: "internal/validation/followup_prompt.go"
+      provides: "Rule-ID to targeted follow-up prompt mapping."
+    - path: "internal/app/generate/fix_loop.go"
+      provides: "Single-issue guided remediation loop with revalidation after each edit."
+    - path: "internal/app/generate/gate.go"
+      provides: "Central fail-closed progression gate based on validation severity."
+    - path: "internal/app/generate/fix_loop_test.go"
+      provides: "Behavior tests for one-issue-at-a-time prompt and retry loop."
+    - path: "internal/app/generate/gate_test.go"
+      provides: "Guarantees warning-only reports do not block while any Error always blocks."
+  key_links:
+    - from: "internal/app/generate/fix_loop.go"
+      to: "internal/validation/followup_prompt.go"
+      via: "next blocking issue mapped to one targeted prompt per iteration"
+      pattern: "NextBlockingIssue|PromptForRule"
+    - from: "internal/app/generate/fix_loop.go"
+      to: "internal/validation/report.go"
+      via: "loop exit/continue based on blocking issue state"
+      pattern: "HasBlockingIssues|NextBlockingIssue"
+    - from: "internal/app/generate/gate.go"
+      to: "internal/validation/schema_validate.go"
+      via: "post-validation gate blocks downstream progression on Errors"
+      pattern: "CanProceed|ValidateCandidate"</p>
+<hr />
+<p><objective>
+Wire targeted follow-up prompting and fail-closed progression gating into generation flow so users can only continue after acceptable output.</p>
+<p>Purpose: Fulfill VAL-02 and complete Phase 04 gating behavior by coupling validation issues to guided remediation and strict progression control.
+Output: Rule-targeted prompt mapping, single-edit retry orchestration, and centralized progression gate with test coverage.
+</objective></p>
+<p><execution_context>
+@~/.cursor/get-shit-done/workflows/execute-plan.md
+@~/.cursor/get-shit-done/templates/summary.md
+</execution_context></p>
+<p><context>
+@.planning/PROJECT.md
+@.planning/ROADMAP.md
+@.planning/REQUIREMENTS.md
+@.planning/STATE.md
+@.planning/phases/04-validation-quality-gates/04-CONTEXT.md
+@.planning/phases/04-validation-quality-gates/04-RESEARCH.md
+@.planning/phases/04-validation-quality-gates/04-01-SUMMARY.md
+</context></p>
+<p><tasks></p>
+<p><task type="auto">
+  <name>Task 1: Implement stable rule-to-follow-up prompt mapping</name>
+  <files>internal/validation/followup_prompt.go</files>
+  <action>Create a deterministic mapping from validator <code>RuleID</code> to targeted question templates that request only the missing or malformed content needed to resolve that rule. Keep prompts concise, specific, and scoped to one correction target (for example, missing in-scope list, weak out-of-scope boundary, malformed metadata). Include fallback behavior for unknown rule IDs that still preserves fail-closed handling.</action>
+  <verify><code>go test ./...</code> compiles and mapping tests confirm every blocking <code>VAL.*</code> rule used in Phase 04 has a non-empty targeted prompt.</verify>
+  <done>Every blocking validation rule can produce a deterministic, targeted follow-up question usable by remediation loop logic.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 2: Add one-issue-at-a-time fix loop with immediate revalidation</name>
+  <files>internal/app/generate/fix_loop.go, internal/app/generate/fix_loop_test.go</files>
+  <action>Implement remediation loop orchestration that (1) runs validation, (2) selects first blocking issue, (3) asks exactly one mapped follow-up question, (4) applies one focused edit to candidate output, and (5) revalidates immediately. Preserve unlimited retries and avoid multi-issue prompt batching. Ensure loop exits only when no blocking errors remain or user explicitly cancels.</action>
+  <verify><code>go test ./internal/app/generate -run FixLoop -v</code> passes with fixtures proving single-issue prompting and immediate revalidation each cycle.</verify>
+  <done>Validation failures trigger guided, targeted, one-edit remediation cycles until candidate passes or user exits.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 3: Centralize progression gate and enforce fail-closed policy</name>
+  <files>internal/app/generate/gate.go, internal/app/generate/gate_test.go</files>
+  <action>Create a dedicated progression gate (<code>CanProceed</code> or equivalent) that is the only authority for allowing downstream workflow continuation. Gate must deny progression on any blocking <code>Error</code>, allow progression when only warnings remain, and return explicit reason payloads for blocked states. Replace any ad hoc issue checks in generation flow with this centralized gate call.</action>
+  <verify><code>go test ./internal/app/generate -run Gate -v</code> passes and shows block-on-error / allow-on-warning-only behavior.</verify>
+  <done>Downstream progression is fail-closed and deterministic, fully aligned with Phase 04 quality-gate contract.</done>
+</task></p>
+<p></tasks></p>
+<p><verification>
+1. Run <code>go test ./internal/validation ./internal/app/generate -v</code> and confirm prompt mapping, fix-loop, and gate suites pass together.
+2. Simulate candidate with two blocking issues and confirm exactly one issue is prompted per iteration until cleared.
+3. Confirm progression remains blocked for any report containing <code>Error</code>, and becomes allowed only after blocking issues are resolved.
+</verification></p>
+<p><success_criteria>
+- Validation failure always produces targeted next-step guidance rather than generic or silent failure behavior.
+- Guided loop resolves one blocking issue at a time with immediate revalidation and unlimited retries.
+- Progression/install-prep path cannot continue while blocking validation errors remain.
+</success_criteria></p>
+<output>
+After completion, create `.planning/phases/04-validation-quality-gates/04-02-SUMMARY.md`
+</output>
+
+<h2 id="section-2-guided-remediation-and-progression-gate-wiring">Section 2: Guided remediation and progression gate wiring</h2>
+<p><strong>Single goal:</strong> Ensure validation findings drive deterministic one-at-a-time correction prompts and hard-stop progression until output is acceptable.</p>
+<p><strong>Details:</strong>
+- Map every blocking rule to a targeted follow-up prompt template.
+- Orchestrate a single-edit retry loop that revalidates after each correction.
+- Centralize proceed/block decision into one fail-closed gate used by generation flow.
+- Keep warning-level issues non-blocking while preserving visibility in reports.</p>
+<p><strong>Tech stack and dependencies</strong>
+- Libraries/packages (Go modules): use existing validation stack from Wave 1 plus <code>charm.land/huh/v2</code> for one-question prompt interactions where CLI prompting is required.
+- Tooling/runtime: no container changes; integrates into existing CLI flow and Go test commands.</p>
+<p><strong>Files and purpose</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>internal/validation/followup_prompt.go</td>
+<td>Maps blocking rule IDs to focused follow-up questions.</td>
+</tr>
+<tr>
+<td>internal/app/generate/fix_loop.go</td>
+<td>Implements one-issue-at-a-time remediation orchestration with revalidation.</td>
+</tr>
+<tr>
+<td>internal/app/generate/gate.go</td>
+<td>Provides centralized fail-closed progression decision logic.</td>
+</tr>
+<tr>
+<td>internal/app/generate/fix_loop_test.go</td>
+<td>Verifies single-issue prompt behavior and loop control semantics.</td>
+</tr>
+<tr>
+<td>internal/app/generate/gate_test.go</td>
+<td>Verifies progression blocks on errors and allows warning-only reports.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to test:</strong> Run <code>go test ./internal/app/generate -v</code> and manually validate that failing candidates trigger one targeted prompt per loop iteration until blocking errors are cleared.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

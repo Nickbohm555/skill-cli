@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Research Summary · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Project Research Summary</h1>
+      <p>.planning/research/SUMMARY.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#project-research-summary">Project Research Summary</a><ul>
+<li><a href="#executive-summary">Executive Summary</a></li>
+<li><a href="#key-findings">Key Findings</a><ul>
+<li><a href="#recommended-stack">Recommended Stack</a></li>
+<li><a href="#expected-features">Expected Features</a></li>
+<li><a href="#architecture-approach">Architecture Approach</a></li>
+<li><a href="#critical-pitfalls">Critical Pitfalls</a></li>
+</ul>
+</li>
+<li><a href="#implications-for-roadmap">Implications for Roadmap</a><ul>
+<li><a href="#phase-1-secure-ingestion-and-domain-contracts">Phase 1: Secure Ingestion and Domain Contracts</a></li>
+<li><a href="#phase-2-extraction-quality-gates">Phase 2: Extraction Quality Gates</a></li>
+<li><a href="#phase-3-semantic-validation-and-adaptive-refinement">Phase 3: Semantic Validation and Adaptive Refinement</a></li>
+<li><a href="#phase-4-conflict-resolution-and-approval-contract">Phase 4: Conflict Resolution and Approval Contract</a></li>
+<li><a href="#phase-5-transactional-install-and-verification">Phase 5: Transactional Install and Verification</a></li>
+<li><a href="#phase-6-hardening-e2e-reliability-and-v1x-differentiators">Phase 6: Hardening, E2E Reliability, and v1.x Differentiators</a></li>
+<li><a href="#phase-ordering-rationale">Phase Ordering Rationale</a></li>
+<li><a href="#research-flags">Research Flags</a></li>
+</ul>
+</li>
+<li><a href="#confidence-assessment">Confidence Assessment</a><ul>
+<li><a href="#gaps-to-address">Gaps to Address</a></li>
+</ul>
+</li>
+<li><a href="#sources">Sources</a><ul>
+<li><a href="#primary-high-confidence">Primary (HIGH confidence)</a></li>
+<li><a href="#secondary-medium-confidence">Secondary (MEDIUM confidence)</a></li>
+<li><a href="#tertiary-low-confidence">Tertiary (LOW confidence)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Project Research Summary</h2>
+        <p>Rendered from <code>.planning/research/SUMMARY.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="project-research-summary">Project Research Summary</h1>
+<p><strong>Project:</strong> Skill Weaver
+<strong>Domain:</strong> Local-first Go CLI that generates installable Codex skills from a single docs URL
+<strong>Researched:</strong> 2026-03-10
+<strong>Confidence:</strong> MEDIUM-HIGH</p>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>Skill Weaver is a quality-gated developer tool, not a generic content converter. The research converges on a deterministic pipeline: ingest one URL, extract high-signal content, run adaptive Q&amp;A to close gaps, generate a candidate skill, enforce strict validation, check overlap against installed skills, and only then allow approval-gated install. Experts build this kind of product as a fail-closed workflow with explicit policies at each transition, because local registry mutation is the highest-risk operation.</p>
+<p>The recommended implementation approach is a Go monolith with clear layer boundaries (CLI, app pipeline, domain policy, adapters), using Cobra for commands, Huh for interactive flows, and strict schema plus semantic validators as non-negotiable gates. The strongest delivery strategy is to lock domain contracts and validation semantics first, then add ingestion/extraction, then adaptive generation, then conflict handling and transactional install, followed by adversarial hardening.</p>
+<p>The key risks are untrusted remote content, incomplete extraction from dynamic docs pages, weak semantic validation, and non-atomic install writes. Mitigation is consistent across the research set: treat fetched content as untrusted input, add extraction completeness diagnostics, enforce semantic quality rubrics with targeted re-ask loops, resolve overlap pre-install, and stage/atomically commit filesystem changes with rollback paths.</p>
+<h2 id="key-findings">Key Findings</h2>
+<h3 id="recommended-stack">Recommended Stack</h3>
+<p>The stack is mature and intentionally conservative for reliability: Go 1.25.x, Cobra + Viper for CLI/config, Huh v2 for adaptive prompts, and <code>openai-go/v3</code> for generation. Supporting choices focus on hardening and testability: goquery for deterministic single-page extraction, retryable HTTP for network resilience, schema + semantic validators for output quality, and <code>afero</code> for safe filesystem testing.</p>
+<p>Critical version notes: Go 1.25.x satisfies newer package floors (for example, goquery and validator requirements), and Charm libraries should stay aligned on v2 majors to avoid UI integration friction.</p>
+<p><strong>Core technologies:</strong>
+- Go 1.25.x: runtime and distribution base - stable CLI ecosystem with strong stdlib for IO/process safety.
+- <code>github.com/spf13/cobra</code>: command UX and routing - de-facto standard with predictable help/completion ergonomics.
+- <code>charm.land/huh/v2</code>: adaptive interactive flow - strong fit for iterative ask/validate/re-ask loops.
+- <code>github.com/openai/openai-go/v3</code>: draft generation adapter - official SDK for constrained generation retries.
+- <code>github.com/spf13/viper</code>: config/env handling - standard with Cobra for runtime and key management.</p>
+<h3 id="expected-features">Expected Features</h3>
+<p>v1 table stakes are consistent: deterministic single-URL ingestion, robust extraction/normalization, adaptive refinement tied to strict validation, overlap detection with explicit resolution, and approval-gated install with preview/diff. Differentiators worth building after core stability are adaptive follow-ups from specific validator failures, overlap-aware merge planning, and atomicity scoring to keep generated skills narrow and composable.</p>
+<p>Research strongly advises deferring multi-page crawling, team governance workflows, and default one-shot generation in early releases because they broaden ambiguity and degrade reliability before core quality loops are proven.</p>
+<p><strong>Must have (table stakes):</strong>
+- Single URL ingest + deterministic extraction - base for all downstream quality.
+- Adaptive Q&amp;A linked to strict validation - closes missing/weak fields before output.
+- Overlap detection with explicit merge/update/rename/cancel decision path - prevents registry confusion.
+- Approval-gated install with preview/diff - preserves user trust and control.
+- Fail-closed behavior on uncertainty - no install when validation or conflict confidence is low.</p>
+<p><strong>Should have (competitive):</strong>
+- Validation-failure-driven adaptive questioning - highest leverage correctness boost.
+- Merge/update planner with impact preview - safer evolution of existing skills.
+- Session persistence for resumable refinement - better UX for iterative quality improvements.
+- Install simulation with rollback helper - lower risk for update flows.</p>
+<p><strong>Defer (v2+):</strong>
+- Multi-page/domain crawling.
+- Team/shared governance workflows.
+- IDE companion experiences.</p>
+<h3 id="architecture-approach">Architecture Approach</h3>
+<p>The architecture should be pipeline-first and policy-first: use a typed state machine in <code>internal/app</code>, keep all validation/overlap/install rules in deterministic <code>internal/domain</code>, and isolate side effects behind adapters (fetch/extract/generate/store/install). The strongest pattern across sources is validate-then-commit: never mutate final skill paths before all quality and policy gates pass.</p>
+<p><strong>Major components:</strong>
+1. CLI/prompt layer - command entry, adaptive prompts, approval UX, and explicit exit semantics.
+2. Orchestrator pipeline - stage sequencing with bounded retry/abort transitions.
+3. Domain policy engine - skill spec rules, semantic validation, overlap and install policy scoring.
+4. Ingestion/extraction adapters - URL fetch guardrails and deterministic content normalization.
+5. Registry/install subsystem - staged writes, atomic move, rollback, and post-install verification.</p>
+<h3 id="critical-pitfalls">Critical Pitfalls</h3>
+<p>The highest-probability failures are known and preventable if handled early in phase order.</p>
+<ol>
+<li><strong>Untrusted docs content influences behavior</strong> - treat fetched content as untrusted data, sanitize aggressively, and test prompt-injection fixtures.</li>
+<li><strong>Incomplete extraction from dynamic docs</strong> - add completeness heuristics and require explicit user confirmation on low-signal pages.</li>
+<li><strong>"Valid-looking" but semantically weak skills</strong> - enforce semantic rubrics (scope boundaries, non-goals, trigger clarity) and targeted re-asks.</li>
+<li><strong>Late overlap/collision handling</strong> - run overlap policy before approval and require explicit resolution choices.</li>
+<li><strong>Non-atomic install writes</strong> - use staging + atomic move + rollback; fail closed on any filesystem error.</li>
+</ol>
+<h2 id="implications-for-roadmap">Implications for Roadmap</h2>
+<p>Based on research, suggested phase structure:</p>
+<h3 id="phase-1-secure-ingestion-and-domain-contracts">Phase 1: Secure Ingestion and Domain Contracts</h3>
+<p><strong>Rationale:</strong> Everything downstream depends on safe URL handling and stable domain types; this minimizes rework and security debt.
+<strong>Delivers:</strong> <code>SkillSpec</code>/validation/overlap/install contract types, URL safety policy (scheme/host/redirect/timeout/size limits), baseline fetch adapter.
+<strong>Addresses:</strong> Single-URL deterministic ingestion, fail-closed policy.
+<strong>Avoids:</strong> SSRF/hostile redirect risk and untrusted-input ambiguity.</p>
+<h3 id="phase-2-extraction-quality-gates">Phase 2: Extraction Quality Gates</h3>
+<p><strong>Rationale:</strong> Adaptive generation quality is capped by extraction quality; build diagnostics before prompting.
+<strong>Delivers:</strong> HTML-to-doc model extraction, completeness heuristics, low-signal warnings, extraction preview diagnostics.
+<strong>Addresses:</strong> Clean content extraction table stake.
+<strong>Avoids:</strong> Building skills from nav/noise-heavy or incomplete pages.</p>
+<h3 id="phase-3-semantic-validation-and-adaptive-refinement">Phase 3: Semantic Validation and Adaptive Refinement</h3>
+<p><strong>Rationale:</strong> Validation semantics must drive adaptive Q&A; this is the core product loop.
+<strong>Delivers:</strong> strict schema + semantic validator, targeted re-ask engine, bounded retry/abort state machine.
+<strong>Addresses:</strong> Interactive refinement, strict quality gate, narrow single-capability output.
+<strong>Avoids:</strong> "Looks valid but unusable" skill artifacts.</p>
+<h3 id="phase-4-conflict-resolution-and-approval-contract">Phase 4: Conflict Resolution and Approval Contract</h3>
+<p><strong>Rationale:</strong> Overlap/approval semantics are trust-critical and should precede any write path.
+<strong>Delivers:</strong> existing-skill indexing, overlap scoring, merge/update/rename planner, interactive + non-interactive approval policy.
+<strong>Addresses:</strong> collision detection, explicit user control, script-safe behavior.
+<strong>Avoids:</strong> silent conflict drift and CI/TTY prompt mismatch failures.</p>
+<h3 id="phase-5-transactional-install-and-verification">Phase 5: Transactional Install and Verification</h3>
+<p><strong>Rationale:</strong> Write durability is a hard requirement for local-first tooling.
+<strong>Delivers:</strong> staged artifact writes, atomic install, rollback hooks, post-install parse/discovery verification.
+<strong>Addresses:</strong> safe install to <code>$CODEX_HOME/skills</code>.
+<strong>Avoids:</strong> partial/corrupt installs and inconsistent registry state.</p>
+<h3 id="phase-6-hardening-e2e-reliability-and-v1x-differentiators">Phase 6: Hardening, E2E Reliability, and v1.x Differentiators</h3>
+<p><strong>Rationale:</strong> Once end-to-end flow is stable, add stress/security tests and selected P2 differentiators.
+<strong>Delivers:</strong> adversarial fixtures, crash-interruption tests, performance caching, optional session resume and install simulation.
+<strong>Addresses:</strong> resilience and operational confidence before broader scope.
+<strong>Avoids:</strong> regressions from real-world noisy docs and repeated retry churn.</p>
+<h3 id="phase-ordering-rationale">Phase Ordering Rationale</h3>
+<ul>
+<li>Policy and safety constraints come first because every later feature consumes those contracts.</li>
+<li>Extraction precedes adaptive generation to avoid optimizing prompts around bad source evidence.</li>
+<li>Overlap/approval is completed before install so all mutation decisions are explicit and auditable.</li>
+<li>Transactional install is isolated as its own phase to guarantee durability before expansion features.</li>
+<li>Hardening is intentionally last in build order but mandatory before release confidence.</li>
+</ul>
+<h3 id="research-flags">Research Flags</h3>
+<p>Phases likely needing deeper research during planning:
+- <strong>Phase 4:</strong> overlap scoring thresholds and merge semantics may need deeper algorithm/provenance trade-off analysis.
+- <strong>Phase 6:</strong> adversarial prompt-injection test design and red-team fixture coverage can benefit from focused security research.</p>
+<p>Phases with standard patterns (skip research-phase):
+- <strong>Phase 1:</strong> Go CLI command/config structure and network guardrails are well-documented.
+- <strong>Phase 2:</strong> static HTML extraction plus diagnostics has established implementation patterns.
+- <strong>Phase 5:</strong> staged-write + atomic rename + rollback is a mature filesystem pattern.</p>
+<h2 id="confidence-assessment">Confidence Assessment</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Confidence</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stack</td>
+<td>HIGH</td>
+<td>Versions and compatibility are well-sourced with official docs/releases.</td>
+</tr>
+<tr>
+<td>Features</td>
+<td>MEDIUM-HIGH</td>
+<td>Strong cross-tool pattern evidence; some differentiators are inference-heavy for this niche workflow.</td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td>MEDIUM-HIGH</td>
+<td>Patterns are robust and practical, but final boundaries depend on implementation trade-offs.</td>
+</tr>
+<tr>
+<td>Pitfalls</td>
+<td>HIGH</td>
+<td>Security and reliability risks are concrete, repeatedly documented, and directly testable.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overall confidence:</strong> MEDIUM-HIGH</p>
+<h3 id="gaps-to-address">Gaps to Address</h3>
+<ul>
+<li>Overlap scoring calibration: initial lexical/semantic thresholds need empirical tuning on real local skill corpora.</li>
+<li>Extraction coverage limits: JS-rendered/gated docs behavior needs explicit user-facing fallback policy validation.</li>
+<li>Non-interactive approval semantics: CI/automation force-flag behavior must be pinned with acceptance tests early.</li>
+<li>Optional deterministic/offline generation path: architecture supports it, but product priority and quality bar are unvalidated.</li>
+</ul>
+<h2 id="sources">Sources</h2>
+<h3 id="primary-high-confidence">Primary (HIGH confidence)</h3>
+<ul>
+<li>Go official release and stdlib docs (<code>go.dev</code>, <code>pkg.go.dev</code>) - runtime compatibility, filesystem and HTTP behavior.</li>
+<li>Official package documentation/releases for Cobra, Viper, Huh, OpenAI Go SDK, goquery, validator, jsonschema, afero.</li>
+<li>OpenAI Codex skills/customization docs - skill format and install/discovery expectations.</li>
+<li>OWASP LLM prompt-injection guidance - threat model and defensive patterns.</li>
+</ul>
+<h3 id="secondary-medium-confidence">Secondary (MEDIUM confidence)</h3>
+<ul>
+<li>Claude Code and Aider docs - comparative UX/guardrail patterns for approval and iterative workflows.</li>
+<li>Firecrawl and Jina Reader docs - extraction behavior references relevant to URL ingestion strategy.</li>
+<li>Real-world CLI prompt-safety evidence (Netlify CLI PR) - practical confirmation pattern.</li>
+</ul>
+<h3 id="tertiary-low-confidence">Tertiary (LOW confidence)</h3>
+<ul>
+<li>Internal/local skill specs and inferred design heuristics for this specific product domain - useful but requires implementation validation.</li>
+</ul>
+<hr />
+<p><em>Research completed: 2026-03-10</em>
+<em>Ready for roadmap: yes</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

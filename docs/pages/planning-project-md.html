@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Weaver · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Skill Weaver</h1>
+      <p>.planning/PROJECT.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#skill-weaver">Skill Weaver</a><ul>
+<li><a href="#what-this-is">What This Is</a></li>
+<li><a href="#core-value">Core Value</a></li>
+<li><a href="#requirements">Requirements</a><ul>
+<li><a href="#validated">Validated</a></li>
+<li><a href="#active">Active</a></li>
+<li><a href="#out-of-scope">Out of Scope</a></li>
+</ul>
+</li>
+<li><a href="#context">Context</a></li>
+<li><a href="#constraints">Constraints</a></li>
+<li><a href="#key-decisions">Key Decisions</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Skill Weaver</h2>
+        <p>Rendered from <code>.planning/PROJECT.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="skill-weaver">Skill Weaver</h1>
+<h2 id="what-this-is">What This Is</h2>
+<p>Skill Weaver is a Go CLI tool that turns a documentation page URL into a Codex skill scaffold through an interactive, adaptive question flow. It is designed for your personal Codex workflow so skills are generated in the right format, scoped atomically, and installed where Codex can use them. The tool only installs a generated skill after explicit user approval.</p>
+<h2 id="core-value">Core Value</h2>
+<p>Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.</p>
+<h2 id="requirements">Requirements</h2>
+<h3 id="validated">Validated</h3>
+<p>(None yet — ship to validate)</p>
+<h3 id="active">Active</h3>
+<ul>
+<li>[ ] User can run <code>skill-generator</code> and enter a single documentation URL as input.</li>
+<li>[ ] The CLI runs an adaptive interactive questioning loop until required skill fields are complete.</li>
+<li>[ ] The generator enforces strict skill format validation and blocks output when required sections are weak or missing.</li>
+<li>[ ] On validation failure, the CLI asks targeted follow-up questions and retries generation.</li>
+<li>[ ] Generated skill content defines a narrow, single capability with explicit boundaries.</li>
+<li>[ ] The tool checks overlap against existing installed skills and surfaces potential conflicts.</li>
+<li>[ ] If overlap is detected, the CLI offers merge/update behavior instead of silent overwrite.</li>
+<li>[ ] The skill is only written to <code>$CODEX_HOME/skills/&lt;skill-name&gt;</code> after explicit user approval.</li>
+<li>[ ] The final installed skill is immediately usable by Codex.</li>
+</ul>
+<h3 id="out-of-scope">Out of Scope</h3>
+<ul>
+<li>Multi-page crawling or domain-wide ingestion in v1 — intentionally constrained to one page for quality and predictability.</li>
+<li>Team/shared governance workflows in v1 — first release is optimized for a single-user workflow.</li>
+<li>Auto-install without confirmation — conflicts with explicit approval requirement.</li>
+</ul>
+<h2 id="context">Context</h2>
+<p>This project starts greenfield in an empty repository. The desired user experience is not a one-shot converter; it is a guided conversation that keeps refining output until it is valid and useful. Atomicity and uniqueness are first-class concerns: each generated skill should do one thing well and avoid overlapping responsibilities with existing skills.</p>
+<h2 id="constraints">Constraints</h2>
+<ul>
+<li><strong>Tech stack</strong>: Go CLI implementation — selected for maintainability and strong CLI distribution characteristics.</li>
+<li><strong>Input scope</strong>: Single URL only in v1 — keeps extraction deterministic and reduces complexity.</li>
+<li><strong>Validation policy</strong>: Strict block-and-re-ask — output is not accepted when quality gates fail.</li>
+<li><strong>Installation target</strong>: <code>$CODEX_HOME/skills</code> — generated artifacts must land where Codex can load them.</li>
+<li><strong>Approval gate</strong>: Explicit user approval before write/install — protects against unintended changes.</li>
+</ul>
+<h2 id="key-decisions">Key Decisions</h2>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Rationale</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Implement v1 in Go</td>
+<td>Prioritize maintainability and robust CLI packaging</td>
+<td>— Pending</td>
+</tr>
+<tr>
+<td>Limit ingestion to one page URL</td>
+<td>Minimize ambiguity and control extraction quality in first version</td>
+<td>— Pending</td>
+</tr>
+<tr>
+<td>Use adaptive questioning with strict validation</td>
+<td>Ensure required skill schema and quality before installation</td>
+<td>— Pending</td>
+</tr>
+<tr>
+<td>Detect overlap and offer merge/update</td>
+<td>Prevent duplicate or conflicting skills while preserving user intent</td>
+<td>— Pending</td>
+</tr>
+<tr>
+<td>Install only after explicit user approval</td>
+<td>Keep user control over local Codex skill registry</td>
+<td>— Pending</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Last updated: 2026-03-10 after initialization</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

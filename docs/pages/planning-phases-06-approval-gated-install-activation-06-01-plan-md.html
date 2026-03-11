@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06-01-PLAN.md · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>06-01-PLAN.md</h1>
+      <p>.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul></ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>06-01-PLAN.md</h2>
+        <p>Rendered from <code>.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <hr />
+<p>phase: 06-approval-gated-install-activation
+plan: 01
+type: execute
+wave: 1
+depends_on: []
+files_modified:
+  - internal/install/model.go
+  - internal/install/errors.go
+  - internal/install/preflight_gates.go
+  - internal/install/approval_prompt.go
+  - internal/install/preflight_gates_test.go
+  - internal/install/approval_prompt_test.go
+autonomous: true
+must_haves:
+  truths:
+    - "Install is blocked before any preview or write when validation status is unresolved or conflict decision is unresolved/abort."
+    - "Approval is an explicit contract: install proceeds only when the user confirms approve (or passes explicit non-interactive approval flag)."
+    - "Declined, interrupted, or implicit non-interactive runs fail closed and never transition to writable install state."
+  artifacts:
+    - path: "internal/install/model.go"
+      provides: "Typed install request/result and approval state contracts consumed by install pipeline."
+    - path: "internal/install/preflight_gates.go"
+      provides: "Centralized preflight gate that enforces validation and conflict resolution prerequisites."
+    - path: "internal/install/approval_prompt.go"
+      provides: "Explicit approval flow with interactive confirm and deny-by-default non-interactive policy."
+    - path: "internal/install/errors.go"
+      provides: "Typed fail-closed install errors for blocked-validation, blocked-conflict, and declined approval outcomes."
+  key_links:
+    - from: "internal/install/preflight_gates.go"
+      to: "internal/validation/report.go"
+      via: "validation report blocking-state check before install path starts"
+      pattern: "HasBlockingIssues|ErrInstallBlockedValidation"
+    - from: "internal/install/preflight_gates.go"
+      to: "internal/overlap/model.go"
+      via: "conflict decision resolution check rejects unresolved/abort modes"
+      pattern: "ConflictResolutionDecision|IsResolved|ResolutionAbort"
+    - from: "internal/install/approval_prompt.go"
+      to: "internal/install/model.go"
+      via: "explicit approval outcome persisted as install approval contract"
+      pattern: "Approved|ApprovalSource|ErrInstallDeclined"</p>
+<hr />
+<p><objective>
+Define the fail-closed install contracts and gating policy so Phase 06 cannot write anything unless upstream validation/conflict states are resolved and explicit approval is captured.</p>
+<p>Purpose: Establish the safety boundary for INST-02 and INST-03 before any preview rendering or filesystem mutation logic is introduced.
+Output: Install domain types, typed errors, preflight gate checks, explicit approval policy (interactive and non-interactive), and unit tests.
+</objective></p>
+<p><execution_context>
+@~/.cursor/get-shit-done/workflows/execute-plan.md
+@~/.cursor/get-shit-done/templates/summary.md
+</execution_context></p>
+<p><context>
+@.planning/PROJECT.md
+@.planning/ROADMAP.md
+@.planning/REQUIREMENTS.md
+@.planning/STATE.md
+@.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md
+@.planning/phases/04-validation-quality-gates/04-02-SUMMARY.md
+@.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md
+</context></p>
+<p><tasks></p>
+<p><task type="auto">
+  <name>Task 1: Create typed install contracts and fail-closed error taxonomy</name>
+  <files>internal/install/model.go, internal/install/errors.go</files>
+  <action>Define <code>InstallRequest</code>, <code>InstallCandidate</code>, <code>InstallTarget</code>, <code>ApprovalDecision</code>, and <code>InstallResult</code> contracts with explicit fields for gate state and decision provenance (<code>Approved</code>, <code>ApprovalSource</code>, <code>DecisionAt</code>). Add typed errors for blocked validation, blocked conflict resolution, approval declined, and non-interactive approval missing. Keep contracts write-agnostic: this plan only establishes policy state, not filesystem mutation behavior.</action>
+  <verify><code>go test ./internal/install -run "Model|Errors" -v</code> passes and confirms stable contract behavior plus error classification helpers.</verify>
+  <done>Install stage has deterministic typed state and error contracts that downstream plans can enforce without reinterpreting string messages.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 2: Implement centralized preflight gate for validation and conflict prerequisites</name>
+  <files>internal/install/preflight_gates.go, internal/install/preflight_gates_test.go</files>
+  <action>Implement <code>Preflight</code> (or equivalent) that consumes validation status/report and Phase 05 <code>ConflictResolutionDecision</code>, then blocks install when any validation blocking issue remains, conflict decision is missing, unresolved, or <code>abort</code>. Return typed errors from <code>errors.go</code> and explicit reason metadata suitable for CLI status output. Do not perform preview or file operations in this gate.</action>
+  <verify><code>go test ./internal/install -run Preflight -v</code> passes with cases for pass-through, blocked-validation, unresolved-conflict, and abort-conflict outcomes.</verify>
+  <done>Install progression is fail-closed before any mutable behavior when validation/conflict prerequisites are not fully resolved.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 3: Add explicit approval flow with deny-by-default non-interactive policy</name>
+  <files>internal/install/approval_prompt.go, internal/install/approval_prompt_test.go</files>
+  <action>Implement explicit approval collection using <code>huh/v2</code> in interactive mode and strict non-interactive policy: fail closed unless an explicit approval flag/option is provided in request policy. Map decline, interruption, and prompt errors to safe deny outcomes (<code>Approved=false</code>) and typed install errors. Ensure this task only returns an approval decision contract and does not write to disk.</action>
+  <verify><code>go test ./internal/install -run Approval -v</code> passes for interactive approve/decline, interrupted prompt, non-interactive no-flag blocked, and non-interactive explicit-approve allowed cases.</verify>
+  <done>Approval becomes a hard prerequisite to write-capable steps and cannot be bypassed implicitly.</done>
+</task></p>
+<p></tasks></p>
+<p><verification>
+1. Run <code>go test ./internal/install -v</code> and confirm all preflight and approval tests pass.
+2. Confirm no code path in this plan writes to <code>$CODEX_HOME/skills</code> (contracts/gates only).
+3. Verify unresolved validation or conflict states always return blocking typed errors.
+</verification></p>
+<p><success_criteria>
+- INST-03 enforced at gate level: unresolved validation/conflict states never proceed.
+- INST-02 foundation enforced: explicit approval contract is mandatory and deny-by-default in non-interactive mode.
+- Phase 06 write-capable behavior remains impossible until downstream transaction plan consumes approved preflight output.
+</success_criteria></p>
+<output>
+After completion, create `.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md`
+</output>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

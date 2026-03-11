@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STATE: Skill Weaver · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>STATE: Skill Weaver</h1>
+      <p>.planning/STATE.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#state-skill-weaver">STATE: Skill Weaver</a><ul>
+<li><a href="#project-reference">Project Reference</a></li>
+<li><a href="#current-position">Current Position</a></li>
+<li><a href="#performance-metrics">Performance Metrics</a></li>
+<li><a href="#accumulated-context">Accumulated Context</a><ul>
+<li><a href="#decisions">Decisions</a></li>
+<li><a href="#active-todos">Active Todos</a></li>
+<li><a href="#blockers">Blockers</a></li>
+</ul>
+</li>
+<li><a href="#session-continuity">Session Continuity</a></li>
+<li><a href="#execution-tracking">Execution Tracking</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>STATE: Skill Weaver</h2>
+        <p>Rendered from <code>.planning/STATE.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="state-skill-weaver">STATE: Skill Weaver</h1>
+<h2 id="project-reference">Project Reference</h2>
+<ul>
+<li><strong>Core value:</strong> Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.</li>
+<li><strong>Current focus:</strong> Phase 6 Plan 06-03 Task 3 is verified, and all roadmap phases are complete.</li>
+</ul>
+<h2 id="current-position">Current Position</h2>
+<ul>
+<li><strong>Current phase:</strong> 6 - Approval-Gated Install &amp; Activation</li>
+<li><strong>Current plan:</strong> 06-03</li>
+<li><strong>Overall status:</strong> Phases 1, 2, 3, 4, 5, and 6 are complete.</li>
+<li><strong>Progress:</strong> 6/6 phases complete</li>
+<li><strong>Progress bar:</strong> [######] 100%</li>
+</ul>
+<h2 id="performance-metrics">Performance Metrics</h2>
+<ul>
+<li><strong>v1 requirements total:</strong> 20</li>
+<li><strong>Mapped to phases:</strong> 20</li>
+<li><strong>Coverage:</strong> 100%</li>
+<li><strong>Validated requirements complete:</strong> 20</li>
+</ul>
+<h2 id="accumulated-context">Accumulated Context</h2>
+<h3 id="decisions">Decisions</h3>
+<ul>
+<li>Roadmap depth set to <strong>comprehensive</strong> based on config.</li>
+<li>Phases are requirement-driven with one-to-one requirement mapping.</li>
+<li>Install remains fail-closed until validation and conflict states are resolved.</li>
+<li>Use <code>github.com/Nickbohm555/skill-cli</code> as the module path to enable Go-native verification in this repo.</li>
+<li>Phase 1 is complete after verifying the runnable crawl flow end to end and updating the phase summary.</li>
+<li>Phase 2 Plan <code>02-01</code> is complete after verification confirmed extraction, normalization, and conservative dedupe tests pass and stable IDs/checksums remain present in the content records.</li>
+<li>Plan <code>02-02</code> Task <code>1</code> now adds semantic-first chunking with token-aware guardrails via <code>langchaingo/textsplitter</code>, producing deterministic chunk IDs, token counts, checksums, and per-page ordering from <code>NormalizedPage</code> inputs.</li>
+<li>Verification reran the scoped chunk test filter plus broader package and repo test suites; no fixes were required, and explicit chunk regression coverage remains the later Task <code>3</code> scope.</li>
+<li>Plan <code>02-02</code> Task <code>2</code> now adds metadata-first chunk attribution via <code>ChunkAttribution</code> plus <code>ProcessToChunks</code>, which skips deduped/failed pages and emits deterministic attributed chunk records ready for later summarization work.</li>
+<li>Verification for Plan <code>02-02</code> Task <code>2</code> reran the repo and package test suites cleanly, and direct inspection confirmed <code>ProcessToChunks</code> still stamps attribution at chunk creation with required <code>source_url</code>, <code>page_title</code>, <code>heading_path</code>, <code>chunk_id</code>, <code>checksum</code>, and <code>reference</code> fields enforced by <code>HasRequiredFields</code>.</li>
+<li>Plan <code>02-02</code> Task <code>3</code> now adds explicit chunking and pipeline regression coverage in <code>internal/content/chunk_test.go</code>, locking deterministic chunk IDs/order, token cap enforcement, table/code preservation, required attribution fields, and attribution stability when chunk text is passed into downstream summary-input constructors.</li>
+<li>Verification for Plan <code>02-02</code> Task <code>3</code> reran the full <code>internal/content</code> suite plus <code>go test ./...</code> cleanly, confirming <code>ProcessToChunks</code> still emits only attributed chunks with stable <code>source_url</code> and <code>chunk_id</code> fields and completing Plan <code>02-02</code>.</li>
+<li>Plan <code>02-03</code> Task <code>1</code> now adds <code>internal/content/summarize.go</code>, which summarizes attributed chunks through a provider interface, prefers OpenAI Responses structured output when <code>OPENAI_API_KEY</code> is present, validates the schema-shaped summary contract locally, and falls back deterministically to concise two-line gist generation when the provider is unavailable or fails.</li>
+<li>Verification for Plan <code>02-03</code> Task <code>1</code> found the scoped <code>Summarize</code> command had no matching tests, so this run added <code>internal/content/summarize_test.go</code> for structured-output, provider-error, unavailable-provider, and schema-validation fallback cases, and moved <code>cloneAttribution</code> into production code so <code>go build ./...</code> succeeds outside the test binary.</li>
+<li>Plan <code>02-03</code> Task <code>2</code> now adds <code>internal/content/review_view.go</code>, which projects <code>ChunkSummary</code> plus raw <code>AttributedChunk</code> inputs into summary-first review rows with explicit <code>ExpandTarget</code> lookup keys and a raw expansion table keyed by stable chunk/source identifiers.</li>
+<li>The new review projection preserves per-chunk attribution on every row, keeps raw chunk text behind explicit expansion references instead of inline dumps, and supports multi-source review lists without collapsing provenance into page-level summaries.</li>
+<li>Verification for Plan <code>02-03</code> Task <code>2</code> reran <code>go test ./...</code> plus the focused <code>ReviewView</code> suite cleanly, confirming every review row still carries <code>summary</code>, <code>source_url</code>, <code>chunk_id</code>, and an expansion key that resolves to the raw chunk text and attribution metadata.</li>
+<li>Plan <code>02-03</code> Task <code>3</code> now adds <code>internal/cli/command/process.go</code>, wiring <code>cli-skill process --url ...</code> through crawl, fetch, extraction, normalization, conservative dedupe, chunking, summarization, and review rendering so the Phase 2 pipeline is visible as summary-first CLI output.</li>
+<li>The new <code>process</code> command prints per-chunk <code>summary</code>, <code>source_url</code>, <code>expand_target</code>, and attribution reference by default, with <code>--include-raw</code> exposing raw chunk excerpts without replacing the concise review-first output.</li>
+<li><code>internal/content/summarize_test.go</code> now adds regression coverage for two-line summary bounding and schema-validation fallback when the provider omits required identifiers, alongside the existing provider-error fallback checks.</li>
+<li>Verification for Plan <code>02-03</code> Task <code>3</code> reran <code>go test ./...</code> and the focused <code>Summarize</code> / <code>ReviewView</code> suites cleanly, then manually confirmed <code>go run ./cmd/cli-skill process --url https://go.dev/doc/</code> emits summary-first rows with persistent <code>source_url</code>, <code>expand_target</code>, and <code>reference</code> fields while <code>--include-raw</code> exposes <code>raw_excerpt</code> output.</li>
+<li>Phase 2 is now complete after creating the <code>02-03</code> summary, marking the roadmap status complete, and advancing state to Phase 3 Plan <code>03-01</code> Task <code>1</code>.</li>
+<li>Plan <code>03-01</code> Task <code>1</code> now adds <code>internal/refinement/session.go</code> and <code>internal/refinement/field_graph.go</code>, establishing a deterministic required-field registry, section grouping (<code>purpose</code>, <code>constraints</code>, <code>examples</code>, <code>boundaries</code>), explicit readiness states, answer revision metadata, and a transitive dependency graph for impact-aware revision handling.</li>
+<li><code>internal/refinement/session_test.go</code> now locks the Task 1 behavior with focused session/graph coverage: default field registry initialization, ordered section mapping, missing-by-default readiness, and <code>ReviseAnswer</code> reopening only the transitive impacted downstream fields.</li>
+<li>Verification for Plan <code>03-01</code> Task <code>1</code> reran the scoped <code>Session</code> suite cleanly and confirmed <code>internal/refinement</code> remains transport-free, with no prompt-library or stdin usage introduced into the domain package.</li>
+<li>Plan <code>03-01</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/clarity.go"><code>internal/refinement/clarity.go</code></a>, centralizing deterministic clarity scoring with per-field thresholds, ambiguity penalties, specificity signals, and retry policy that escalates low-clarity answers from targeted free-text follow-up to structured-choice clarification before capping further deepening.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/clarity_test.go"><code>internal/refinement/clarity_test.go</code></a> now locks high-clarity, low-clarity, structured-example, escalation, and attempt-cap behavior so later validator work can consume the same policy without UI-specific branching.</li>
+<li>Verification for Plan <code>03-01</code> Task <code>2</code> reran the full <code>internal/refinement</code> test suite cleanly, confirming the clarity/deepening policy remains deterministic alongside the existing session and field-graph tests.</li>
+<li>Static verification confirmed <code>internal/refinement</code> still has no prompt-library or stdin usage; the only <code>prompt</code> match is a boundary comment in <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/session.go"><code>internal/refinement/session.go</code></a>.</li>
+<li>Plan <code>03-01</code> Task <code>3</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/validator.go"><code>internal/refinement/validator.go</code></a>, which evaluates the required refinement fields in stable section order, combines completeness, clarity thresholds, and revision drift state into field-level readiness, and emits an overall fail-closed <code>CommitReady</code> gate for downstream review/commit orchestration.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/validator_test.go"><code>internal/refinement/validator_test.go</code></a> now locks the commit gate with table-driven coverage for missing required fields, low-clarity answers, revision-induced readiness drift, and fully-ready sessions.</li>
+<li>Verification for Plan <code>03-01</code> Task <code>3</code> reran <code>go test ./internal/refinement -v</code> cleanly, confirming the session, graph, clarity, and validator suites all pass together and <code>CommitReady</code> still fails closed unless every required field is complete and clear.</li>
+<li>Static verification for Plan <code>03-01</code> Task <code>3</code> confirmed <code>internal/refinement</code> remains transport-free; the only <code>prompt</code> match is a boundary comment in <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/session.go"><code>internal/refinement/session.go</code></a>, with no prompt-library imports or stdin usage in the domain package.</li>
+<li>Phase 3 Plan <code>03-01</code> is now complete after creating the plan summary and advancing state to Plan <code>03-02</code> / Task <code>1</code>.</li>
+<li>Plan <code>03-02</code> Task <code>1</code> now adds <code>internal/cli/prompts/refinement_form.go</code>, introducing a spec-first <code>RefinementFormAdapter</code> that maps refinement field metadata plus <code>ClarityPolicy.DeepeningDecision</code> outputs into consistent <code>huh/v2</code> prompt plans for primary, targeted deepening, and capped fallback questioning.</li>
+<li>The prompt adapter keeps option ordering deterministic, appends a stable <code>other</code> path for structured clarification, and exposes <code>BuildPrimaryFields</code> / <code>BuildDeepeningFields</code> so later orchestration can use one transport surface instead of mixed raw-stdin prompt flows.</li>
+<li><code>internal/cli/prompts/refinement_form_test.go</code> now locks the Task 1 behavior with focused coverage for required-field primary prompt generation, deterministic deepening routing across attempt counts, no-op behavior when clarity already passes, and preservation of the explicit <code>other</code> path.</li>
+<li>Verification for Plan <code>03-02</code> Task <code>1</code> reran the full <code>internal/cli/prompts</code> suite cleanly, confirming the prompt adapter remains deterministic and the CLI prompt layer still consumes <code>internal/refinement</code> clarity decisions rather than duplicating thresholds or scoring logic locally.</li>
+<li>Plan <code>03-02</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/review_renderer.go"><code>internal/cli/prompts/review_renderer.go</code></a>, which converts <code>refinement.ValidationReport</code> output into a sectioned review model and plain-text renderer with stable <code>ready</code>, <code>needs attention</code>, and <code>missing</code> labels plus an overall commit-readiness banner.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/review_renderer_test.go"><code>internal/cli/prompts/review_renderer_test.go</code></a> now locks grouped section ordering, missing-field rendering, commit-ready summary output, and revision-impact hint messaging so the final review stays aligned with validator semantics.</li>
+<li>Verification for Plan <code>03-02</code> Task <code>2</code> ran <code>go test ./...</code> cleanly and confirmed the CLI prompt layer continues to consume domain policy outputs from <code>internal/refinement</code> rather than duplicating clarity or readiness rules locally.</li>
+<li>Verification for Plan <code>03-02</code> Task <code>2</code> reran <code>go test ./...</code> plus <code>go test ./internal/cli/prompts -v</code> cleanly, confirming the review renderer tests still pass and the CLI prompt layer continues to consume <code>refinement.ValidationReport</code>, <code>ReadinessStatus</code>, <code>ClarityPolicy</code>, and <code>DeepeningDecision</code> outputs instead of reimplementing clarity/readiness policy in the prompt package.</li>
+<li>Plan <code>03-02</code> Task <code>3</code> now expands <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/refinement_form_test.go"><code>internal/cli/prompts/refinement_form_test.go</code></a> with table-driven prompt-routing coverage for clear-answer no-op behavior, low-clarity escalation from free-text to structured choice, capped fallback wording, and stable option ordering across representative fields.</li>
+<li>The prompt tests now also lock the <code>other</code> path safety contract by asserting blank custom detail is allowed for non-<code>other</code> selections, required for explicit <code>other</code> selections, and accepted when concrete custom detail is supplied.</li>
+<li>Verification for Plan <code>03-02</code> Task <code>3</code> ran <code>go test ./internal/cli/prompts -v</code> cleanly, and static inspection still shows clarity thresholds/scoring live in <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/clarity.go"><code>internal/refinement/clarity.go</code></a> while the prompt package only consumes <code>ClarityPolicy</code>, <code>DeepeningDecision</code>, <code>ReadinessStatus</code>, and <code>ValidationReport</code>.</li>
+<li>Phase 3 Plan <code>03-02</code> is now complete after verification confirmed the adaptive prompt and review layer still routes through refinement-domain policy outputs, and the plan summary was created at <code>.planning/phases/03-interactive-refinement-loop/03-02-SUMMARY.md</code>.</li>
+<li>Plan <code>03-03</code> Task <code>1</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go"><code>internal/refinement/flow.go</code></a>, introducing a deterministic runtime loop with explicit <code>collecting</code>, <code>review</code>, and <code>committed</code> states, summarize-first handoff signals/events before any deepening prompt, per-field deepening attempt accounting, and a validator-backed commit gate.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go"><code>internal/refinement/flow_test.go</code></a> now locks the Task 1 behavior with focused coverage for normal progression to review, summarize-first ordering before deepening, and capped deepening that leaves low-clarity fields blocked in review instead of looping indefinitely.</li>
+<li>Verification for Plan <code>03-03</code> Task <code>1</code> ran <code>go test ./internal/refinement -run 'Flow|Handoff|Sequence' -v</code> cleanly after a small test-stub wiring fix in the call-sequence recorder; no production logic changes were required beyond the new flow runtime.</li>
+<li>Plan <code>03-03</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/revise.go"><code>internal/refinement/revise.go</code></a>, introducing strict <code>revise &lt;field&gt;</code> parsing plus revision-target validation so review-mode edits stay deterministic and constrained to known refinement fields.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go"><code>internal/refinement/flow.go</code></a> now exposes a revision path that applies answer updates through the field graph, resets revision/deepening state for the edited branch, re-asks only direct dependents, and leaves broader impacted descendants marked <code>needs_attention</code> so stale-ready states cannot slip through commit.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go"><code>internal/refinement/flow_test.go</code></a> now covers valid revision reopening behavior, invalid target/command errors, and commit blocking after readiness drift from a revision.</li>
+<li>Plan <code>03-03</code> Task <code>3</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine.go"><code>internal/cli/command/refine.go</code></a>, wiring <code>cli-skill refine</code> to the refinement domain flow with prompt-adapter-driven questioning, sectioned review rendering, <code>revise &lt;field&gt;</code> handling in review mode, and a fail-closed final commit path that delegates to <code>flow.Commit()</code> instead of CLI-side readiness checks.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine_test.go"><code>internal/cli/command/refine_test.go</code></a> now locks the command behavior with scripted stdin/stdout coverage for summarize-first follow-up prompting, blocked commit after revision impact drift, and deterministic committed payload emission once all required fields return to ready.</li>
+<li>Manual smoke verification for Task <code>3</code> confirmed <code>go run ./cmd/cli-skill refine</code> renders grouped review output, blocks <code>commit</code> after a revision reopens impacted fields, accepts a follow-up <code>revise example_outputs</code>, and emits a deterministic JSON refinement payload only after readiness is fully green.</li>
+<li>Verification for Plan <code>03-03</code> Task <code>3</code> re-ran <code>go test ./...</code> cleanly and repeated the scripted <code>go run ./cmd/cli-skill refine</code> smoke path, confirming the review/commit loop stays fail-closed after revision drift and the committed payload remains deterministic for Phase 4 input.</li>
+<li>Phase 3 Plan <code>03-03</code> is now complete after writing <code>.planning/phases/03-interactive-refinement-loop/03-03-SUMMARY.md</code>, and Phase 3 is marked complete in <code>.planning/ROADMAP.md</code>.</li>
+<li>Plan <code>04-01</code> Task <code>1</code> now adds <code>internal/validation/model.go</code>, <code>internal/validation/parse_skill.go</code>, and <code>internal/validation/report.go</code>, establishing a normalized <code>CandidateSkill</code> contract, a goldmark/frontmatter-based <code>SKILL.md</code> parser that maps required headings into typed sections, and a deterministic validation issue report with stable severity ordering plus blocking helpers.</li>
+<li><code>internal/validation/validation_test.go</code> now locks Task 1 behavior with parser coverage for frontmatter plus required-section extraction, empty defaults for missing sections, deterministic issue ordering across repeated runs, and warning-only reports staying non-blocking.</li>
+<li>Task 1 verification reran <code>go test ./internal/validation -v</code> and <code>go test ./...</code> cleanly after one parser finalization fix, confirming the new validation package compiles repo-wide and yields the same first blocking issue on repeated report sorts.</li>
+<li>Verification for Plan <code>04-01</code> Task <code>1</code> reran the full <code>internal/validation</code> suite, the full repository suite, and a repeated deterministic-ordering run (<code>-count=5</code>) cleanly, confirming <code>HasBlockingIssues()</code> still blocks only on <code>Error</code> severity and the first blocking issue remains stable across repeated executions.</li>
+<li>Plan <code>04-01</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/schema_validate.go"><code>internal/validation/schema_validate.go</code></a> plus embedded <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/skill.schema.json"><code>internal/validation/skill.schema.json</code></a>, establishing a strict JSON Schema pass over the normalized <code>CandidateSkill</code> shape and deterministic mapping from schema failures to stable blocking <code>VAL.STRUCT.*</code> issues.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/validation_test.go"><code>internal/validation/validation_test.go</code></a> now adds task-scoped structural coverage for valid candidates, fail-closed missing required sections, malformed values such as blank metadata or blank list entries, and repeated-run ordering stability for the first blocking structural issue.</li>
+<li>Task <code>2</code> verification in execution scope ran <code>go test ./internal/validation -run Structural -v</code> cleanly after one schema-loader fix: <code>jsonschema/v6</code> <code>AddResource</code> needed parsed JSON via <code>jsonschema.UnmarshalJSON</code>, not an <code>io.Reader</code>.</li>
+<li>Verification for Plan <code>04-01</code> Task <code>2</code> reran the full <code>internal/validation</code> suite plus repeated deterministic checks for structural ordering and warning-only non-blocking behavior, all clean with no follow-up fixes required.</li>
+<li>Plan <code>04-01</code> Task <code>3</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/semantic_validate.go"><code>internal/validation/semantic_validate.go</code></a>, introducing a deterministic semantic scope pass that validates <code>In Scope</code> and <code>Out Of Scope</code> entries for non-trivial specificity and blocks vague catch-all phrasing with stable blocking <code>VAL.SCOPE.*</code> rule IDs and priorities.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/validation_test.go"><code>internal/validation/validation_test.go</code></a> now adds task-scoped semantic coverage for valid specific boundaries, too-brief boundary entries, vague catch-all phrasing in both scope sections, and repeated-run ordering stability for the first blocking semantic issue.</li>
+<li>Task <code>3</code> verification in execution scope ran <code>go test ./internal/validation -run Semantic -v</code> cleanly after adding the semantic boundary heuristics; no broader verification session was run in this execution turn.</li>
+<li>Verification for Plan <code>04-01</code> Task <code>3</code> reran the full <code>internal/validation</code> suite plus repeated deterministic-ordering and warning-only gate checks cleanly, confirming semantic and structural validation still pass together, the first blocking issue remains stable across repeated runs, and warning-only reports never block.</li>
+<li>Phase 4 Plan <code>04-01</code> is now complete after writing <code>.planning/phases/04-validation-quality-gates/04-01-SUMMARY.md</code> and advancing state to Plan <code>04-02</code> / Task <code>1</code>.</li>
+<li>Plan <code>04-02</code> Task <code>1</code> now adds <code>internal/validation/followup_prompt.go</code>, introducing deterministic follow-up questions for every current blocking <code>VAL.STRUCT.*</code> and <code>VAL.SCOPE.*</code> rule plus a stable fallback prompt for unknown rule IDs.</li>
+<li><code>internal/validation/validation_test.go</code> now adds prompt-mapping coverage that proves all current blocking Phase 4 rules resolve to non-empty targeted prompts and that unknown rules always fall back to the same fail-closed default prompt.</li>
+<li>Task <code>1</code> verification in execution scope ran <code>go fmt ./...</code> and <code>go test ./...</code> cleanly with no blockers; the new mapping remains isolated to <code>internal/validation</code> until the next plan task wires it into remediation flow.</li>
+<li>Verification for Plan <code>04-02</code> Task <code>1</code> reran <code>go test ./...</code> plus the focused <code>PromptForRule</code>, <code>Structural</code>, <code>Semantic</code>, and <code>ValidationReport</code> suites cleanly, confirming every current blocking Phase 4 rule still resolves to a targeted prompt and the fallback prompt remains deterministic for unknown rule IDs.</li>
+<li>Plan <code>04-02</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/fix_loop.go"><code>internal/app/generate/fix_loop.go</code></a>, creating a reusable one-issue-at-a-time remediation loop that combines structural plus semantic validation, selects the first blocking issue only, maps that issue to a targeted follow-up prompt, applies one focused edit, and revalidates immediately until the candidate passes or the user cancels.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/fix_loop_test.go"><code>internal/app/generate/fix_loop_test.go</code></a> now locks Task <code>2</code> behavior with focused coverage for single-issue prompt sequencing across multiple blocking issues, immediate revalidation on every loop cycle, deterministic prompt mapping usage, and explicit user-cancel exit behavior without applying later edits.</li>
+<li>Task <code>2</code> verification in execution scope ran <code>go test ./internal/app/generate -run FixLoop -v</code> cleanly; no blockers surfaced while introducing the new <code>internal/app/generate</code> package.</li>
+<li>Verification for Plan <code>04-02</code> Task <code>2</code> reran <code>go test ./internal/validation ./internal/app/generate -v</code> cleanly, confirming the fix-loop behavior remains one-issue-at-a-time with immediate revalidation and that the combined validation plus generate package tests still pass without code changes.</li>
+<li>Plan <code>04-02</code> Task <code>3</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/gate.go"><code>internal/app/generate/gate.go</code></a>, centralizing progression into a single fail-closed <code>CanProceed</code> decision that allows warning-only reports, blocks on the first error deterministically, and returns explicit blocked-state reason payloads plus the full validation report.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/fix_loop.go"><code>internal/app/generate/fix_loop.go</code></a> now routes its continue/stop decision through <code>CanProceed</code> instead of directly branching on ad hoc blocking checks, so generation-flow progression policy lives in one place while the loop still uses the selected blocking issue for targeted prompting.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/gate_test.go"><code>internal/app/generate/gate_test.go</code></a> now locks warning-only allow behavior, deterministic first-error blocking, and parity between <code>CanProceed(ValidateCandidate(...))</code> and the combined structural-plus-semantic validation flow.</li>
+<li>Task <code>3</code> verification in execution scope ran <code>go fmt ./internal/app/generate/... ./internal/validation/...</code>, <code>go test ./internal/app/generate -run Gate -v</code>, and <code>go test ./internal/validation ./internal/app/generate -v</code> cleanly; the existing fix-loop tests continued to prove that a two-error candidate still prompts exactly one issue per iteration until cleared.</li>
+<li>Verification for Plan <code>04-02</code> Task <code>3</code> reran the full <code>internal/validation</code> plus <code>internal/app/generate</code> suites cleanly and repeated the focused gate/fix-loop checks, confirming one-issue-at-a-time prompting still holds, warning-only reports still pass, and any <code>Error</code> still blocks progression through the centralized gate.</li>
+<li>Phase 4 Plan <code>04-02</code> is now complete after writing <code>.planning/phases/04-validation-quality-gates/04-02-SUMMARY.md</code>, and Phase 4 is marked complete in <code>.planning/ROADMAP.md</code>.</li>
+<li>Plan <code>05-01</code> Task <code>1</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/model.go"><code>internal/overlap/model.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/report.go"><code>internal/overlap/report.go</code></a>, establishing typed overlap contracts for <code>SkillProfile</code>, <code>OverlapFinding</code>, <code>OverlapReport</code>, <code>ResolutionMode</code>, and <code>ConflictResolutionDecision</code> with stable JSON field names, explanation metadata, and explicit Phase 06 handoff fields such as <code>TargetSkillID</code>, <code>Mode</code>, <code>Blocking</code>, and <code>SelectedAt</code>.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/model_report_test.go"><code>internal/overlap/model_report_test.go</code></a> now locks the contract surface with JSON-shape assertions for report and decision serialization, deterministic finding/warning ordering, overall-severity aggregation, and resolved-vs-blocked decision semantics.</li>
+<li>Task <code>1</code> verification in execution scope ran <code>go fmt ./internal/overlap/...</code> and <code>go test ./internal/overlap -run "Model|Report" -v</code> cleanly; no blockers came up while introducing the new overlap package.</li>
+<li>Verification for Plan <code>05-01</code> Task <code>1</code> reran the focused overlap contract suite cleanly, repeated the same test selection with <code>-count=2</code> to confirm deterministic results, and statically confirmed <code>internal/overlap</code> still contains no skill-install write paths.</li>
+<li>Plan <code>05-01</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed.go"><code>internal/overlap/index_installed.go</code></a>, introducing a read-only installed-skill scanner that resolves <code>$CODEX_HOME/skills</code> defaults, walks local <code>SKILL.md</code> files, reuses <code>internal/validation.ParseSkill</code>, and converts installed skills into normalized <code>SkillProfile</code> records with deterministic IDs, normalized scope fields, extracted command lists, and non-fatal index warnings for unreadable or malformed entries.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed_test.go"><code>internal/overlap/index_installed_test.go</code></a> now locks Task <code>2</code> behavior with focused fixtures for valid skill indexing, malformed <code>SKILL.md</code> warning behavior, <code>CODEX_HOME</code> default-root resolution, case-insensitive <code>SKILL.md</code> discovery, and case/path normalization of profile fields.</li>
+<li>Task <code>2</code> verification in execution scope ran <code>go fmt ./internal/overlap/...</code> and <code>go test ./internal/overlap -run Index -v</code> cleanly after tightening command detection so dependency text like <code>Go 1.25.x</code> does not get misclassified as a command overlap signal.</li>
+<li>Verification for Plan <code>05-01</code> Task <code>2</code> reran the full <code>internal/overlap</code> suite cleanly, repeated the package test run with <code>-count=2</code> to confirm deterministic repeatability, and statically confirmed the package still has no write-path behavior into <code>$CODEX_HOME/skills</code> beyond test fixtures and the read-only <code>WalkDir</code> scan.</li>
+<li>Plan <code>05-01</code> Task <code>3</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/classify.go"><code>internal/overlap/classify.go</code></a>, <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect.go"><code>internal/overlap/detect.go</code></a>, and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect_test.go"><code>internal/overlap/detect_test.go</code></a>, implementing a deterministic read-only overlap detector that compares a candidate profile against indexed installed skills using hard path/name collisions, exact-content matching, weighted structural scoring, scope-conflict checks, and stable signal-level explanations.</li>
+<li>The new detector consumes <code>InstalledIndex</code> directly so index warnings carry into the final <code>OverlapReport</code>, normalizes both candidate and installed profiles with the existing overlap package helpers, and keeps findings order stable regardless of input ordering by re-sorting profiles before classification.</li>
+<li>Task <code>3</code> verification in execution scope ran <code>go fmt ./internal/overlap/...</code> and <code>go test ./internal/overlap -run Detect -v</code> cleanly after tightening exact-content matching to require substantive non-name content and relaxing one score assertion to tolerate floating-point math.</li>
+<li>Verification for Plan <code>05-01</code> Task <code>3</code> reran the full <code>internal/overlap</code> suite cleanly, repeated the focused detect tests with <code>-count=2</code> to confirm deterministic ordering and severity on identical fixtures, and statically confirmed production overlap code remains read-only with no <code>$CODEX_HOME/skills</code> write path.</li>
+<li>Phase 5 Plan <code>05-01</code> is now complete after writing <code>.planning/phases/05-overlap-conflict-resolution/05-01-SUMMARY.md</code> and advancing state to Plan <code>05-02</code> / Task <code>1</code>.</li>
+<li>Plan <code>05-02</code> Task <code>1</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/decision_flow.go"><code>internal/overlap/decision_flow.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/decision_flow_test.go"><code>internal/overlap/decision_flow_test.go</code></a>, introducing a fail-closed conflict-resolution flow that auto-shortcuts <code>new_install</code> only for <code>SeverityNone</code>, otherwise requires an explicit <code>update_existing</code>, <code>merge_with_existing</code>, or <code>abort</code> choice and maps interrupted or invalid prompt outcomes back to blocking <code>abort</code>.</li>
+<li>The new decision flow preserves the existing typed <code>ConflictResolutionDecision</code> contract, captures the highest-priority overlap target from the sorted report, exposes only the explicit overlap-resolution modes in the prompt contract, and keeps interrupted sessions unresolved by leaving <code>SelectedAt</code> unset while marking <code>Blocking=true</code>.</li>
+<li>Task <code>1</code> verification in execution scope ran <code>go fmt ./internal/overlap/...</code> and <code>go test ./internal/overlap -run Decision -v</code> cleanly; the focused suite covered explicit-choice persistence, no-overlap shortcut messaging, interrupted prompt fallback, and invalid selection fallback.</li>
+<li>Verification for Plan <code>05-02</code> Task <code>1</code> reran the focused decision-flow suite cleanly, repeated it with <code>-count=2</code> to confirm deterministic results, and statically confirmed the prompt contract still exposes only the explicit <code>update_existing</code>, <code>merge_with_existing</code>, and <code>abort</code> choices for overlap cases.</li>
+<li>Plan <code>05-02</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/resolution_summary.go"><code>internal/overlap/resolution_summary.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage.go"><code>internal/app/generate/overlap_stage.go</code></a>, introducing a read-only overlap stage that runs detect -&gt; decide -&gt; resolution-summary rendering and always returns a dedicated pre-install summary block before any later install-capable phase handoff.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go"><code>internal/app/generate/overlap_stage_test.go</code></a> now locks the Task <code>2</code> contract with focused checks for resolved and unresolved summaries, including the selected mode, target skill, next-step line, and explicit pre-install status line.</li>
+<li>Task <code>2</code> verification in execution scope ran <code>go fmt ./internal/overlap ./internal/app/generate</code>, <code>go test ./internal/app/generate -run OverlapStageSummary -v</code>, and <code>go test ./internal/overlap ./internal/app/generate -v</code> cleanly; no blockers came up while adding the summary artifact and overlap-stage orchestration.</li>
+<li>Verification for Plan <code>05-02</code> Task <code>2</code> reran the focused overlap-stage summary suite and the broader <code>internal/overlap</code> plus <code>internal/app/generate</code> suites cleanly, and static inspection confirmed the dedicated resolution summary still exposes the selected mode, target skill, next-step line, and explicit pre-install status before any later phase handoff.</li>
+<li>Plan <code>05-02</code> Task <code>3</code> now extends <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage.go"><code>internal/app/generate/overlap_stage.go</code></a> into the actual pre-install gate, returning an explicit allow/block reason plus a Phase 06 handoff payload only when the overlap decision is fully resolved and non-blocking.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go"><code>internal/app/generate/overlap_stage_test.go</code></a> now locks the gating boundary with no-overlap proceed, resolved-overlap proceed, missing-decision blocked, and abort blocked cases so no downstream install handoff can exist without an explicit resolved choice.</li>
+<li>Task <code>3</code> verification in execution scope ran <code>go fmt ./internal/app/generate ./internal/overlap</code>, <code>go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v</code>, and <code>go test ./internal/overlap ./internal/app/generate -v</code> cleanly; static inspection also confirmed the prompt surface still exposes only <code>update</code>, <code>merge</code>, and <code>abort</code> choices, and the summary/pre-install status lines remain centralized.</li>
+<li>Verification for Plan <code>05-02</code> Task <code>3</code> reran the focused overlap-gating suite, the full <code>internal/overlap</code> plus <code>internal/app/generate</code> suites, and the decision-flow suite with <code>-count=2</code> cleanly, confirming the gate still blocks missing or abort decisions and only hands off Phase 06 state for explicit resolved choices.</li>
+<li>Static inspection confirmed the overlap prompt contract still exposes only <code>update_existing</code>, <code>merge_with_existing</code>, and <code>abort</code>, and that the dedicated resolution summary still surfaces the selected outcome, target skill, next-step line, and explicit pre-install status before any later phase handoff.</li>
+<li>Phase 5 is now complete after writing <code>.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md</code>, marking the roadmap phase status complete, and advancing state to Phase <code>06</code> Plan <code>06-01</code> Task <code>1</code>.</li>
+<li>Plan <code>06-01</code> Task <code>1</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model.go"><code>internal/install/model.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/errors.go"><code>internal/install/errors.go</code></a>, introducing typed install request/candidate/target/result contracts plus approval provenance fields (<code>approved</code>, <code>approval_source</code>, <code>decision_at</code>) and fail-closed install error taxonomy for blocked validation, blocked conflict resolution, declined approval, and missing non-interactive approval.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model_test.go"><code>internal/install/model_test.go</code></a> now locks Task <code>1</code> behavior with JSON-shape coverage for the install request contract, explicit-approval detection, write-readiness derivation from validation/conflict/approval state, and wrapped error classification helpers.</li>
+<li>Verification for Plan <code>06-01</code> Task <code>1</code> reran the focused install model/error suite plus the broader <code>internal/install</code> package tests cleanly, and static inspection confirmed the package still has no filesystem writes or <code>$CODEX_HOME/skills</code> mutation path.</li>
+<li>Plan <code>06-01</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preflight_gates.go"><code>internal/install/preflight_gates.go</code></a>, centralizing Phase 06 preflight enforcement so validation errors, missing conflict decisions, unresolved conflict decisions, and <code>abort</code> decisions all fail closed before any preview or write-capable step can begin.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preflight_gates_test.go"><code>internal/install/preflight_gates_test.go</code></a> now locks pass-through, blocked-validation, missing/unresolved-conflict, and abort-conflict outcomes, while <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model.go"><code>internal/install/model.go</code></a> now carries <code>PreflightStatus</code> metadata for CLI-facing block reasons and the first blocking validation issue.</li>
+<li>Task <code>2</code> verification in execution scope ran <code>go test ./internal/install -run Preflight -v</code> cleanly; no blockers came up while reusing <code>ValidationReport.NextBlockingIssue()</code> and <code>ConflictResolutionDecision.IsResolved()</code> instead of duplicating gate logic.</li>
+<li>Verification for Plan <code>06-01</code> Task <code>2</code> reran the focused preflight suite plus the broader <code>internal/install</code> package tests cleanly, and static inspection confirmed <code>internal/install</code> still has no <code>$CODEX_HOME/skills</code> path or filesystem write primitives, so unresolved validation/conflict states remain fail-closed at the preflight boundary only.</li>
+<li>Plan <code>06-01</code> Task <code>3</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/approval_prompt.go"><code>internal/install/approval_prompt.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/approval_prompt_test.go"><code>internal/install/approval_prompt_test.go</code></a>, introducing a fail-closed approval collector with a <code>huh/v2</code> interactive confirm adapter plus a testable prompt interface for deterministic install-approval decisions.</li>
+<li>The approval flow denies by default in non-interactive mode unless <code>ExplicitApprovalByFlag</code> is set, returns typed <code>ErrInstallApprovalRequiredNonInteractive</code> for implicit automation runs, and maps interactive decline, missing prompter, and prompt interruption back to safe denied <code>ApprovalDecision</code> results with typed <code>ErrInstallDeclined</code>.</li>
+<li>Task <code>3</code> verification in execution scope ran <code>go fmt ./internal/install/...</code>, <code>go test ./internal/install -run Approval -v</code>, and <code>go test ./internal/install -v</code> cleanly; static inspection also confirmed <code>internal/install</code> still has no production write path into <code>$CODEX_HOME/skills</code> and no filesystem mutation primitives.</li>
+<li>Verification for Plan <code>06-01</code> Task <code>3</code> reran the full <code>internal/install</code> suite cleanly, repeated the combined <code>Preflight|Approval</code> selection with <code>-count=2</code> to confirm deterministic fail-closed gate and approval behavior, and statically confirmed <code>internal/install</code> still contains no <code>$CODEX_HOME/skills</code> write path or filesystem mutation primitives outside test fixtures.</li>
+<li>Phase 6 Plan <code>06-01</code> is now complete after writing <code>.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md</code> and advancing state to Plan <code>06-02</code> / Task <code>1</code>.</li>
+<li>Plan <code>06-02</code> Task <code>1</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preview_diff.go"><code>internal/install/preview_diff.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preview_diff_test.go"><code>internal/install/preview_diff_test.go</code></a>, introducing deterministic preview rendering for target path and key skill sections plus <code>go-diff</code> backed human-readable update diffs that remain read-only and approval-prep only.</li>
+<li>Task <code>1</code> verification in execution scope ran <code>go test ./internal/install -run "Preview|Diff" -v</code> cleanly after normalizing ANSI-decorated pretty-diff assertions in the test suite; no production write path or filesystem mutation was introduced.</li>
+<li>Verification for Plan <code>06-02</code> Task <code>1</code> reran the focused preview/diff suite plus the full <code>internal/install</code> package tests cleanly, and static inspection confirmed <code>internal/install</code> still has no production filesystem mutation path or <code>$CODEX_HOME/skills</code> write behavior, so preview rendering remains read-only and approval-prep only.</li>
+<li>Plan <code>06-02</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction.go"><code>internal/install/transaction.go</code></a>, introducing an approval-gated install transaction that reuses preflight gates, stages <code>SKILL.md</code> under the target parent, verifies the staged artifact via <code>validation.ParseSkill</code>, and promotes it with same-parent rename semantics plus backup-and-restore on update failures.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction_test.go"><code>internal/install/transaction_test.go</code></a> now locks create, update, rollback-on-activation-failure, and missing-approval blocked cases, including checks that stage and backup artifacts are cleaned up from the target root after each run.</li>
+<li>Task <code>2</code> verification in execution scope ran <code>go test ./internal/install -run Transaction -v</code> cleanly; no blockers came up, and the only install-package mutation path now stays behind <code>Preflight(...)</code> plus explicit approval enforcement.</li>
+<li>Verification for Plan <code>06-02</code> Task <code>2</code> reran the focused transaction suite plus the full <code>internal/install</code> package tests cleanly, and static inspection confirmed approval gating plus artifact cleanup coverage are still enforced by <code>TestTransactionBlocksMissingExplicitApproval</code> and <code>assertNoTransactionArtifacts</code> in <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction_test.go"><code>internal/install/transaction_test.go</code></a>.</li>
+<li>Plan <code>06-02</code> Task <code>3</code> now extends the install-package regression coverage in <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preview_diff_test.go"><code>internal/install/preview_diff_test.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction_test.go"><code>internal/install/transaction_test.go</code></a> to prove preview/diff rendering stays available before approval while the transaction boundary still rejects writes until <code>Approved=true</code>.</li>
+<li>The new sequence tests lock three fail-closed paths: preview/diff-only calls leave the target directory absent, declined approval leaves an existing installed skill unchanged, and interrupted approval leaves an existing installed skill unchanged with no leaked stage or backup artifacts.</li>
+<li>Task <code>3</code> verification in execution scope ran <code>go fmt ./internal/install/...</code>, <code>go test ./internal/install -run "Sequence|NoWriteBeforeApproval|Decline" -v</code>, and <code>go test ./internal/install -v</code> cleanly after adding a missing <code>io</code> import in the new interrupted-approval test.</li>
+<li>Verification for Plan <code>06-02</code> Task <code>3</code> reran the scoped sequence/no-write-before-approval suite plus the full <code>internal/install</code> package tests cleanly, and static inspection confirmed all production filesystem mutation primitives remain isolated to <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction.go"><code>internal/install/transaction.go</code></a>, still gated by <code>Preflight(...)</code> and explicit approval.</li>
+<li>Phase 6 Plan <code>06-02</code> is now complete after writing <code>.planning/phases/06-approval-gated-install-activation/06-02-SUMMARY.md</code> and advancing state to Plan <code>06-03</code> / Task <code>1</code>.</li>
+<li>Plan <code>06-03</code> Task <code>1</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify.go"><code>internal/install/activate_verify.go</code></a>, introducing a post-install activation verifier that confirms installed path presence, reparses <code>SKILL.md</code>, reruns structural plus semantic validation, and emits either an immediate-usability <code>ReadyNow</code> signal or an exceptional restart fallback guidance path when discoverability is missing.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go"><code>internal/install/activate_verify_test.go</code></a> now locks ready-now success, parse-invalid fail-closed behavior, and the rare discoverability-lag fallback case so later pipeline wiring can depend on a deterministic activation contract without adding a second write phase.</li>
+<li>Task <code>1</code> verification in execution scope ran <code>go fmt ./internal/install/...</code> and <code>go test ./internal/install -run Activate -v</code> cleanly after tightening the legacy transaction fixture to produce a structurally valid installed skill for activation checks; no blockers came up, and <code>.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md</code> is still absent.</li>
+<li>Verification for Plan <code>06-03</code> Task <code>1</code> reran the focused activation suite plus the broader <code>internal/install</code> package tests cleanly, confirming the activation verifier still reports ready-now success, parse-invalid fail-closed behavior, and restart fallback only for exceptional discoverability lag with no code changes required.</li>
+<li>Plan <code>06-03</code> Task <code>2</code> now adds <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage.go"><code>internal/app/generate/install_stage.go</code></a>, introducing a strict Phase 06 orchestration stage that reuses install-package primitives to enforce <code>Preflight -&gt; RenderPreview/RenderDiff -&gt; RequestApproval -&gt; ExecuteTransaction -&gt; VerifyInstalledSkill</code> with no bypass path.</li>
+<li><a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage_test.go"><code>internal/app/generate/install_stage_test.go</code></a> now locks success-path ordering plus fail-closed preflight and approval-decline short-circuit behavior, including assertions that blocked states never reach transaction or activation.</li>
+<li>Task <code>2</code> verification in execution scope ran <code>go fmt ./internal/app/generate</code> and <code>go test ./internal/app/generate -run InstallStage -v</code> cleanly; no blockers came up, and <code>.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md</code> is still absent.</li>
+<li>Verification for Plan <code>06-03</code> Task <code>2</code> reran the focused <code>InstallStage</code> suite plus the broader <code>internal/install</code> and <code>internal/app/generate</code> package suites cleanly, confirming the strict stage order still short-circuits blocked preflight and declined approval before transaction or activation, while the success path still reports immediate-usability activation state with no code changes required.</li>
+<li>Plan <code>06-03</code> Task <code>3</code> now adds explicit Phase 06 acceptance coverage in <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage_test.go"><code>internal/app/generate/install_stage_test.go</code></a> and <a href="/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go"><code>internal/install/activate_verify_test.go</code></a>, mapping <code>INST-01..INST-04</code> to deterministic end-to-end test cases for preview-before-approval, no-write-without-explicit-approval, unresolved validation/conflict blocking, immediate-usability success, and exceptional restart fallback guidance.</li>
+<li>The new acceptance tests reuse the real install-stage and activation path where it matters, while stubbing only the approval edge needed to prove preview/diff happen before a blocked no-write outcome; fixture updates also make the real-path candidate structurally valid for post-install verification.</li>
+<li>Task <code>3</code> verification in execution scope ran <code>go test ./internal/install ./internal/app/generate -run "InstallStage|Activate|INST" -v</code> cleanly after correcting the initial test fixture gap where the real install-stage activation path surfaced missing required sections in the candidate skill.</li>
+<li>Verification for Plan <code>06-03</code> Task <code>3</code> reran the full <code>internal/install</code> and <code>internal/app/generate</code> package suites cleanly, confirming the acceptance coverage still enforces preview-before-approval, no-write-without-explicit-approval, unresolved validation/conflict blocking, immediate-usability success, and exceptional restart fallback guidance with no code changes required.</li>
+<li>Phase 6 Plan <code>06-03</code> is now complete after writing <code>.planning/phases/06-approval-gated-install-activation/06-03-SUMMARY.md</code>, and Phase 6 is marked complete in <code>.planning/ROADMAP.md</code>.</li>
+</ul>
+<h3 id="active-todos">Active Todos</h3>
+<ul>
+<li>None. The current roadmap is complete.</li>
+</ul>
+<h3 id="blockers">Blockers</h3>
+<ul>
+<li>None currently.</li>
+</ul>
+<h2 id="session-continuity">Session Continuity</h2>
+<ul>
+<li><strong>Next command:</strong> None. All planned phases and plan summaries are complete.</li>
+<li><strong>When resuming:</strong> Start from a new user-scoped task; <code>IMPLEMENTATION_PLAN.md</code> has been advanced past the final section.</li>
+</ul>
+<h2 id="execution-tracking">Execution Tracking</h2>
+<ul>
+<li>phase=06-approval-gated-install-activation</li>
+<li>plan=06-03</li>
+<li>task=3</li>
+<li>status=verified</li>
+</ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

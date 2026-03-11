@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 3: Interactive Refinement Loop - Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Phase 3: Interactive Refinement Loop - Research</h1>
+      <p>.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#phase-3-interactive-refinement-loop-research">Phase 3: Interactive Refinement Loop - Research</a><ul>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#standard-stack">Standard Stack</a><ul>
+<li><a href="#core">Core</a></li>
+<li><a href="#supporting">Supporting</a></li>
+<li><a href="#alternatives-considered">Alternatives Considered</a></li>
+</ul>
+</li>
+<li><a href="#architecture-patterns">Architecture Patterns</a><ul>
+<li><a href="#recommended-project-structure">Recommended Project Structure</a></li>
+<li><a href="#pattern-1-domain-chunk-adaptive-loop">Pattern 1: Domain-Chunk Adaptive Loop</a></li>
+<li><a href="#pattern-2-revision-as-dependency-aware-revalidation">Pattern 2: Revision as Dependency-Aware Revalidation</a></li>
+<li><a href="#pattern-3-sectioned-final-review-with-commit-gate">Pattern 3: Sectioned Final Review with Commit Gate</a></li>
+<li><a href="#anti-patterns-to-avoid">Anti-Patterns to Avoid</a></li>
+</ul>
+</li>
+<li><a href="#dont-hand-roll">Don't Hand-Roll</a></li>
+<li><a href="#common-pitfalls">Common Pitfalls</a><ul>
+<li><a href="#pitfall-1-infinite-deepening-loops">Pitfall 1: Infinite Deepening Loops</a></li>
+<li><a href="#pitfall-2-readiness-drift-after-revision">Pitfall 2: Readiness Drift After Revision</a></li>
+<li><a href="#pitfall-3-cli-ux-split-brain">Pitfall 3: CLI UX Split-Brain</a></li>
+<li><a href="#pitfall-4-commit-gate-too-weak">Pitfall 4: Commit Gate Too Weak</a></li>
+</ul>
+</li>
+<li><a href="#code-examples">Code Examples</a><ul>
+<li><a href="#single-field-typed-prompt-with-validation">Single-field typed prompt with validation</a></li>
+<li><a href="#targeted-clarification-with-select-other">Targeted clarification with select + other</a></li>
+<li><a href="#explicit-transition-handling">Explicit transition handling</a></li>
+</ul>
+</li>
+<li><a href="#state-of-the-art">State of the Art</a></li>
+<li><a href="#open-questions">Open Questions</a></li>
+<li><a href="#sources">Sources</a><ul>
+<li><a href="#primary-high-confidence">Primary (HIGH confidence)</a></li>
+<li><a href="#secondary-medium-confidence">Secondary (MEDIUM confidence)</a></li>
+<li><a href="#tertiary-low-confidence">Tertiary (LOW confidence)</a></li>
+</ul>
+</li>
+<li><a href="#metadata">Metadata</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Phase 3: Interactive Refinement Loop - Research</h2>
+        <p>Rendered from <code>.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="phase-3-interactive-refinement-loop-research">Phase 3: Interactive Refinement Loop - Research</h1>
+<p><strong>Researched:</strong> 2026-03-10
+<strong>Domain:</strong> Go CLI adaptive conversation and revision loop
+<strong>Confidence:</strong> HIGH</p>
+<h2 id="summary">Summary</h2>
+<p>Phase 03 should be planned as a deterministic conversation engine layered on top of the existing CLI command surface, not as ad-hoc prompt branching. The locked decisions in <code>03-CONTEXT.md</code> (domain-chunk questioning, confidence-driven deepening, <code>revise &lt;field&gt;</code>, sectioned review, and commit blocking) map cleanly to a small state machine plus a field dependency graph.</p>
+<p>The strongest current stack for this phase is <code>cobra</code> for command orchestration plus <code>huh/v2</code> for interactive prompts and multiple-choice clarifications. <code>survey/v2</code> is explicitly no longer maintained, so planning should avoid it. Validation and readiness gating should be schema-backed (<code>jsonschema/v6</code>) plus deterministic clarity scoring rules, so "ready vs needs attention" is reproducible and testable.</p>
+<p>Primary implementation strategy: run an iterative loop of <code>ask -&gt; score clarity -&gt; deepen or accept -&gt; review -&gt; revise impacts -&gt; re-evaluate</code>, and only allow commit when every required field is both present and above clarity threshold.</p>
+<p><strong>Primary recommendation:</strong> Build Phase 03 around a typed <code>SessionState</code> + <code>FieldGraph</code> engine with <code>huh</code> prompts and schema-backed readiness gates; treat revision as first-class state transition, not a side path.</p>
+<h2 id="standard-stack">Standard Stack</h2>
+<p>The established libraries/tools for this domain:</p>
+<h3 id="core">Core</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Why Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/spf13/cobra</code></td>
+<td><code>v1.10.2</code></td>
+<td>Command lifecycle, <code>RunE</code>, and error/exit handling</td>
+<td>Widely adopted CLI framework in Go; stable command architecture patterns</td>
+</tr>
+<tr>
+<td><code>charm.land/huh/v2</code></td>
+<td><code>v2.0.3</code></td>
+<td>Interactive terminal prompts, select/multiselect, validation, accessibility mode</td>
+<td>Actively maintained prompt/form library; supports dynamic forms and typed options</td>
+</tr>
+<tr>
+<td><code>github.com/santhosh-tekuri/jsonschema/v6</code></td>
+<td><code>v6.0.2</code></td>
+<td>Readiness/required-field schema enforcement before commit</td>
+<td>Strong JSON Schema compliance and mature validator surface</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting">Supporting</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/looplab/fsm</code></td>
+<td><code>v1.0.3</code></td>
+<td>Explicit conversation state transitions</td>
+<td>Use when flow branching complexity exceeds simple enum/switch loop</td>
+</tr>
+<tr>
+<td>Go stdlib (<code>bufio</code>, <code>strings</code>, <code>regexp</code>)</td>
+<td>Go toolchain</td>
+<td>Parse <code>revise &lt;field&gt;</code> command and normalize free text</td>
+<td>Use for revision command parsing and answer preprocessing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alternatives-considered">Alternatives Considered</h3>
+<table>
+<thead>
+<tr>
+<th>Instead of</th>
+<th>Could Use</th>
+<th>Tradeoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>huh/v2</code></td>
+<td><code>survey/v2</code></td>
+<td><code>survey/v2</code> is no longer maintained; increases maintenance risk</td>
+</tr>
+<tr>
+<td><code>looplab/fsm</code></td>
+<td>hand-rolled switch state machine</td>
+<td>Hand-rolled is fine for small flows; use <code>fsm</code> when transitions/events proliferate</td>
+</tr>
+<tr>
+<td><code>jsonschema/v6</code></td>
+<td>custom struct-tag validators only</td>
+<td>Custom-only validation drifts and misses nested/conditional rule coverage</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Installation:</strong></p>
+<pre><code class="language-bash">go get github.com/spf13/cobra@latest
+go get charm.land/huh/v2@latest
+go get github.com/santhosh-tekuri/jsonschema/v6@latest
+go get github.com/looplab/fsm@latest
+</code></pre>
+<h2 id="architecture-patterns">Architecture Patterns</h2>
+<h3 id="recommended-project-structure">Recommended Project Structure</h3>
+<pre><code class="language-text">internal/
+├── refinement/               # phase 03 package boundary
+│   ├── session.go            # SessionState, required fields, readiness map
+│   ├── flow.go               # state machine / loop orchestration
+│   ├── question_policy.go    # confidence-driven deepening rules
+│   ├── revise.go             # revise command parsing + impacted field expansion
+│   ├── review.go             # sectioned review renderer + readiness badges
+│   └── validator.go          # required/clarity/schema gate
+└── cli/
+    └── prompts.go            # huh adapters (Input/Select/Confirm wrappers)
+</code></pre>
+<h3 id="pattern-1-domain-chunk-adaptive-loop">Pattern 1: Domain-Chunk Adaptive Loop</h3>
+<p><strong>What:</strong> Ask by section (<code>purpose</code>, <code>constraints</code>, <code>examples</code>, <code>boundaries</code>) and only deepen fields that are missing or low clarity.
+<strong>When to use:</strong> Default phase interaction path for INT-01 and INT-02.
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: https://pkg.go.dev/charm.land/huh/v2
+for _, section := range orderedSections {
+    for _, field := range requiredBySection(section) {
+        if !state.IsReady(field) {
+            askPrimaryPrompt(field)
+            score := clarity.Score(state.Answer(field))
+            if score &lt; thresholds[field] {
+                askTargetedClarification(field) // usually Select + &quot;Other&quot;
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="pattern-2-revision-as-dependency-aware-revalidation">Pattern 2: Revision as Dependency-Aware Revalidation</h3>
+<p><strong>What:</strong> <code>revise &lt;field&gt;</code> updates one answer, then invalidates and re-asks impacted follow-ups using a dependency graph.
+<strong>When to use:</strong> Any pre-commit edit request (INT-03).
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: project pattern derived from phase decisions
+func ReviseField(field string, state *SessionState, graph FieldGraph) error {
+    newValue := askRevisionPrompt(field)
+    state.Set(field, newValue)
+
+    impacted := graph.ImpactedBy(field)
+    for _, f := range impacted {
+        state.MarkNeedsAttention(f)
+        askTargetedClarification(f)
+    }
+    return nil
+}
+</code></pre>
+<h3 id="pattern-3-sectioned-final-review-with-commit-gate">Pattern 3: Sectioned Final Review with Commit Gate</h3>
+<p><strong>What:</strong> Render grouped review and block commit when required fields are missing or below clarity floor.
+<strong>When to use:</strong> Before generation handoff.
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/santhosh-tekuri/jsonschema/v6
+report := validator.Evaluate(state)
+renderSectionedReview(report) // ready / needs-attention per field
+
+if !report.CommitReady {
+    return errors.New(&quot;cannot commit: required fields missing or low clarity&quot;)
+}
+</code></pre>
+<h3 id="anti-patterns-to-avoid">Anti-Patterns to Avoid</h3>
+<ul>
+<li><strong>Flat one-pass questionnaire:</strong> violates adaptive deepening and causes over/under-questioning.</li>
+<li><strong>Revision without dependency invalidation:</strong> creates stale derived answers and false readiness.</li>
+<li><strong>Commit on "required present" only:</strong> ignores clarity quality bar from phase decision.</li>
+<li><strong>Prompt logic as policy source of truth:</strong> keep readiness/clarity logic in deterministic domain code.</li>
+</ul>
+<h2 id="dont-hand-roll">Don't Hand-Roll</h2>
+<p>Problems that look simple but have existing solutions:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Don't Build</th>
+<th>Use Instead</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interactive terminal widgets</td>
+<td>Custom arrow-key/select renderer</td>
+<td><code>huh/v2</code> fields (<code>Select</code>, <code>Input</code>, <code>Confirm</code>)</td>
+<td>Terminal behavior, accessibility, and rendering edge cases are already handled</td>
+</tr>
+<tr>
+<td>Schema-level commit gate</td>
+<td>Ad-hoc nested <code>if</code> checks across files</td>
+<td><code>jsonschema/v6</code> + explicit readiness report</td>
+<td>Centralized, auditable constraints; easier to evolve</td>
+</tr>
+<tr>
+<td>Complex transition graph</td>
+<td>Unstructured bool flags</td>
+<td><code>looplab/fsm</code> (or strict enum state machine)</td>
+<td>Prevents illegal transitions and hidden dead-ends</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight:</strong> hand-rolled interactive terminal controls and quality gates accumulate subtle edge-case debt quickly; use battle-tested libraries for IO/validation and keep domain policy custom.</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<h3 id="pitfall-1-infinite-deepening-loops">Pitfall 1: Infinite Deepening Loops</h3>
+<p><strong>What goes wrong:</strong> Ambiguous answers trigger repeated clarifications without convergence.
+<strong>Why it happens:</strong> No per-field attempt cap or fallback path.
+<strong>How to avoid:</strong> Set max deepening attempts and switch to structured multiple choice + "other".
+<strong>Warning signs:</strong> Same field asked &gt;2 times with no readiness improvement.</p>
+<h3 id="pitfall-2-readiness-drift-after-revision">Pitfall 2: Readiness Drift After Revision</h3>
+<p><strong>What goes wrong:</strong> User revises upstream field, but dependent fields stay marked ready.
+<strong>Why it happens:</strong> No dependency graph invalidation.
+<strong>How to avoid:</strong> Maintain explicit <code>FieldGraph</code> and invalidate impacted nodes on revise.
+<strong>Warning signs:</strong> Final review shows "ready" fields inconsistent with revised intent.</p>
+<h3 id="pitfall-3-cli-ux-split-brain">Pitfall 3: CLI UX Split-Brain</h3>
+<p><strong>What goes wrong:</strong> Some prompts come from one style path and others from another, confusing users.
+<strong>Why it happens:</strong> Mixing raw stdin prompts and form widgets inconsistently.
+<strong>How to avoid:</strong> Keep a single prompt adapter surface and standardized prompt phrasing.
+<strong>Warning signs:</strong> Inconsistent keybindings, confirmation semantics, or accessibility behavior.</p>
+<h3 id="pitfall-4-commit-gate-too-weak">Pitfall 4: Commit Gate Too Weak</h3>
+<p><strong>What goes wrong:</strong> Flow allows finalization with low-clarity required fields.
+<strong>Why it happens:</strong> Gate checks only presence, not clarity score.
+<strong>How to avoid:</strong> Gate on both completeness and per-field clarity threshold.
+<strong>Warning signs:</strong> Frequent downstream validation failures in later phases.</p>
+<h2 id="code-examples">Code Examples</h2>
+<p>Verified patterns from official sources:</p>
+<h3 id="single-field-typed-prompt-with-validation">Single-field typed prompt with validation</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/charm.land/huh/v2
+var purpose string
+err := huh.NewInput().
+    Title(&quot;What is the skill's primary purpose?&quot;).
+    Validate(func(s string) error {
+        if strings.TrimSpace(s) == &quot;&quot; {
+            return errors.New(&quot;purpose is required&quot;)
+        }
+        return nil
+    }).
+    Value(&amp;purpose).
+    Run()
+</code></pre>
+<h3 id="targeted-clarification-with-select-other">Targeted clarification with select + other</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/charm.land/huh/v2
+var boundaryMode string
+_ = huh.NewSelect[string]().
+    Title(&quot;How strict should scope boundaries be?&quot;).
+    Options(
+        huh.NewOption(&quot;Strict single-capability&quot;, &quot;strict&quot;),
+        huh.NewOption(&quot;Balanced&quot;, &quot;balanced&quot;),
+        huh.NewOption(&quot;Other (describe)&quot;, &quot;other&quot;),
+    ).
+    Value(&amp;boundaryMode).
+    Run()
+</code></pre>
+<h3 id="explicit-transition-handling">Explicit transition handling</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/looplab/fsm
+flow := fsm.NewFSM(
+    &quot;collecting&quot;,
+    fsm.Events{
+        {Name: &quot;to_review&quot;, Src: []string{&quot;collecting&quot;}, Dst: &quot;review&quot;},
+        {Name: &quot;to_revise&quot;, Src: []string{&quot;review&quot;}, Dst: &quot;collecting&quot;},
+        {Name: &quot;commit&quot;, Src: []string{&quot;review&quot;}, Dst: &quot;committed&quot;},
+    },
+    fsm.Callbacks{},
+)
+</code></pre>
+<h2 id="state-of-the-art">State of the Art</h2>
+<table>
+<thead>
+<tr>
+<th>Old Approach</th>
+<th>Current Approach</th>
+<th>When Changed</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static question lists</td>
+<td>Adaptive, confidence-driven questioning</td>
+<td>Commonly adopted in modern assistant UX (2024+)</td>
+<td>Fewer unnecessary prompts, higher answer quality</td>
+</tr>
+<tr>
+<td><code>survey/v2</code> for terminal prompts</td>
+<td><code>huh/v2</code> / Bubble Tea ecosystem</td>
+<td><code>survey</code> marked unmaintained; <code>huh</code> v2 active in 2025</td>
+<td>Better maintenance outlook and richer dynamic forms</td>
+</tr>
+<tr>
+<td>Presence-only completion checks</td>
+<td>Completeness + clarity readiness gates</td>
+<td>Quality-gated generation workflows (recent CLI assistants)</td>
+<td>Fewer low-quality outputs passed downstream</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deprecated/outdated:</strong>
+- <code>github.com/AlecAivazis/survey/v2</code>: marked "no longer maintained" in its package README; avoid for new phase implementation.</p>
+<h2 id="open-questions">Open Questions</h2>
+<ol>
+<li><strong>Clarity scoring formula (rule-based vs model-assisted)</strong></li>
+<li>What we know: confidence-driven branching is required; threshold operationalization is discretionary.</li>
+<li>What's unclear: exact scoring rubric and calibration target.</li>
+<li>
+<p>Recommendation: start with deterministic rules (length + specificity signals + ambiguity keyword penalties), then tune with fixture-based tests.</p>
+</li>
+<li>
+<p><strong>Persistence scope of refinement session</strong></p>
+</li>
+<li>What we know: revision before commit is required within session.</li>
+<li>What's unclear: whether resume across process restarts is in this phase or later.</li>
+<li>Recommendation: plan in-memory for Phase 03 with serialization seam, then make persistence explicit in a later phase unless requested.</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<h3 id="primary-high-confidence">Primary (HIGH confidence)</h3>
+<ul>
+<li>https://pkg.go.dev/github.com/spf13/cobra - command architecture and current module versions</li>
+<li>https://cobra.dev/docs/how-to-guides/working-with-commands/ - <code>RunE</code>, command organization, error handling patterns</li>
+<li>https://pkg.go.dev/charm.land/huh/v2 - interactive form APIs, validation, dynamic form capabilities</li>
+<li>https://github.com/charmbracelet/huh/releases - release activity and latest <code>v2.0.3</code> notes (2025-03-10)</li>
+<li>https://pkg.go.dev/github.com/santhosh-tekuri/jsonschema/v6 - schema validation capabilities and current version</li>
+<li>https://pkg.go.dev/github.com/looplab/fsm - state machine API and latest stable version</li>
+<li>https://pkg.go.dev/github.com/AlecAivazis/survey/v2 - unmaintained notice in README</li>
+</ul>
+<h3 id="secondary-medium-confidence">Secondary (MEDIUM confidence)</h3>
+<ul>
+<li>https://github.com/charmbracelet/huh - ecosystem usage context and project activity signal</li>
+</ul>
+<h3 id="tertiary-low-confidence">Tertiary (LOW confidence)</h3>
+<ul>
+<li>Web search summaries for "best" libraries and comparative claims (used only for discovery; recommendations verified via official docs above)</li>
+</ul>
+<h2 id="metadata">Metadata</h2>
+<p><strong>Confidence breakdown:</strong>
+- Standard stack: HIGH - based on official package docs and release pages
+- Architecture: HIGH - derived directly from locked phase decisions plus validated library capabilities
+- Pitfalls: MEDIUM-HIGH - pattern-derived, consistent with validated flow constraints</p>
+<p><strong>Research date:</strong> 2026-03-10
+<strong>Valid until:</strong> 2026-04-09</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pitfalls Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Pitfalls Research</h1>
+      <p>.planning/research/PITFALLS.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#pitfalls-research">Pitfalls Research</a><ul>
+<li><a href="#critical-pitfalls">Critical Pitfalls</a><ul>
+<li><a href="#pitfall-1-treating-fetched-docs-content-as-trusted-instructions">Pitfall 1: Treating fetched docs content as trusted instructions</a></li>
+<li><a href="#pitfall-2-assuming-single-page-html-contains-the-real-documentation">Pitfall 2: Assuming single-page HTML contains the real documentation</a></li>
+<li><a href="#pitfall-3-weak-skill-shape-validation-looks-valid-but-not-usable">Pitfall 3: Weak skill-shape validation ("looks valid" but not usable)</a></li>
+<li><a href="#pitfall-4-name-collisions-and-overlap-are-handled-too-late">Pitfall 4: Name collisions and overlap are handled too late</a></li>
+<li><a href="#pitfall-5-non-atomic-install-writes-corrupt-local-skill-state">Pitfall 5: Non-atomic install writes corrupt local skill state</a></li>
+<li><a href="#pitfall-6-unsafe-url-ingestion-ssrf-hostile-redirects-hanging-requests">Pitfall 6: Unsafe URL ingestion (SSRF, hostile redirects, hanging requests)</a></li>
+<li><a href="#pitfall-7-approval-ux-exists-but-is-not-script-safe">Pitfall 7: Approval UX exists but is not script-safe</a></li>
+</ul>
+</li>
+<li><a href="#technical-debt-patterns">Technical Debt Patterns</a></li>
+<li><a href="#integration-gotchas">Integration Gotchas</a></li>
+<li><a href="#performance-traps">Performance Traps</a></li>
+<li><a href="#security-mistakes">Security Mistakes</a></li>
+<li><a href="#ux-pitfalls">UX Pitfalls</a></li>
+<li><a href="#looks-done-but-isnt-checklist">"Looks Done But Isn't" Checklist</a></li>
+<li><a href="#recovery-strategies">Recovery Strategies</a></li>
+<li><a href="#pitfall-to-phase-mapping">Pitfall-to-Phase Mapping</a></li>
+<li><a href="#sources">Sources</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Pitfalls Research</h2>
+        <p>Rendered from <code>.planning/research/PITFALLS.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="pitfalls-research">Pitfalls Research</h1>
+<p><strong>Domain:</strong> CLI that generates Codex <code>SKILL.md</code> artifacts from single-page docs URLs
+<strong>Researched:</strong> 2026-03-10
+<strong>Confidence:</strong> MEDIUM-HIGH</p>
+<h2 id="critical-pitfalls">Critical Pitfalls</h2>
+<h3 id="pitfall-1-treating-fetched-docs-content-as-trusted-instructions">Pitfall 1: Treating fetched docs content as trusted instructions</h3>
+<p><strong>What goes wrong:</strong>
+Malicious or accidental instructions inside fetched page content influence generation output (scope drift, unsafe commands, hidden directives), producing unsafe or misleading skills.</p>
+<p><strong>Why it happens:</strong>
+The pipeline conflates "source data" and "instructions to follow" during extraction/generation, and does not model remote content as untrusted input.</p>
+<p><strong>How to avoid:</strong>
+- Treat fetched page text as untrusted data by default.
+- Sanitize/normalize HTML and strip hidden or suspicious payload patterns before generation.
+- Use strict structured generation contracts and deterministic validators.
+- Require explicit user approval before any write/install step (already aligned with project constraints).
+- Add adversarial test fixtures (prompt injection strings, encoded variants, hidden text).</p>
+<p><strong>Warning signs:</strong>
+- Generated skill includes imperative instructions not present in user intent.
+- Scope suddenly expands ("do everything" style behavior).
+- Skill output references secrets/system prompt style text.
+- Minor wording changes in source page cause major behavioral changes.</p>
+<p><strong>Phase to address:</strong>
+Phase 1 (Safe ingestion boundaries) and Phase 6 (Adversarial hardening tests).</p>
+<hr />
+<h3 id="pitfall-2-assuming-single-page-html-contains-the-real-documentation">Pitfall 2: Assuming single-page HTML contains the real documentation</h3>
+<p><strong>What goes wrong:</strong>
+The generator builds skills from incomplete content because the target docs page is JS-rendered, gated, or missing critical sections in the raw HTML response.</p>
+<p><strong>Why it happens:</strong>
+v1 ingestion is intentionally one URL; teams overestimate what plain HTTP+HTML parsing can capture on modern docs stacks.</p>
+<p><strong>How to avoid:</strong>
+- Add extraction completeness checks (word count, heading density, required-section heuristics).
+- Detect low-signal pages and trigger user prompts ("content appears incomplete; proceed or provide another URL").
+- Persist extraction diagnostics in preview output.
+- Keep parser behavior explicit: static HTML mode only in v1, with clear UX messaging.</p>
+<p><strong>Warning signs:</strong>
+- Extracted text is mostly nav/footer boilerplate.
+- Missing examples/code blocks despite known docs richness.
+- Frequent user corrections like "that section was not on the page."
+- Large variance in generated quality across similar URLs.</p>
+<p><strong>Phase to address:</strong>
+Phase 2 (Extraction quality gates and diagnostics).</p>
+<hr />
+<h3 id="pitfall-3-weak-skill-shape-validation-looks-valid-but-not-usable">Pitfall 3: Weak skill-shape validation ("looks valid" but not usable)</h3>
+<p><strong>What goes wrong:</strong>
+Generated <code>SKILL.md</code> passes superficial checks but fails practical usage: unclear trigger boundaries, broad scope, missing constraints, or ambiguous instructions.</p>
+<p><strong>Why it happens:</strong>
+Validation focuses on syntax/frontmatter presence rather than semantic quality and single-capability boundaries.</p>
+<p><strong>How to avoid:</strong>
+- Validate both structure and semantics (required sections, explicit trigger boundaries, non-goals).
+- Add a rubric-based quality gate before install.
+- Re-ask targeted questions on specific failed dimensions (scope, activation criteria, exclusions).
+- Include overlap/ambiguity checks against existing local skills.</p>
+<p><strong>Warning signs:</strong>
+- Many generated skills start with generic descriptions ("helps with many tasks").
+- High overlap scores between new and existing skills.
+- User repeatedly edits installed skills immediately after generation.
+- Trigger behavior is inconsistent across similar prompts.</p>
+<p><strong>Phase to address:</strong>
+Phase 3 (Semantic validation and adaptive re-ask loop).</p>
+<hr />
+<h3 id="pitfall-4-name-collisions-and-overlap-are-handled-too-late">Pitfall 4: Name collisions and overlap are handled too late</h3>
+<p><strong>What goes wrong:</strong>
+New skills collide with existing names/capabilities and create confusing invocation behavior, duplicate options, or hidden conflicts after installation.</p>
+<p><strong>Why it happens:</strong>
+Conflict detection is deferred to install time or reduced to filename checks instead of capability-level overlap checks.</p>
+<p><strong>How to avoid:</strong>
+- Run overlap and naming checks before final approval step.
+- Present merge/update/rename choices with a preview diff.
+- Block install when overlap exceeds threshold unless user explicitly approves override path.
+- Keep deterministic conflict resolution rules.</p>
+<p><strong>Warning signs:</strong>
+- Two skills with nearly identical descriptions appear in selector lists.
+- Users report "wrong skill gets picked" during implicit invocation.
+- Frequent post-install manual renames and deletions.</p>
+<p><strong>Phase to address:</strong>
+Phase 4 (Conflict detection + explicit resolution UX).</p>
+<hr />
+<h3 id="pitfall-5-non-atomic-install-writes-corrupt-local-skill-state">Pitfall 5: Non-atomic install writes corrupt local skill state</h3>
+<p><strong>What goes wrong:</strong>
+Interrupted or partial writes leave broken skill directories; Codex sees invalid or mixed artifact state.</p>
+<p><strong>Why it happens:</strong>
+Direct writes into final install path without staging, fsync, or rollback strategy.</p>
+<p><strong>How to avoid:</strong>
+- Write to temp staging directory, validate, then perform atomic move into target.
+- Keep backup/rollback on overwrite flows.
+- Fail closed: no install on any validation or file operation error.
+- Emit explicit post-install verification checks.</p>
+<p><strong>Warning signs:</strong>
+- Partial files or missing sections after Ctrl-C/crash.
+- Intermittent "skill exists but unusable" reports.
+- Manual cleanup in <code>$CODEX_HOME/skills</code> becomes common.</p>
+<p><strong>Phase to address:</strong>
+Phase 5 (Transactional install and rollback).</p>
+<hr />
+<h3 id="pitfall-6-unsafe-url-ingestion-ssrf-hostile-redirects-hanging-requests">Pitfall 6: Unsafe URL ingestion (SSRF, hostile redirects, hanging requests)</h3>
+<p><strong>What goes wrong:</strong>
+CLI can be abused to fetch internal/private endpoints, follow dangerous redirect chains, or hang indefinitely on network operations.</p>
+<p><strong>Why it happens:</strong>
+Insufficient URL allow/deny policy, redirect controls, timeout defaults, and protocol restrictions.</p>
+<p><strong>How to avoid:</strong>
+- Enforce allowed schemes (<code>http</code>/<code>https</code>) and deny local/private address ranges by default.
+- Set strict request timeout and max redirects; surface clear error messages.
+- Validate final resolved host before processing body.
+- Add request-size and content-type limits for ingestion.</p>
+<p><strong>Warning signs:</strong>
+- CLI appears to "freeze" on URL fetch.
+- Logs show unexpected internal network hosts.
+- Large/binary payloads reach extraction stage.
+- Redirect chains trigger inconsistent behavior.</p>
+<p><strong>Phase to address:</strong>
+Phase 1 (Network safety + ingestion guardrails).</p>
+<hr />
+<h3 id="pitfall-7-approval-ux-exists-but-is-not-script-safe">Pitfall 7: Approval UX exists but is not script-safe</h3>
+<p><strong>What goes wrong:</strong>
+Interactive confirmation prompts break automation, or automation bypasses prompts unintentionally and writes without clear auditability.</p>
+<p><strong>Why it happens:</strong>
+No explicit split between interactive and non-interactive modes (<code>--force</code>/CI policy), and no consistent approval semantics.</p>
+<p><strong>How to avoid:</strong>
+- Define approval policy for interactive vs non-interactive contexts.
+- Require explicit force flag in scripted contexts; otherwise block with actionable message.
+- Standardize confirmation messaging and post-action summaries.
+- Add tests for prompt behavior in TTY, CI, and piped execution modes.</p>
+<p><strong>Warning signs:</strong>
+- CI jobs hang waiting for user input.
+- Users are surprised by installs in script runs.
+- Prompt behavior differs between environments.</p>
+<p><strong>Phase to address:</strong>
+Phase 4 (Approval UX contract and automation policy tests).</p>
+<hr />
+<h2 id="technical-debt-patterns">Technical Debt Patterns</h2>
+<p>Shortcuts that feel fast early but become expensive quickly.</p>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Immediate Benefit</th>
+<th>Long-term Cost</th>
+<th>When Acceptable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Skip semantic validation; only check YAML/header shape</td>
+<td>Faster MVP output</td>
+<td>Low-quality skills, high rework, user distrust</td>
+<td>Never</td>
+</tr>
+<tr>
+<td>Install directly to final path without staging</td>
+<td>Less file handling code</td>
+<td>Corruption/partial state on failure</td>
+<td>Never</td>
+</tr>
+<tr>
+<td>Hardcode overlap logic to filename match only</td>
+<td>Simple implementation</td>
+<td>Capability conflicts remain unresolved</td>
+<td>Only for first spike, not MVP</td>
+</tr>
+<tr>
+<td>Add broad fallback prompts instead of targeted re-ask</td>
+<td>Faster to implement</td>
+<td>Non-convergent question loop, token waste</td>
+<td>MVP only with explicit cap + telemetry</td>
+</tr>
+</tbody>
+</table>
+<h2 id="integration-gotchas">Integration Gotchas</h2>
+<table>
+<thead>
+<tr>
+<th>Integration</th>
+<th>Common Mistake</th>
+<th>Correct Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Remote docs URL fetch</td>
+<td>No timeout / unlimited redirects</td>
+<td>Use bounded timeout, max redirects, size limits, and host/scheme validation</td>
+</tr>
+<tr>
+<td>HTML parsing (<code>goquery</code>)</td>
+<td>Assume browser-like DOM completeness</td>
+<td>Treat as static parse; add completeness heuristics and user warnings</td>
+</tr>
+<tr>
+<td>Codex skills install path</td>
+<td>Overwrite existing skill state silently</td>
+<td>Preview diff + explicit approve + transactional write</td>
+</tr>
+<tr>
+<td>Existing skill discovery</td>
+<td>Name-only duplicate checks</td>
+<td>Compare name + description + capability overlap score</td>
+</tr>
+</tbody>
+</table>
+<h2 id="performance-traps">Performance Traps</h2>
+<table>
+<thead>
+<tr>
+<th>Trap</th>
+<th>Symptoms</th>
+<th>Prevention</th>
+<th>When It Breaks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Re-fetch + re-parse URL on every re-ask iteration</td>
+<td>Slow loop, repeated network spikes</td>
+<td>Cache normalized source per run with hash key</td>
+<td>Noticeable after 3+ retries per run</td>
+</tr>
+<tr>
+<td>Full-document re-validation for tiny edits</td>
+<td>Latency increases with doc size</td>
+<td>Incremental validation for changed sections</td>
+<td>Large docs or long adaptive sessions</td>
+</tr>
+<tr>
+<td>Unbounded prompt context growth across retries</td>
+<td>Rising token usage and drift</td>
+<td>Keep compact state object + bounded history window</td>
+<td>By mid-session on verbose docs</td>
+</tr>
+</tbody>
+</table>
+<h2 id="security-mistakes">Security Mistakes</h2>
+<table>
+<thead>
+<tr>
+<th>Mistake</th>
+<th>Risk</th>
+<th>Prevention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No defense against indirect prompt injection</td>
+<td>Unsafe generated instructions; policy bypass</td>
+<td>Untrusted-content handling, sanitization, structured generation, adversarial tests</td>
+</tr>
+<tr>
+<td>Accept arbitrary URL targets incl. private/internal networks</td>
+<td>SSRF-like local environment probing</td>
+<td>Default-deny private ranges and localhost; explicit override with warning</td>
+</tr>
+<tr>
+<td>Weak output validation before install</td>
+<td>Invalid or dangerous skills installed</td>
+<td>Semantic validator + install block on any gate failure</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ux-pitfalls">UX Pitfalls</h2>
+<table>
+<thead>
+<tr>
+<th>Pitfall</th>
+<th>User Impact</th>
+<th>Better Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vague validation errors ("invalid skill")</td>
+<td>User cannot recover, abandons flow</td>
+<td>Targeted error messages tied to missing/weak section</td>
+</tr>
+<tr>
+<td>Hidden conflict resolution</td>
+<td>Surprise behavior after install</td>
+<td>Show overlap rationale and explicit choice (merge/update/rename/cancel)</td>
+</tr>
+<tr>
+<td>No extraction quality preview</td>
+<td>User approves low-quality output unknowingly</td>
+<td>Preview extracted summary and key diagnostics before generation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="looks-done-but-isnt-checklist">"Looks Done But Isn't" Checklist</h2>
+<ul>
+<li>[ ] <strong>Ingestion safety:</strong> URL policy blocks private/local targets and enforces timeout/redirect limits.</li>
+<li>[ ] <strong>Extraction quality:</strong> System detects low-signal pages and asks for confirmation/alternate URL.</li>
+<li>[ ] <strong>Validation rigor:</strong> Semantic quality rubric gates install, not just syntax checks.</li>
+<li>[ ] <strong>Conflict handling:</strong> Overlap and naming conflicts require explicit user decision.</li>
+<li>[ ] <strong>Install durability:</strong> Staged write + atomic move + rollback path verified.</li>
+<li>[ ] <strong>Approval semantics:</strong> Interactive and non-interactive behavior tested and documented.</li>
+</ul>
+<h2 id="recovery-strategies">Recovery Strategies</h2>
+<table>
+<thead>
+<tr>
+<th>Pitfall</th>
+<th>Recovery Cost</th>
+<th>Recovery Steps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Corrupt/partial install</td>
+<td>MEDIUM</td>
+<td>Detect on startup, restore from backup, rerun install from staged artifact</td>
+</tr>
+<tr>
+<td>Bad overlap merge</td>
+<td>MEDIUM</td>
+<td>Roll back merged artifact, re-run with explicit rename/update path</td>
+</tr>
+<tr>
+<td>Unsafe generated content installed</td>
+<td>HIGH</td>
+<td>Quarantine skill, audit source URL + generation trace, strengthen sanitizer/tests before re-enable</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pitfall-to-phase-mapping">Pitfall-to-Phase Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Pitfall</th>
+<th>Prevention Phase</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Untrusted-content injection</td>
+<td>Phase 1 + Phase 6</td>
+<td>Red-team fixtures fail closed; no unsafe install path</td>
+</tr>
+<tr>
+<td>Incomplete extraction from dynamic docs</td>
+<td>Phase 2</td>
+<td>Completeness metrics + user confirmation on low-signal pages</td>
+</tr>
+<tr>
+<td>Weak semantic validation</td>
+<td>Phase 3</td>
+<td>Quality rubric pass required before install</td>
+</tr>
+<tr>
+<td>Late collision/overlap handling</td>
+<td>Phase 4</td>
+<td>Conflicts surfaced pre-approval with deterministic resolution</td>
+</tr>
+<tr>
+<td>Non-atomic install writes</td>
+<td>Phase 5</td>
+<td>Crash/interruption tests preserve prior valid state</td>
+</tr>
+<tr>
+<td>Script/CI approval mismatch</td>
+<td>Phase 4</td>
+<td>TTY/CI test matrix verifies consistent approval semantics</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">OWASP LLM Prompt Injection Prevention Cheat Sheet</a> (HIGH)</li>
+<li><a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">OWASP LLM01:2025 Prompt Injection</a> (HIGH)</li>
+<li><a href="https://developers.openai.com/codex/skills">OpenAI Codex Agent Skills documentation</a> (HIGH)</li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc9309">RFC 9309: Robots Exclusion Protocol</a> (HIGH)</li>
+<li><a href="https://pkg.go.dev/net/http#Client">Go <code>net/http</code> Client docs</a> (HIGH)</li>
+<li><a href="https://pkg.go.dev/github.com/PuerkitoBio/goquery">Goquery package documentation</a> (HIGH)</li>
+<li><a href="https://github.com/netlify/cli/pull/6878">Netlify CLI PR adding confirmation prompts for unsafe commands</a> (MEDIUM; real-world evidence, not a normative standard)</li>
+<li><a href="https://playwright.dev/docs/api/class-page#page-wait-for-load-state">Playwright page API docs</a> (MEDIUM; supporting evidence for dynamic-content timing pitfalls)</li>
+</ul>
+<hr />
+<p><em>Pitfalls research for: Skill Weaver (CLI skill generator)</em>
+<em>Researched: 2026-03-10</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

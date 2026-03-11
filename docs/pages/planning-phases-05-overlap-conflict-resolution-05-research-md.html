@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 05: Overlap &amp; Conflict Resolution - Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Phase 05: Overlap &amp; Conflict Resolution - Research</h1>
+      <p>.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#phase-05-overlap-conflict-resolution-research">Phase 05: Overlap &amp; Conflict Resolution - Research</a><ul>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#standard-stack">Standard Stack</a><ul>
+<li><a href="#core">Core</a></li>
+<li><a href="#supporting">Supporting</a></li>
+<li><a href="#alternatives-considered">Alternatives Considered</a></li>
+</ul>
+</li>
+<li><a href="#architecture-patterns">Architecture Patterns</a><ul>
+<li><a href="#recommended-project-structure">Recommended Project Structure</a></li>
+<li><a href="#pattern-1-layered-overlap-detection">Pattern 1: Layered Overlap Detection</a></li>
+<li><a href="#pattern-2-decision-contract-as-a-boundary-artifact">Pattern 2: Decision Contract as a Boundary Artifact</a></li>
+<li><a href="#pattern-3-explicit-choice-ux-with-outcome-preview">Pattern 3: Explicit Choice UX with Outcome Preview</a></li>
+<li><a href="#design-options-and-tradeoffs">Design Options and Tradeoffs</a></li>
+<li><a href="#anti-patterns-to-avoid">Anti-Patterns to Avoid</a></li>
+</ul>
+</li>
+<li><a href="#suggested-data-structures-and-comparison-heuristics">Suggested Data Structures and Comparison Heuristics</a><ul>
+<li><a href="#core-data-model">Core data model</a></li>
+<li><a href="#heuristic-scoring-practical-v1-formula">Heuristic scoring (practical v1 formula)</a></li>
+<li><a href="#why-these-heuristics-work-for-planning">Why these heuristics work for planning</a></li>
+</ul>
+</li>
+<li><a href="#dont-hand-roll">Don't Hand-Roll</a></li>
+<li><a href="#cli-ux-patterns-for-explicit-user-choice">CLI UX Patterns for Explicit User Choice</a><ul>
+<li><a href="#required-interaction-contract">Required interaction contract</a></li>
+<li><a href="#recommended-prompt-flow">Recommended prompt flow</a></li>
+<li><a href="#ux-tradeoff-notes">UX tradeoff notes</a></li>
+</ul>
+</li>
+<li><a href="#integration-boundaries">Integration Boundaries</a><ul>
+<li><a href="#input-contract-from-phase-4-validation-quality-gates">Input contract from Phase 4 (Validation &amp; Quality Gates)</a></li>
+<li><a href="#output-contract-to-phase-6-approval-gated-install-activation">Output contract to Phase 6 (Approval-Gated Install &amp; Activation)</a></li>
+</ul>
+</li>
+<li><a href="#common-pitfalls">Common Pitfalls</a><ul>
+<li><a href="#pitfall-1-false-positives-from-generic-language">Pitfall 1: False positives from generic language</a></li>
+<li><a href="#pitfall-2-false-negatives-from-naming-diversity">Pitfall 2: False negatives from naming diversity</a></li>
+<li><a href="#pitfall-3-ambiguous-merge-semantics">Pitfall 3: Ambiguous merge semantics</a></li>
+<li><a href="#pitfall-4-decision-state-lost-between-stages">Pitfall 4: Decision state lost between stages</a></li>
+</ul>
+</li>
+<li><a href="#edge-cases-and-testing-strategy">Edge Cases and Testing Strategy</a><ul>
+<li><a href="#critical-edge-cases">Critical edge cases</a></li>
+<li><a href="#test-matrix-planning-ready">Test matrix (planning-ready)</a></li>
+<li><a href="#verification-commands-once-implementation-exists">Verification commands (once implementation exists)</a></li>
+</ul>
+</li>
+<li><a href="#code-examples">Code Examples</a><ul>
+<li><a href="#parse-frontmatter-metadata-for-profile-extraction">Parse frontmatter metadata for profile extraction</a></li>
+<li><a href="#explicit-cli-conflict-choice">Explicit CLI conflict choice</a></li>
+<li><a href="#struct-equality-checks-for-exact-overlap-classification">Struct equality checks for exact-overlap classification</a></li>
+</ul>
+</li>
+<li><a href="#state-of-the-art">State of the Art</a></li>
+<li><a href="#open-questions">Open Questions</a></li>
+<li><a href="#sources">Sources</a><ul>
+<li><a href="#primary-high-confidence">Primary (HIGH confidence)</a></li>
+<li><a href="#secondary-medium-confidence">Secondary (MEDIUM confidence)</a></li>
+<li><a href="#tertiary-low-confidence">Tertiary (LOW confidence)</a></li>
+</ul>
+</li>
+<li><a href="#metadata">Metadata</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Phase 05: Overlap &amp; Conflict Resolution - Research</h2>
+        <p>Rendered from <code>.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="phase-05-overlap-conflict-resolution-research">Phase 05: Overlap &amp; Conflict Resolution - Research</h1>
+<p><strong>Researched:</strong> 2026-03-10
+<strong>Domain:</strong> Overlap detection and explicit conflict-resolution UX for generated Codex skills
+<strong>Confidence:</strong> HIGH</p>
+<h2 id="summary">Summary</h2>
+<p>Phase 05 should be planned as a deterministic decision stage between Phase 04 validation and Phase 06 install approval. The core outcome is not file mutation; it is a resolved conflict decision artifact that clearly states whether the generated skill is a <code>new_install</code>, <code>update_existing</code>, <code>merge_with_existing</code>, or <code>abort</code>.</p>
+<p>The practical implementation path is to compare a normalized candidate skill against an index of installed skills using layered heuristics: hard collisions first (exact name/path), then structural overlap (frontmatter + section similarity), then scope conflict signals (in-scope and out-of-scope intersections). Only explicit user choice can resolve overlap states; unresolved findings must fail closed and block progression.</p>
+<p>This phase should output an auditable resolution summary shown to the user before any write/install action in Phase 06. The biggest planning risk is ambiguity in merge/update semantics, so tasks should define resolution modes, confidence/risk scoring, and exact CLI prompts up front.</p>
+<p><strong>Primary recommendation:</strong> Build a two-step conflict engine (<code>detect -&gt; decide</code>) that emits a machine-readable <code>ConflictResolutionDecision</code> consumed by Phase 06, with mandatory explicit user selection whenever overlap severity is not <code>none</code>.</p>
+<h2 id="standard-stack">Standard Stack</h2>
+<p>The established libraries/tools for this domain:</p>
+<h3 id="core">Core</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Why Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Go stdlib (<code>os</code>, <code>path/filepath</code>)</td>
+<td>Go stdlib</td>
+<td>Enumerate installed skills and resolve deterministic identifiers</td>
+<td>Required for local-first registry scanning and path-safe comparisons.</td>
+</tr>
+<tr>
+<td><code>github.com/yuin/goldmark</code></td>
+<td><code>v1.7.16</code></td>
+<td>Parse <code>SKILL.md</code> into normalized sections for overlap comparison</td>
+<td>Reuses Phase 04 parser stack to avoid divergent parsing logic.</td>
+</tr>
+<tr>
+<td><code>go.abhg.dev/goldmark/frontmatter</code></td>
+<td><code>v0.3.0</code></td>
+<td>Extract <code>name</code> and <code>description</code> metadata used for collision checks</td>
+<td>Provides typed frontmatter extraction used in both validation and overlap analysis.</td>
+</tr>
+<tr>
+<td><code>charm.land/huh/v2</code></td>
+<td><code>v2.0.3</code></td>
+<td>Explicit CLI decision prompts (<code>Select</code>, <code>Confirm</code>)</td>
+<td>Supports structured, explicit user choices for merge/update/abort flows.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting">Supporting</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/google/go-cmp</code></td>
+<td><code>v0.7.0</code></td>
+<td>Compare normalized skill structs for exact-equivalence checks</td>
+<td>Use to quickly classify "candidate equals installed skill" as low-risk update/no-op path.</td>
+</tr>
+<tr>
+<td><code>github.com/sergi/go-diff</code></td>
+<td><code>v1.4.0</code></td>
+<td>Generate compact textual delta previews for decision context</td>
+<td>Use when showing "what would change" between installed and candidate instructions.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alternatives-considered">Alternatives Considered</h3>
+<table>
+<thead>
+<tr>
+<th>Instead of</th>
+<th>Could Use</th>
+<th>Tradeoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Heuristic lexical overlap scoring</td>
+<td>Embedding/vector similarity service</td>
+<td>Better semantic recall, but adds non-local dependency and unpredictability for v1 local-first CLI.</td>
+</tr>
+<tr>
+<td><code>huh</code> interactive forms</td>
+<td>Raw stdin prompts (<code>fmt.Scanln</code>)</td>
+<td>Lower dependency surface, but weaker multi-option UX and higher input-validation complexity.</td>
+</tr>
+<tr>
+<td><code>go-diff</code> text differ</td>
+<td>Custom line-by-line differ</td>
+<td>Fewer dependencies, but easier to produce noisy or misleading change previews.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Installation:</strong></p>
+<pre><code class="language-bash">go get github.com/yuin/goldmark@v1.7.16
+go get go.abhg.dev/goldmark/frontmatter@v0.3.0
+go get charm.land/huh/v2@v2.0.3
+go get github.com/google/go-cmp/cmp@latest
+go get github.com/sergi/go-diff@v1.4.0
+</code></pre>
+<h2 id="architecture-patterns">Architecture Patterns</h2>
+<h3 id="recommended-project-structure">Recommended Project Structure</h3>
+<pre><code class="language-text">internal/overlap/
+├── model.go                 # overlap entities, severity levels, decision contract
+├── index_installed.go       # scan + parse installed skills into normalized index
+├── detect.go                # overlap detection pipeline and scoring
+├── classify.go              # map raw signals into severity/risk categories
+├── decision_flow.go         # explicit user-choice orchestration (no writes)
+└── resolution_summary.go    # final &quot;selected outcome&quot; output for Phase 06 handoff
+
+internal/app/generate/
+└── overlap_stage.go         # orchestrator stage: validate pass -&gt; overlap -&gt; resolution artifact
+</code></pre>
+<h3 id="pattern-1-layered-overlap-detection">Pattern 1: Layered Overlap Detection</h3>
+<p><strong>What:</strong> Run checks from highest certainty to lowest: exact collision -&gt; structural overlap -&gt; semantic scope conflict.
+<strong>When to use:</strong> For every validated candidate entering Phase 05.
+<strong>Example:</strong></p>
+<pre><code class="language-go">type OverlapSeverity string
+
+const (
+    SeverityNone   OverlapSeverity = &quot;none&quot;
+    SeverityLow    OverlapSeverity = &quot;low&quot;
+    SeverityMedium OverlapSeverity = &quot;medium&quot;
+    SeverityHigh   OverlapSeverity = &quot;high&quot;
+)
+
+func Detect(candidate SkillProfile, installed []SkillProfile) []OverlapFinding {
+    findings := []OverlapFinding{}
+    for _, existing := range installed {
+        if candidate.Name == existing.Name {
+            findings = append(findings, NewFinding(&quot;OVLP.NAME.EXACT&quot;, SeverityHigh, existing.ID))
+            continue
+        }
+        score := SimilarityScore(candidate, existing)
+        if score &gt;= 0.70 {
+            findings = append(findings, NewFinding(&quot;OVLP.SCOPE.SEMANTIC&quot;, SeverityMedium, existing.ID))
+        }
+    }
+    return findings
+}
+</code></pre>
+<h3 id="pattern-2-decision-contract-as-a-boundary-artifact">Pattern 2: Decision Contract as a Boundary Artifact</h3>
+<p><strong>What:</strong> Convert overlap findings + user choice into a typed decision object consumed by later phases.
+<strong>When to use:</strong> Immediately after explicit user resolution choice.
+<strong>Example:</strong></p>
+<pre><code class="language-go">type ResolutionMode string
+
+const (
+    ResolutionNewInstall ResolutionMode = &quot;new_install&quot;
+    ResolutionUpdate     ResolutionMode = &quot;update_existing&quot;
+    ResolutionMerge      ResolutionMode = &quot;merge_with_existing&quot;
+    ResolutionAbort      ResolutionMode = &quot;abort&quot;
+)
+
+type ConflictResolutionDecision struct {
+    CandidateID      string
+    TargetSkillID    string
+    Mode             ResolutionMode
+    SelectedAt       time.Time
+    RequiresDiffView bool
+    Blocking         bool // true until user made an explicit choice
+    Notes            string
+}
+</code></pre>
+<h3 id="pattern-3-explicit-choice-ux-with-outcome-preview">Pattern 3: Explicit Choice UX with Outcome Preview</h3>
+<p><strong>What:</strong> Force user selection from explicit options and echo the exact selected outcome before progressing.
+<strong>When to use:</strong> Any time overlap severity is not <code>none</code>.
+<strong>Example:</strong></p>
+<pre><code class="language-go">var mode ResolutionMode
+err := huh.NewSelect[ResolutionMode]().
+    Title(&quot;Overlap detected. Choose a conflict-resolution path before install:&quot;).
+    Options(
+        huh.NewOption(&quot;Update existing skill&quot;, ResolutionUpdate),
+        huh.NewOption(&quot;Merge candidate + existing&quot;, ResolutionMerge),
+        huh.NewOption(&quot;Abort (no install)&quot;, ResolutionAbort),
+    ).
+    Value(&amp;mode).
+    Run()
+if err != nil {
+    return err
+}
+fmt.Printf(&quot;Selected outcome: %s\n&quot;, mode) // mandatory OVLP-03 surface before Phase 06
+</code></pre>
+<h3 id="design-options-and-tradeoffs">Design Options and Tradeoffs</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Strengths</th>
+<th>Weaknesses</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name-only collision checks</td>
+<td>Fast, deterministic, simple to explain</td>
+<td>Misses semantic overlaps with different names</td>
+<td>Use only as first-pass hard signal, not full detector.</td>
+</tr>
+<tr>
+<td>Weighted lexical/structural heuristics</td>
+<td>Local-first, explainable scoring, testable fixtures</td>
+<td>Needs threshold tuning and can miss deep semantic overlap</td>
+<td><strong>Recommended for v1</strong> with conservative thresholds + explicit user confirmation.</td>
+</tr>
+<tr>
+<td>Embeddings-based similarity</td>
+<td>Better semantic recall on paraphrased skills</td>
+<td>External service or model dependency, less deterministic, higher complexity</td>
+<td>Defer to v1.x after baseline overlap UX is stable.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anti-patterns-to-avoid">Anti-Patterns to Avoid</h3>
+<ul>
+<li><strong>Auto-resolve on high overlap:</strong> violates explicit choice requirement and can mutate trusted skills unexpectedly.</li>
+<li><strong>Opaque confidence score with no signal breakdown:</strong> users cannot make informed merge/update decisions.</li>
+<li><strong>Mixing overlap decision and file writes in same stage:</strong> breaks phase boundary and makes fail-closed enforcement brittle.</li>
+<li><strong>Silent fallthrough to install when prompts are interrupted:</strong> cancellations must map to <code>abort</code> and remain blocked.</li>
+</ul>
+<h2 id="suggested-data-structures-and-comparison-heuristics">Suggested Data Structures and Comparison Heuristics</h2>
+<h3 id="core-data-model">Core data model</h3>
+<pre><code class="language-go">type SkillProfile struct {
+    ID          string   // stable ID from path/name
+    Name        string
+    Description string
+    InScope     []string
+    OutOfScope  []string
+    Commands    []string
+    SourcePath  string
+}
+
+type OverlapFinding struct {
+    RuleID      string
+    ExistingID  string
+    Severity    OverlapSeverity
+    Score       float64
+    Signals     []string // e.g. &quot;name_exact&quot;, &quot;in_scope_jaccard:0.82&quot;
+    Explanation string
+}
+</code></pre>
+<h3 id="heuristic-scoring-practical-v1-formula">Heuristic scoring (practical v1 formula)</h3>
+<p>Use weighted signals in a bounded score:</p>
+<ul>
+<li><code>name_exact</code> (hard override): severity <code>high</code></li>
+<li><code>description_similarity</code> (normalized token overlap): weight <code>0.35</code></li>
+<li><code>in_scope_jaccard</code>: weight <code>0.30</code></li>
+<li><code>out_of_scope_conflict</code> (candidate in-scope intersects existing out-of-scope or inverse): weight <code>0.20</code></li>
+<li><code>command_overlap</code>: weight <code>0.15</code></li>
+</ul>
+<p>Classification recommendation:</p>
+<ul>
+<li><code>score &lt; 0.40</code> -&gt; <code>none/low</code> (allow <code>new_install</code> default path with explicit confirmation)</li>
+<li><code>0.40 &lt;= score &lt; 0.70</code> -&gt; <code>medium</code> (require explicit update/merge/abort choice)</li>
+<li><code>score &gt;= 0.70</code> or hard collision -&gt; <code>high</code> (strong warning; no implicit path)</li>
+</ul>
+<h3 id="why-these-heuristics-work-for-planning">Why these heuristics work for planning</h3>
+<ul>
+<li>Deterministic and local (no remote model needed).</li>
+<li>Explainable to user with concrete signals.</li>
+<li>Easy to test with fixtures and tune thresholds without architecture rewrites.</li>
+</ul>
+<h2 id="dont-hand-roll">Don't Hand-Roll</h2>
+<p>Problems that look simple but have existing solutions:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Don't Build</th>
+<th>Use Instead</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interactive multi-option conflict prompts</td>
+<td>Ad hoc stdin loops with manual parsing</td>
+<td><code>huh</code> <code>Select</code>/<code>Confirm</code> fields</td>
+<td>Better validation, consistent UX, and fewer input edge-case bugs.</td>
+</tr>
+<tr>
+<td>Markdown/frontmatter parsing split across phases</td>
+<td>Separate ad hoc parser for overlap stage</td>
+<td>Reuse Phase 04 parser contract (<code>goldmark</code> + frontmatter)</td>
+<td>Avoids parse drift between validation and overlap decisions.</td>
+</tr>
+<tr>
+<td>Human-readable textual change previews</td>
+<td>Custom diff formatting logic</td>
+<td><code>go-diff</code></td>
+<td>Mature differ reduces misleading preview output and edge-case handling.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight:</strong> The risk in this phase is incorrect decisions, not raw algorithm speed; use well-known parsing/prompt/diff primitives and keep policy logic deterministic.</p>
+<h2 id="cli-ux-patterns-for-explicit-user-choice">CLI UX Patterns for Explicit User Choice</h2>
+<h3 id="required-interaction-contract">Required interaction contract</h3>
+<ol>
+<li>Show overlap findings with severity and plain-language explanation.</li>
+<li>If severity <code>none</code>, still show "no conflicts found" and proceed to Phase 06 pre-approval.</li>
+<li>If overlap exists, present explicit choices (<code>update</code>, <code>merge</code>, <code>abort</code>) as mutually exclusive options.</li>
+<li>Echo selected outcome in a dedicated "Resolution Summary" block before any write/install action.</li>
+<li>Require reconfirmation if user changes choice after viewing diff/summary.</li>
+</ol>
+<h3 id="recommended-prompt-flow">Recommended prompt flow</h3>
+<pre><code class="language-text">[Overlap Findings]
+- Existing skill: shell-helper
+- Severity: HIGH
+- Signals: name_exact, in_scope_jaccard=0.78
+
+Choose resolution path:
+  1) Update existing skill
+  2) Merge with existing skill
+  3) Abort
+
+[Resolution Summary]
+Selected: Merge with existing skill
+Target: shell-helper
+Next step: Show merged-preview in Phase 06 approval gate
+Status: BLOCKED until user confirms continue
+</code></pre>
+<h3 id="ux-tradeoff-notes">UX tradeoff notes</h3>
+<ul>
+<li>Defaulting to <code>abort</code> on interruption is safer than defaulting to <code>update</code>.</li>
+<li>Showing one target skill at a time simplifies decisions when multiple overlaps exist.</li>
+<li>"Why this was flagged" text is mandatory for user trust and debuggability.</li>
+</ul>
+<h2 id="integration-boundaries">Integration Boundaries</h2>
+<h3 id="input-contract-from-phase-4-validation-quality-gates">Input contract from Phase 4 (Validation &amp; Quality Gates)</h3>
+<p>Phase 05 should only run when:
+- Candidate passed all blocking validation errors.
+- Candidate profile is normalized and parse-stable (same structure used in overlap stage).
+- Validation report is attached for traceability but not re-adjudicated here.</p>
+<p>If Phase 04 still has unresolved blocking errors, Phase 05 must not start (fail closed).</p>
+<h3 id="output-contract-to-phase-6-approval-gated-install-activation">Output contract to Phase 6 (Approval-Gated Install &amp; Activation)</h3>
+<p>Phase 05 must emit:
+- <code>OverlapReport</code> (all findings + signals + severity)
+- <code>ConflictResolutionDecision</code> (explicit selected mode)
+- <code>ResolutionSummary</code> (human-readable block for pre-install display)</p>
+<p>Phase 06 is responsible for:
+- Rendering final file diff/preview for install/write operations
+- Approval confirmation and filesystem mutation
+- Enforcing install block when Phase 05 decision is absent or <code>abort</code></p>
+<p>Phase 05 must not:
+- Write to <code>$CODEX_HOME/skills</code>
+- Modify existing installed skills
+- Auto-commit merge/update results</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<h3 id="pitfall-1-false-positives-from-generic-language">Pitfall 1: False positives from generic language</h3>
+<p><strong>What goes wrong:</strong> Generic words ("best practices", "guide") inflate similarity.
+<strong>Why it happens:</strong> Overweighting description token overlap.
+<strong>How to avoid:</strong> Downweight stopwords and require at least one strong scope/command signal.
+<strong>Warning signs:</strong> Many medium/high flags for clearly unrelated skills.</p>
+<h3 id="pitfall-2-false-negatives-from-naming-diversity">Pitfall 2: False negatives from naming diversity</h3>
+<p><strong>What goes wrong:</strong> Conflicting skills with different names bypass checks.
+<strong>Why it happens:</strong> Name collision treated as primary and only detector.
+<strong>How to avoid:</strong> Include in-scope/out-of-scope and command overlap signals.
+<strong>Warning signs:</strong> Duplicate behavior slips through when names differ.</p>
+<h3 id="pitfall-3-ambiguous-merge-semantics">Pitfall 3: Ambiguous merge semantics</h3>
+<p><strong>What goes wrong:</strong> "Merge" means different operations to users and code.
+<strong>Why it happens:</strong> No explicit merge policy definition in decision contract.
+<strong>How to avoid:</strong> Define merge policy modes (e.g., append sections, replace matching headings) before implementation tasks.
+<strong>Warning signs:</strong> Planner tasks mention merge without deterministic transformation rules.</p>
+<h3 id="pitfall-4-decision-state-lost-between-stages">Pitfall 4: Decision state lost between stages</h3>
+<p><strong>What goes wrong:</strong> Phase 06 cannot prove explicit user resolution happened.
+<strong>Why it happens:</strong> Decision stored only in transient UI state.
+<strong>How to avoid:</strong> Persist decision artifact in session state with timestamp and target IDs.
+<strong>Warning signs:</strong> Install flow re-prompts overlap or proceeds without a stored decision.</p>
+<h2 id="edge-cases-and-testing-strategy">Edge Cases and Testing Strategy</h2>
+<h3 id="critical-edge-cases">Critical edge cases</h3>
+<ol>
+<li>Candidate exactly equals installed skill content (<code>no-op</code> style overlap).</li>
+<li>Candidate has unique name but near-identical scope to one installed skill.</li>
+<li>One candidate overlaps multiple installed skills with different severities.</li>
+<li>User cancels prompt (Ctrl+C/EOF) during choice flow.</li>
+<li>Installed skill parse failure (malformed <code>SKILL.md</code>) while building index.</li>
+<li>Case-sensitivity/path-normalization differences on skill names across filesystems.</li>
+<li>Candidate marked "update" but selected target missing by time of Phase 06.</li>
+</ol>
+<h3 id="test-matrix-planning-ready">Test matrix (planning-ready)</h3>
+<table>
+<thead>
+<tr>
+<th>Test Type</th>
+<th>What to Verify</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unit: scoring</td>
+<td>Deterministic score + severity classification</td>
+<td>same fixture always yields same <code>OVLP.*</code> findings</td>
+</tr>
+<tr>
+<td>Unit: decision policy</td>
+<td>Block when overlap unresolved</td>
+<td>missing user choice sets <code>Blocking=true</code></td>
+</tr>
+<tr>
+<td>Unit: edge behavior</td>
+<td>interruption maps to safe abort</td>
+<td>prompt cancel -&gt; <code>ResolutionAbort</code></td>
+</tr>
+<tr>
+<td>Integration: phase handoff</td>
+<td>Phase 04 pass required before detection</td>
+<td>unresolved <code>Error</code> from validation skips Phase 05</td>
+</tr>
+<tr>
+<td>Integration: output contract</td>
+<td>Phase 06 receives complete decision artifact</td>
+<td>install stage rejects absent <code>ConflictResolutionDecision</code></td>
+</tr>
+<tr>
+<td>Golden fixtures</td>
+<td>known overlap scenarios remain stable</td>
+<td><code>fixtures/overlap-cases/*.yaml</code> expected report snapshots</td>
+</tr>
+<tr>
+<td>UX snapshot tests</td>
+<td>prompt text includes explicit choices and summary</td>
+<td>selection screen + summary output unchanged unless intentional</td>
+</tr>
+</tbody>
+</table>
+<h3 id="verification-commands-once-implementation-exists">Verification commands (once implementation exists)</h3>
+<pre><code class="language-bash">go test ./internal/overlap -v
+go test ./internal/app/generate -run Overlap -v
+go test ./... -run &quot;Overlap|Conflict|InstallGate&quot; -v
+</code></pre>
+<h2 id="code-examples">Code Examples</h2>
+<p>Verified patterns from official sources:</p>
+<h3 id="parse-frontmatter-metadata-for-profile-extraction">Parse frontmatter metadata for profile extraction</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/go.abhg.dev/goldmark/frontmatter
+md := goldmark.New(goldmark.WithExtensions(&amp;frontmatter.Extender{}))
+ctx := parser.NewContext()
+_ = md.Convert(src, io.Discard, parser.WithContext(ctx))
+fm := frontmatter.Get(ctx)
+</code></pre>
+<h3 id="explicit-cli-conflict-choice">Explicit CLI conflict choice</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/charm.land/huh/v2
+var choice string
+_ = huh.NewSelect[string]().
+    Title(&quot;Choose conflict resolution:&quot;).
+    Options(
+        huh.NewOption(&quot;Update&quot;, &quot;update&quot;),
+        huh.NewOption(&quot;Merge&quot;, &quot;merge&quot;),
+        huh.NewOption(&quot;Abort&quot;, &quot;abort&quot;),
+    ).
+    Value(&amp;choice).
+    Run()
+</code></pre>
+<h3 id="struct-equality-checks-for-exact-overlap-classification">Struct equality checks for exact-overlap classification</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/google/go-cmp
+if cmp.Equal(candidateProfile, existingProfile) {
+    findings = append(findings, NewFinding(&quot;OVLP.EXACT.CONTENT&quot;, SeverityHigh, existingProfile.ID))
+}
+</code></pre>
+<h2 id="state-of-the-art">State of the Art</h2>
+<table>
+<thead>
+<tr>
+<th>Old Approach</th>
+<th>Current Approach</th>
+<th>When Changed</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name-only duplicate detection</td>
+<td>Multi-signal overlap analysis + explicit decision UX</td>
+<td>Modern local-agent CLI workflows</td>
+<td>Reduces silent conflicts and improves user trust in install decisions.</td>
+</tr>
+<tr>
+<td>Implicit overwrite/update behavior</td>
+<td>Approval-gated explicit resolution and outcome preview</td>
+<td>Current Codex/agent safety patterns</td>
+<td>Aligns with fail-closed local-first safety constraints.</td>
+</tr>
+<tr>
+<td>Unstructured prompt text for risky actions</td>
+<td>Structured select/confirm interaction patterns</td>
+<td>Current CLI UX tooling maturity</td>
+<td>Makes choices testable and deterministic.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deprecated/outdated:</strong>
+- Silent overwrite as default conflict behavior: incompatible with OVLP-02 and fail-closed policy.</p>
+<h2 id="open-questions">Open Questions</h2>
+<ol>
+<li><strong>Merge semantics at section granularity</strong></li>
+<li>What we know: Phase 05 must offer merge as an explicit path.</li>
+<li>What's unclear: exact deterministic merge algorithm for <code>SKILL.md</code> sections.</li>
+<li>
+<p>Recommendation: In planning, define merge policy now as decision metadata only; actual materialized merge transform can be finalized in Phase 6 where preview/install pipeline exists.</p>
+</li>
+<li>
+<p><strong>Threshold tuning source</strong></p>
+</li>
+<li>What we know: heuristic thresholds are required for practical overlap severity classes.</li>
+<li>What's unclear: initial threshold values that minimize false positives for real user skill sets.</li>
+<li>Recommendation: start with conservative defaults from this doc and include fixture-driven calibration task before locking values.</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<h3 id="primary-high-confidence">Primary (HIGH confidence)</h3>
+<ul>
+<li>https://developers.openai.com/codex/skills - skill format expectations and scope-boundary importance.</li>
+<li>https://pkg.go.dev/charm.land/huh/v2 - explicit terminal choice/confirm primitives.</li>
+<li>https://pkg.go.dev/github.com/google/go-cmp - deterministic deep comparison support for profile equivalence checks.</li>
+<li>https://pkg.go.dev/github.com/sergi/go-diff - text diff generation primitives for change previews.</li>
+<li>https://pkg.go.dev/github.com/yuin/goldmark - markdown parser for normalized skill section extraction.</li>
+<li>https://pkg.go.dev/go.abhg.dev/goldmark/frontmatter - frontmatter extraction for name/description profile fields.</li>
+</ul>
+<h3 id="secondary-medium-confidence">Secondary (MEDIUM confidence)</h3>
+<ul>
+<li>https://cobra.dev/docs/how-to-guides/working-with-commands/ - command/error handling patterns informing explicit CLI stage flow.</li>
+</ul>
+<h3 id="tertiary-low-confidence">Tertiary (LOW confidence)</h3>
+<ul>
+<li>None. Critical claims are tied to official documentation and local project constraints.</li>
+</ul>
+<h2 id="metadata">Metadata</h2>
+<p><strong>Confidence breakdown:</strong>
+- Standard stack: HIGH - selected packages are official docs-backed and align with prior project architecture research.
+- Architecture: HIGH - patterns directly map to OVLP-01/02/03 and phase boundaries.
+- Pitfalls: MEDIUM-HIGH - failure modes are common in conflict pipelines and covered by deterministic tests.</p>
+<p><strong>Research date:</strong> 2026-03-10
+<strong>Valid until:</strong> 2026-04-09</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

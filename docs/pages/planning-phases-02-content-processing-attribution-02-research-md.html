@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 2: Content Processing &amp; Attribution - Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Phase 2: Content Processing &amp; Attribution - Research</h1>
+      <p>.planning/phases/02-content-processing-attribution/02-RESEARCH.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#phase-2-content-processing-attribution-research">Phase 2: Content Processing &amp; Attribution - Research</a><ul>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#standard-stack">Standard Stack</a><ul>
+<li><a href="#core">Core</a></li>
+<li><a href="#supporting">Supporting</a></li>
+<li><a href="#alternatives-considered">Alternatives Considered</a></li>
+</ul>
+</li>
+<li><a href="#architecture-patterns">Architecture Patterns</a><ul>
+<li><a href="#recommended-project-structure">Recommended Project Structure</a></li>
+<li><a href="#pattern-1-two-layer-content-model">Pattern 1: Two-Layer Content Model</a></li>
+<li><a href="#pattern-2-structure-first-chunking-token-guardrails-second">Pattern 2: Structure-First Chunking, Token Guardrails Second</a></li>
+<li><a href="#pattern-3-attribution-as-chunk-metadata-never-ui-derived">Pattern 3: Attribution as Chunk Metadata, Never UI-Derived</a></li>
+<li><a href="#anti-patterns-to-avoid">Anti-Patterns to Avoid</a></li>
+</ul>
+</li>
+<li><a href="#dont-hand-roll">Don't Hand-Roll</a></li>
+<li><a href="#common-pitfalls">Common Pitfalls</a><ul>
+<li><a href="#pitfall-1-deprecated-extractor-dependency">Pitfall 1: Deprecated extractor dependency</a></li>
+<li><a href="#pitfall-2-losing-codetablemedia-fidelity-during-normalization">Pitfall 2: Losing code/table/media fidelity during normalization</a></li>
+<li><a href="#pitfall-3-chunking-by-bytescharacters-only">Pitfall 3: Chunking by bytes/characters only</a></li>
+<li><a href="#pitfall-4-dedupe-overreach">Pitfall 4: Dedupe overreach</a></li>
+<li><a href="#pitfall-5-attribution-attached-after-summarization">Pitfall 5: Attribution attached after summarization</a></li>
+</ul>
+</li>
+<li><a href="#code-examples">Code Examples</a><ul>
+<li><a href="#main-content-extraction">Main-content extraction</a></li>
+<li><a href="#html-markdown-conversion-with-extension-points">HTML-&gt;Markdown conversion with extension points</a></li>
+<li><a href="#token-chunking-with-overlap">Token chunking with overlap</a></li>
+<li><a href="#structured-summary-output-call-pattern">Structured summary output call pattern</a></li>
+</ul>
+</li>
+<li><a href="#state-of-the-art">State of the Art</a></li>
+<li><a href="#open-questions">Open Questions</a></li>
+<li><a href="#sources">Sources</a><ul>
+<li><a href="#primary-high-confidence">Primary (HIGH confidence)</a></li>
+<li><a href="#secondary-medium-confidence">Secondary (MEDIUM confidence)</a></li>
+<li><a href="#tertiary-low-confidence">Tertiary (LOW confidence)</a></li>
+</ul>
+</li>
+<li><a href="#metadata">Metadata</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Phase 2: Content Processing &amp; Attribution - Research</h2>
+        <p>Rendered from <code>.planning/phases/02-content-processing-attribution/02-RESEARCH.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="phase-2-content-processing-attribution-research">Phase 2: Content Processing &amp; Attribution - Research</h1>
+<p><strong>Researched:</strong> 2026-03-10
+<strong>Domain:</strong> Go content normalization, chunk summarization, and source attribution pipeline
+<strong>Confidence:</strong> HIGH</p>
+<h2 id="summary">Summary</h2>
+<p>This research focused on how to convert Phase 1 crawl outputs into clean, inspectable, attributable context for downstream generation, while honoring locked decisions: minimal chrome stripping, light cleanup, high-confidence dedupe, medium chunk size, 1-2 line gist summaries, summary-first review, and per-chunk attribution.</p>
+<p>The standard implementation pattern is a three-stage transform: (1) extract main readable content while preserving important structure, (2) normalize into markdown/text that retains tables/code/media hints, and (3) split into bounded chunks with metadata-first provenance (<code>source_url</code>, headings, checksums, token counts). Summaries should be generated as schema-validated records so every chunk has a stable 1-2 line gist and attribution fields for UI review.</p>
+<p>The strongest recommendation is to rely on maintained parser/converter/splitter libraries and keep custom logic only for policy decisions (boilerplate thresholds, dedupe confidence gates, and attribution display). This avoids fragile hand-rolled HTML/chunking code and keeps Phase 2 planning task-oriented.</p>
+<p><strong>Primary recommendation:</strong> Use <code>go-readability v2</code> + <code>html-to-markdown/v2</code> + <code>langchaingo/textsplitter</code> + schema-validated summary output, with chunk metadata as the source of truth for attribution.</p>
+<h2 id="standard-stack">Standard Stack</h2>
+<p>The established libraries/tools for this domain:</p>
+<h3 id="core">Core</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Why Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>codeberg.org/readeck/go-readability/v2</code></td>
+<td><code>v2.1.1</code></td>
+<td>Main-content extraction with light chrome removal</td>
+<td>Maintained Readability.js-aligned extractor; upstream <code>go-shiori/go-readability</code> is deprecated in favor of this line.</td>
+</tr>
+<tr>
+<td><code>github.com/JohannesKaufmann/html-to-markdown/v2</code></td>
+<td><code>v2.5.0</code></td>
+<td>HTML to markdown normalization with structural fidelity</td>
+<td>Supports plugin-based conversion, table plugin, and custom renderers for selective tag handling.</td>
+</tr>
+<tr>
+<td><code>github.com/tmc/langchaingo</code> (<code>textsplitter</code>)</td>
+<td><code>v0.1.14</code></td>
+<td>Recursive/token chunking with overlap and heading options</td>
+<td>Provides tested splitter primitives including token splitter and metadata-preserving split document flow.</td>
+</tr>
+<tr>
+<td><code>github.com/openai/openai-go/v3</code></td>
+<td><code>v3.26.0</code></td>
+<td>Structured chunk gist generation (1-2 lines)</td>
+<td>Official SDK supports schema-constrained structured output workflows.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting">Supporting</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/pkoukk/tiktoken-go</code></td>
+<td><code>v0.1.8</code></td>
+<td>Token counting and tokenizer alignment</td>
+<td>Use when controlling chunk size by token budget and validating prompt footprint.</td>
+</tr>
+<tr>
+<td><code>github.com/microcosm-cc/bluemonday</code></td>
+<td><code>v1.0.27</code></td>
+<td>Sanitization of untrusted HTML when needed</td>
+<td>Use if rendered/previewed HTML is shown; keep conversion pipeline safe from script/style payloads.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alternatives-considered">Alternatives Considered</h3>
+<table>
+<thead>
+<tr>
+<th>Instead of</th>
+<th>Could Use</th>
+<th>Tradeoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go-readability/v2</code></td>
+<td><code>github.com/PuerkitoBio/goquery</code> only extraction</td>
+<td><code>goquery</code> is excellent for DOM selection, but not a full readability/content scoring engine by itself.</td>
+</tr>
+<tr>
+<td><code>html-to-markdown/v2</code></td>
+<td>direct <code>.Text()</code> extraction from DOM</td>
+<td>Faster but loses structure (tables/code/image context) needed by your phase decisions.</td>
+</tr>
+<tr>
+<td><code>langchaingo textsplitter</code></td>
+<td>custom splitter implementation</td>
+<td>Custom splitter increases edge-case burden (boundaries, overlap, tables, headings, multibyte length).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Installation:</strong></p>
+<pre><code class="language-bash">go get codeberg.org/readeck/go-readability/v2
+go get github.com/JohannesKaufmann/html-to-markdown/v2
+go get github.com/tmc/langchaingo@v0.1.14
+go get github.com/openai/openai-go/v3@v3.26.0
+go get github.com/pkoukk/tiktoken-go
+go get github.com/microcosm-cc/bluemonday
+</code></pre>
+<h2 id="architecture-patterns">Architecture Patterns</h2>
+<h3 id="recommended-project-structure">Recommended Project Structure</h3>
+<pre><code class="language-text">internal/content/
+├── extract/            # readability extraction + minimal chrome policy
+├── normalize/          # html-&gt;markdown, code/table/media preservation
+├── dedupe/             # exact and high-confidence near-duplicate policy
+├── chunk/              # splitter config + chunk metadata population
+├── summarize/          # 1-2 line gist generation via structured output
+└── present/            # summary-first view model + raw expansion references
+</code></pre>
+<h3 id="pattern-1-two-layer-content-model">Pattern 1: Two-Layer Content Model</h3>
+<p><strong>What:</strong> Keep both <code>normalized</code> and <code>review</code> representations, not one lossy blob.
+<strong>When to use:</strong> Always in this phase, because users need summary-first + raw expansion.
+<strong>Example:</strong></p>
+<pre><code class="language-go">type NormalizedChunk struct {
+    ID          string
+    SourceURL   string
+    PageTitle   string
+    HeadingPath []string
+    RawMarkdown string
+    RawText     string
+    TokenCount  int
+    Checksum    string
+}
+
+type ReviewChunk struct {
+    ChunkID      string
+    SourceURL    string
+    GistSummary  string // 1-2 lines
+    PreviewText  string
+    ExpandTarget string // key to full raw chunk
+}
+</code></pre>
+<h3 id="pattern-2-structure-first-chunking-token-guardrails-second">Pattern 2: Structure-First Chunking, Token Guardrails Second</h3>
+<p><strong>What:</strong> Split by semantic boundaries first (headings/paragraphs/tables/code blocks), then enforce medium token caps with overlap.
+<strong>When to use:</strong> Default mode for docs/reference pages.
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: https://raw.githubusercontent.com/tmc/langchaingo/main/textsplitter/token_splitter.go
+splitter := textsplitter.NewTokenSplitter(
+    textsplitter.WithChunkSize(500),
+    textsplitter.WithChunkOverlap(80),
+)
+chunks, err := splitter.SplitText(markdownText)
+</code></pre>
+<h3 id="pattern-3-attribution-as-chunk-metadata-never-ui-derived">Pattern 3: Attribution as Chunk Metadata, Never UI-Derived</h3>
+<p><strong>What:</strong> Store provenance directly on each chunk record (<code>source_url</code>, heading path, offsets/checksum), then render from metadata.
+<strong>When to use:</strong> Always; required by CONT-03.
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: https://raw.githubusercontent.com/tmc/langchaingo/main/schema/documents.go
+doc := schema.Document{
+    PageContent: chunkText,
+    Metadata: map[string]any{
+        &quot;source_url&quot;: sourceURL,
+        &quot;page_title&quot;: pageTitle,
+        &quot;chunk_id&quot;:   chunkID,
+        &quot;checksum&quot;:   checksum,
+    },
+}
+</code></pre>
+<h3 id="anti-patterns-to-avoid">Anti-Patterns to Avoid</h3>
+<ul>
+<li><strong>Single-pass plaintext extraction:</strong> Loses table/code/media context and weakens downstream quality.</li>
+<li><strong>Attribution only at page-level:</strong> Fails per-chunk provenance requirement and makes review ambiguous.</li>
+<li><strong>Aggressive dedupe thresholding:</strong> Drops distinct but similar sections; keep dedupe to high-confidence overlaps only.</li>
+<li><strong>Summary-only storage:</strong> Prevents raw expansion and creates irreversible information loss.</li>
+</ul>
+<h2 id="dont-hand-roll">Don't Hand-Roll</h2>
+<p>Problems that look simple but have existing solutions:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Don't Build</th>
+<th>Use Instead</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main-content extraction</td>
+<td>Custom "remove nav/footer regex" pipeline</td>
+<td><code>go-readability/v2</code></td>
+<td>Readability heuristics are battle-tested and handle varied DOM patterns better.</td>
+</tr>
+<tr>
+<td>HTML to markdown fidelity</td>
+<td>Ad-hoc tag-by-tag converter</td>
+<td><code>html-to-markdown/v2</code> with plugins</td>
+<td>Tables/code/link/image handling and extension hooks already exist.</td>
+</tr>
+<tr>
+<td>Chunk splitting mechanics</td>
+<td>Custom overlap/merge splitter</td>
+<td><code>langchaingo/textsplitter</code></td>
+<td>Handles recursive boundaries and token-based splitting with configurable overlap.</td>
+</tr>
+<tr>
+<td>Structured gist outputs</td>
+<td>Prompt-only freeform summaries</td>
+<td>JSON-schema-constrained model output</td>
+<td>Ensures each chunk summary is parseable and consistently shaped.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight:</strong> Hand-rolling extraction/conversion/splitting causes silent quality regressions and high maintenance burden; custom code should define policy thresholds, not core text-processing mechanics.</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<h3 id="pitfall-1-deprecated-extractor-dependency">Pitfall 1: Deprecated extractor dependency</h3>
+<p><strong>What goes wrong:</strong> Team uses deprecated <code>github.com/go-shiori/go-readability</code> as primary.
+<strong>Why it happens:</strong> Older package still appears in search results and examples.
+<strong>How to avoid:</strong> Use <code>codeberg.org/readeck/go-readability/v2</code> as default extractor.
+<strong>Warning signs:</strong> New extraction bugs fixed upstream but not available in your pinned package.</p>
+<h3 id="pitfall-2-losing-codetablemedia-fidelity-during-normalization">Pitfall 2: Losing code/table/media fidelity during normalization</h3>
+<p><strong>What goes wrong:</strong> Conversion drops table alignment, mangles code fences, or removes alt/caption context.
+<strong>Why it happens:</strong> Plain text extraction shortcuts bypass structure-preserving conversion.
+<strong>How to avoid:</strong> Normalize through markdown conversion with table support; preserve image/link context fields.
+<strong>Warning signs:</strong> Chunk previews have flattened rows, missing snippet context, or image references vanish.</p>
+<h3 id="pitfall-3-chunking-by-bytescharacters-only">Pitfall 3: Chunking by bytes/characters only</h3>
+<p><strong>What goes wrong:</strong> Medium chunks become inconsistent by model token limits, causing prompt inefficiency.
+<strong>Why it happens:</strong> Character-length chunking alone does not track tokenizer boundaries.
+<strong>How to avoid:</strong> Use token-aware splitter or token count validation (<code>tiktoken-go</code>) after semantic split.
+<strong>Warning signs:</strong> Frequent oversized prompt payloads and variable chunk utility.</p>
+<h3 id="pitfall-4-dedupe-overreach">Pitfall 4: Dedupe overreach</h3>
+<p><strong>What goes wrong:</strong> Similar but distinct sections are removed.
+<strong>Why it happens:</strong> Broad near-duplicate rules applied without confidence gating.
+<strong>How to avoid:</strong> Restrict dedupe to exact hash and very high-confidence normalized overlap only; log suppressions.
+<strong>Warning signs:</strong> Missing sections users expected to review; unexplained chunk count drops.</p>
+<h3 id="pitfall-5-attribution-attached-after-summarization">Pitfall 5: Attribution attached after summarization</h3>
+<p><strong>What goes wrong:</strong> Summaries cannot be reliably traced back to source chunks.
+<strong>Why it happens:</strong> Provenance is added in presentation layer instead of chunk creation.
+<strong>How to avoid:</strong> Stamp source metadata at chunk creation and carry unchanged through summarization and UI.
+<strong>Warning signs:</strong> Summary rows without stable <code>chunk_id</code>/<code>source_url</code>.</p>
+<h2 id="code-examples">Code Examples</h2>
+<p>Verified patterns from official sources:</p>
+<h3 id="main-content-extraction">Main-content extraction</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/codeberg.org/readeck/go-readability/v2
+article, err := readability.FromReader(srcReader, baseURL)
+if err != nil { return err }
+contentHTML := article.Content()
+textContent := article.TextContent()
+</code></pre>
+<h3 id="html-markdown-conversion-with-extension-points">HTML-&gt;Markdown conversion with extension points</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/JohannesKaufmann/html-to-markdown/v2
+markdown, err := htmltomarkdown.ConvertString(inputHTML)
+if err != nil { return err }
+</code></pre>
+<h3 id="token-chunking-with-overlap">Token chunking with overlap</h3>
+<pre><code class="language-go">// Source: https://raw.githubusercontent.com/tmc/langchaingo/main/textsplitter/token_splitter.go
+splitter := textsplitter.NewTokenSplitter(
+    textsplitter.WithChunkSize(500),
+    textsplitter.WithChunkOverlap(80),
+)
+parts, err := splitter.SplitText(markdown)
+if err != nil { return err }
+</code></pre>
+<h3 id="structured-summary-output-call-pattern">Structured summary output call pattern</h3>
+<pre><code class="language-go">// Source: https://raw.githubusercontent.com/openai/openai-go/main/README.md
+resp, err := client.Responses.New(ctx, responses.ResponseNewParams{
+    Model: openai.ChatModelGPT5_2,
+    Input: responses.ResponseNewParamsInputUnion{OfString: openai.String(prompt)},
+    Text: responses.ResponseTextConfigParam{
+        Format: responses.ResponseFormatTextConfigParamOfJSONSchema(
+            &quot;chunk_summary&quot;,
+            chunkSummarySchema,
+        ),
+    },
+})
+</code></pre>
+<h2 id="state-of-the-art">State of the Art</h2>
+<table>
+<thead>
+<tr>
+<th>Old Approach</th>
+<th>Current Approach</th>
+<th>When Changed</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/go-shiori/go-readability</code> primary</td>
+<td><code>codeberg.org/readeck/go-readability/v2</code></td>
+<td>2025-2026</td>
+<td>Better maintained Readability-compatible extraction path; avoid deprecated package line.</td>
+</tr>
+<tr>
+<td>Freeform summary strings</td>
+<td>Structured output with JSON schema</td>
+<td>GPT-4o+ era onward</td>
+<td>Predictable machine-consumable chunk summaries and safer downstream parsing.</td>
+</tr>
+<tr>
+<td>Character-only chunk sizing</td>
+<td>Token-aware chunking guardrails</td>
+<td>Modern LLM pipelines</td>
+<td>More stable prompt budgeting and better retrieval/generation efficiency.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deprecated/outdated:</strong>
+- <code>github.com/go-shiori/go-readability</code> as primary extractor: deprecated by maintainers in favor of readeck module path.</p>
+<h2 id="open-questions">Open Questions</h2>
+<ol>
+<li><strong>Near-duplicate algorithm beyond exact-match dedupe</strong></li>
+<li>What we know: high-confidence overlap removal is required; exact and normalized hash checks are safe.</li>
+<li>What's unclear: whether to adopt a dedicated near-dup library now or defer until real corpus metrics exist.</li>
+<li>
+<p>Recommendation: ship Phase 2 with exact + strict normalized dedupe only; instrument duplicate rates and revisit in later phase.</p>
+</li>
+<li>
+<p><strong>Default medium chunk target by model family</strong></p>
+</li>
+<li>What we know: token-aware chunking is available and preferred.</li>
+<li>What's unclear: exact default (<code>~400</code>, <code>~500</code>, <code>~700</code>) for best balance with later Phase 3 prompts.</li>
+<li>Recommendation: start at 500 tokens with 80 overlap, then calibrate using real prompt-size telemetry.</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<h3 id="primary-high-confidence">Primary (HIGH confidence)</h3>
+<ul>
+<li><code>codeberg.org/readeck/go-readability/v2</code> docs: https://pkg.go.dev/codeberg.org/readeck/go-readability/v2</li>
+<li>Readeck fork docs and compatibility notes: https://codeberg.org/readeck/go-readability</li>
+<li><code>html-to-markdown/v2</code> docs: https://pkg.go.dev/github.com/JohannesKaufmann/html-to-markdown/v2</li>
+<li><code>goquery</code> docs (fallback/DOM extraction constraints): https://pkg.go.dev/github.com/PuerkitoBio/goquery</li>
+<li>LangChainGo text splitter docs: https://tmc.github.io/langchaingo/docs/modules/data_connection/text_splitters/</li>
+<li>LangChainGo splitter source (<code>token_splitter</code>, options, split docs): https://raw.githubusercontent.com/tmc/langchaingo/main/textsplitter/token_splitter.go</li>
+<li>OpenAI structured outputs guide: https://platform.openai.com/docs/guides/structured-outputs</li>
+<li>OpenAI Go SDK README (structured outputs example): https://raw.githubusercontent.com/openai/openai-go/main/README.md</li>
+<li><code>tiktoken-go</code> docs: https://pkg.go.dev/github.com/pkoukk/tiktoken-go</li>
+<li><code>bluemonday</code> docs: https://pkg.go.dev/github.com/microcosm-cc/bluemonday</li>
+</ul>
+<h3 id="secondary-medium-confidence">Secondary (MEDIUM confidence)</h3>
+<ul>
+<li>Ecosystem pattern references for chunking and attribution (validated directionally against official docs): web search results on 2026 chunking best practices.</li>
+</ul>
+<h3 id="tertiary-low-confidence">Tertiary (LOW confidence)</h3>
+<ul>
+<li>Web-search-only near-duplicate recommendations (MinHash/LSH blog posts) not backed by an actively maintained Go-first official standard package for this project yet.</li>
+</ul>
+<h2 id="metadata">Metadata</h2>
+<p><strong>Confidence breakdown:</strong>
+- Standard stack: HIGH - based on current official package docs, version metadata, and maintainer deprecation guidance.
+- Architecture: HIGH - directly aligned with package capabilities and locked phase decisions.
+- Pitfalls: MEDIUM-HIGH - mostly verified by official docs; dedupe-specific tuning remains context-dependent.</p>
+<p><strong>Research date:</strong> 2026-03-10
+<strong>Valid until:</strong> 2026-04-09</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roadmap: Skill Weaver · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Roadmap: Skill Weaver</h1>
+      <p>.planning/ROADMAP.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#roadmap-skill-weaver">Roadmap: Skill Weaver</a><ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#phases">Phases</a><ul>
+<li><a href="#phase-1-crawl-ingestion-foundation">Phase 1 - Crawl &amp; Ingestion Foundation</a></li>
+<li><a href="#phase-2-content-processing-attribution">Phase 2 - Content Processing &amp; Attribution</a></li>
+<li><a href="#phase-3-interactive-refinement-loop">Phase 3 - Interactive Refinement Loop</a></li>
+<li><a href="#phase-4-validation-quality-gates">Phase 4 - Validation &amp; Quality Gates</a></li>
+<li><a href="#phase-5-overlap-conflict-resolution">Phase 5 - Overlap &amp; Conflict Resolution</a></li>
+<li><a href="#phase-6-approval-gated-install-activation">Phase 6 - Approval-Gated Install &amp; Activation</a></li>
+</ul>
+</li>
+<li><a href="#progress">Progress</a></li>
+<li><a href="#coverage-check">Coverage Check</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Roadmap: Skill Weaver</h2>
+        <p>Rendered from <code>.planning/ROADMAP.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="roadmap-skill-weaver">Roadmap: Skill Weaver</h1>
+<h2 id="overview">Overview</h2>
+<p>This roadmap delivers Skill Weaver as a quality-gated, local-first CLI that turns documentation into installable Codex skills with explicit user control. Phases are derived directly from v1 requirement groups and ordered by dependency so each phase unlocks the next capability. Every v1 requirement is mapped to exactly one phase with observable outcomes.</p>
+<h2 id="phases">Phases</h2>
+<h3 id="phase-1-crawl-ingestion-foundation">Phase 1 - Crawl &amp; Ingestion Foundation</h3>
+<p><strong>Goal:</strong> User can start from a documentation entry URL and get a bounded, transparent crawl result suitable for downstream processing.</p>
+<p><strong>Dependencies:</strong> None</p>
+<p><strong>Requirements:</strong>
+- CRAWL-01
+- CRAWL-02
+- CRAWL-03
+- CRAWL-04</p>
+<p><strong>Success Criteria:</strong>
+1. User can input a docs URL and the system crawls only same-domain pages.
+2. Crawl stops safely at the default 50-page cap without hanging or overrunning.
+3. User can see which URLs were skipped and why.
+4. User receives a final crawl summary with discovered, processed, and skipped counts.</p>
+<h3 id="phase-2-content-processing-attribution">Phase 2 - Content Processing &amp; Attribution</h3>
+<p><strong>Goal:</strong> User gets clean, attributable source material that is efficient to use in generation.</p>
+<p><strong>Dependencies:</strong> Phase 1</p>
+<p><strong>Requirements:</strong>
+- CONT-01
+- CONT-02
+- CONT-03</p>
+<p><strong>Success Criteria:</strong>
+1. Crawled pages are converted into normalized text that is usable by later pipeline steps.
+2. User can inspect structured summarized chunks rather than raw unbounded page dumps.
+3. Generated context retains source URL attribution that the user can review.</p>
+<h3 id="phase-3-interactive-refinement-loop">Phase 3 - Interactive Refinement Loop</h3>
+<p><strong>Goal:</strong> User can complete and refine required skill inputs through an adaptive conversation before generation finalization.</p>
+<p><strong>Dependencies:</strong> Phase 2</p>
+<p><strong>Requirements:</strong>
+- INT-01
+- INT-02
+- INT-03</p>
+<p><strong>Success Criteria:</strong>
+1. User is guided through adaptive questions until required skill fields are filled.
+2. Flow behavior reflects a crawl/summarize-first approach followed by targeted deepening questions.
+3. User can revise prior answers before committing to final generation output.</p>
+<h3 id="phase-4-validation-quality-gates">Phase 4 - Validation &amp; Quality Gates</h3>
+<p><strong>Goal:</strong> User can only proceed when generated skill output is structurally and semantically acceptable for Codex usage.</p>
+<p><strong>Dependencies:</strong> Phase 3</p>
+<p><strong>Requirements:</strong>
+- VAL-01
+- VAL-02
+- VAL-03</p>
+<p><strong>Success Criteria:</strong>
+1. Candidate skill fails closed when required sections or schema constraints are not met.
+2. On validation failure, user receives targeted follow-up prompts instead of a silent error.
+3. Final candidate explicitly shows in-scope and out-of-scope boundaries.</p>
+<h3 id="phase-5-overlap-conflict-resolution">Phase 5 - Overlap &amp; Conflict Resolution</h3>
+<p><strong>Goal:</strong> User can resolve conflicts with existing installed skills explicitly before any install decision.</p>
+<p><strong>Dependencies:</strong> Phase 4</p>
+<p><strong>Requirements:</strong>
+- OVLP-01
+- OVLP-02
+- OVLP-03</p>
+<p><strong>Success Criteria:</strong>
+1. System checks generated skill against installed skills and surfaces overlap/conflict findings.
+2. When overlap exists, user is offered explicit merge or update choices.
+3. User sees the selected conflict-resolution outcome before any write/install action.</p>
+<h3 id="phase-6-approval-gated-install-activation">Phase 6 - Approval-Gated Install &amp; Activation</h3>
+<p><strong>Goal:</strong> User can safely approve and install a validated, conflict-resolved skill that Codex can use immediately.</p>
+<p><strong>Dependencies:</strong> Phase 5</p>
+<p><strong>Requirements:</strong>
+- INST-01
+- INST-02
+- INST-03
+- INST-04</p>
+<p><strong>Success Criteria:</strong>
+1. User can review a preview or diff of generated skill content before approval.
+2. Skill is written to <code>$CODEX_HOME/skills/&lt;skill-name&gt;</code> only after explicit user approval.
+3. Install is blocked when validation or conflict state remains unresolved.
+4. After successful install, Codex can use the skill without additional manual setup.</p>
+<h2 id="progress">Progress</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Name</th>
+<th>Status</th>
+<th>Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Crawl &amp; Ingestion Foundation</td>
+<td>Complete</td>
+<td>4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Content Processing &amp; Attribution</td>
+<td>Complete</td>
+<td>3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Interactive Refinement Loop</td>
+<td>Complete</td>
+<td>3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Validation &amp; Quality Gates</td>
+<td>Complete</td>
+<td>3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Overlap &amp; Conflict Resolution</td>
+<td>Complete</td>
+<td>3</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Approval-Gated Install &amp; Activation</td>
+<td>Complete</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<h2 id="coverage-check">Coverage Check</h2>
+<ul>
+<li>Total v1 requirements: 20</li>
+<li>Requirements mapped: 20</li>
+<li>Unmapped requirements: 0</li>
+<li>Duplicate mappings: 0</li>
+</ul>
+<p>Coverage is complete.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

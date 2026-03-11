@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skill Weaver (cli-skill) · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Skill Weaver (cli-skill)</h1>
+      <p>README.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#skill-weaver-cli-skill">Skill Weaver (cli-skill)</a></li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Skill Weaver (cli-skill)</h2>
+        <p>Rendered from <code>README.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <div align="center">
+  <img src="assets/skill-weaver-banner.svg" alt="Skill Weaver banner" width="100%" />
+</div>
+
+<h1 id="skill-weaver-cli-skill">Skill Weaver (cli-skill)</h1>
+<p>Drop a link into the grid. I map the signal, interrogate the gaps, and only then mint a validated, conflict-checked skill—installed after explicit approval and nothing earlier.</p>
+<p><strong>Project Description</strong>
+Skill Weaver is a Go CLI that converts a single documentation URL into a Codex skill scaffold using a gated pipeline: bounded crawl, structured processing, adaptive refinement, strict validation, conflict resolution, and approval-only installation. It is built to keep every skill atomic, auditable, and immediately usable without surprise writes.</p>
+<p><strong>How To Use In Codex</strong>
+1. Set <code>CODEX_HOME</code> to your Codex home directory.
+2. Build or install the CLI: <code>go install ./cmd/cli-skill</code>.
+3. Run the generator with your docs URL and follow prompts: <code>cli-skill generate &lt;docs-url&gt;</code>.
+4. Resolve validation fixes and any overlap decisions when prompted.
+5. Approve the preview/diff when you want the skill installed.
+6. Start or refresh your Codex session so it detects the new skill.
+7. Use the skill in your session by name when prompting Codex.</p>
+<p><strong>Why It Exists</strong>
+- One-page links are easy; usable Codex skills are not. I bridge that gap with structured refinement and strict validation.
+- Skill overlap is costly. I surface conflicts and require explicit resolution before anything is written.
+- Installation safety matters. I never write before preview and approval.</p>
+<p><strong>Core Principles</strong>
+- Local-first pipeline with deterministic output boundaries.
+- Fail-closed validation and conflict gates.
+- Explicit approval before any filesystem mutation.
+- Single-capability skills with explicit in-scope and out-of-scope boundaries.
+- Bounded, same-domain crawl starting from a single entry URL.</p>
+<div style="margin: 14px 0; height: 2px; background: linear-gradient(90deg, #15f4ee, #ff7ad9, #faff6b); border-radius: 2px;"></div>
+
+<p><strong>Architecture At A Glance</strong></p>
+<div align="center">
+  <img src="assets/architecture-diagram.svg" alt="Skill Weaver architecture diagram" width="100%" />
+</div>
+
+<p><strong>Phase Map</strong>
+Phase 1: Crawl &amp; Ingestion Foundation
+- Same-domain crawl only, default cap 50 pages, transparent skip reasons, summary counts.</p>
+<p>Phase 2: Content Processing &amp; Attribution
+- Normalize text, preserve structure, chunk and summarize with per-chunk source attribution.</p>
+<p>Phase 3: Interactive Refinement Loop
+- Adaptive question flow, confidence-driven deepening, <code>revise &lt;field&gt;</code> edits, sectioned review.</p>
+<p>Phase 4: Validation &amp; Quality Gates
+- Structural and semantic validation, one-issue-at-a-time fix loop, explicit scope boundaries.</p>
+<p>Phase 5: Overlap &amp; Conflict Resolution
+- Detect overlap with installed skills and require explicit update/merge/abort decision.</p>
+<p>Phase 6: Approval-Gated Install &amp; Activation
+- Preview/diff, explicit approval, atomic install, post-install verification.</p>
+<p><strong>Dataflow Contract</strong></p>
+<pre><code class="language-mermaid">sequenceDiagram
+    autonumber
+    participant U as User
+    participant C as cli-skill
+    participant R as Registry ($CODEX_HOME/skills)
+
+    U-&gt;&gt;C: Provide docs URL
+    C-&gt;&gt;C: Crawl same-domain, cap pages
+    C-&gt;&gt;C: Normalize + chunk + summarize
+    C-&gt;&gt;U: Ask adaptive refinement questions
+    C-&gt;&gt;C: Validate structure and scope
+    C-&gt;&gt;C: Detect overlap and ask for decision
+    C-&gt;&gt;U: Show preview/diff and ask approval
+    U-&gt;&gt;C: Approve or cancel
+    C-&gt;&gt;R: Atomic install if approved
+    C-&gt;&gt;U: Success or blocked with guidance
+</code></pre>
+<p><strong>Tech Stack</strong>
+Core CLI dependencies (pinned):
+- Go <code>1.25.x</code>
+- <code>github.com/spf13/cobra@v1.10.2</code>
+- <code>charm.land/huh/v2@v2.0.3</code>
+- <code>github.com/openai/openai-go/v3@v3.26.0</code>
+- <code>github.com/spf13/viper@v1.21.0</code></p>
+<p>Phase stacks (planned, per research docs):
+- Crawl foundation: <code>github.com/gocolly/colly/v2</code>, <code>net/url</code>, <code>mime</code>, <code>github.com/PuerkitoBio/goquery</code>
+- Content processing: <code>codeberg.org/readeck/go-readability/v2</code>, <code>github.com/JohannesKaufmann/html-to-markdown/v2</code>, <code>github.com/tmc/langchaingo/textsplitter</code>, <code>github.com/pkoukk/tiktoken-go</code>
+- Refinement loop: <code>github.com/santhosh-tekuri/jsonschema/v6</code>, optional <code>github.com/looplab/fsm</code>
+- Validation gates: <code>github.com/yuin/goldmark</code>, <code>go.abhg.dev/goldmark/frontmatter</code>, <code>github.com/go-playground/validator/v10</code>
+- Overlap resolution: <code>github.com/google/go-cmp</code>, <code>github.com/sergi/go-diff</code>
+- Install pipeline: <code>github.com/spf13/afero</code> (tests), <code>github.com/sergi/go-diff</code>, stdlib atomic rename</p>
+<p><strong>Repository Layout</strong>
+Current entrypoint:
+- <code>cmd/cli-skill/</code> is the main package for the CLI binary.</p>
+<p>Current internal packages:
+- <code>internal/crawl/</code> includes crawl contracts and skip-reason taxonomy.</p>
+<p>Planned internal packages (phase-aligned):
+- <code>internal/content/</code> for extraction, normalization, chunking, summarization, presentation.
+- <code>internal/refinement/</code> for adaptive questioning and revision flow.
+- <code>internal/validation/</code> for schema and semantic validation gates.
+- <code>internal/overlap/</code> for installed-skill indexing and conflict decisions.
+- <code>internal/install/</code> for preview, approval, and atomic install transaction.</p>
+<p><strong>How The Build Is Shaped</strong>
+1. Start with a single docs URL.
+2. Crawl same-domain pages with a strict cap and explicit skip reasons.
+3. Extract and normalize content with structure preserved.
+4. Chunk and summarize content with per-chunk attribution.
+5. Run an adaptive question flow to fill required skill fields.
+6. Validate structure and scope; fix one blocking issue at a time.
+7. Detect overlap with installed skills and require explicit decision.
+8. Show preview/diff, require approval, install atomically.</p>
+<p><strong>Boot Sequence</strong>
+I run clean and loud when your toolchain is ready.</p>
+<p>Prerequisites:
+- Go <code>1.25.x</code> installed and on <code>PATH</code>.
+- <code>CODEX_HOME</code> set to your Codex home directory.</p>
+<p>Initialize and run:</p>
+<pre><code class="language-bash">go mod init &lt;module-path&gt;
+go get github.com/spf13/cobra@v1.10.2
+go get charm.land/huh/v2@v2.0.3
+go get github.com/openai/openai-go/v3@v3.26.0
+go get github.com/spf13/viper@v1.21.0
+
+go mod tidy
+go fmt ./...
+go vet ./...
+go test ./...
+
+go run ./cmd/cli-skill --help
+</code></pre>
+<p>Build and install:</p>
+<pre><code class="language-bash">go build -o bin/cli-skill ./cmd/cli-skill
+./bin/cli-skill --version
+
+go install ./cmd/cli-skill
+</code></pre>
+<p><strong>System Status</strong>
+- Phase 1 is in progress.
+- Task 1 for Phase 1 Plan 01-01 is implemented.
+- Verification for that task is pending.
+- Roadmap coverage is complete for all v1 requirements.</p>
+<p><strong>Useful If You Want</strong>
+- A deterministic, local-first path from docs to a Codex-ready skill.
+- Strict safety gates and explicit approvals before install.
+- A pipeline that surfaces what it skips, why it skips, and how it decides.</p>
+<p><strong>Notes</strong>
+- The binary name is <code>cli-skill</code> per project instructions.
+- The project name in planning docs is Skill Weaver; both refer to the same tool.
+- The pipeline is intentionally bounded in v1 to keep outputs deterministic and audit-friendly.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

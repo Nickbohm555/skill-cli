@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 04: Validation &amp; Quality Gates - Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Phase 04: Validation &amp; Quality Gates - Research</h1>
+      <p>.planning/phases/04-validation-quality-gates/04-RESEARCH.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#phase-04-validation-quality-gates-research">Phase 04: Validation &amp; Quality Gates - Research</a><ul>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#standard-stack">Standard Stack</a><ul>
+<li><a href="#core">Core</a></li>
+<li><a href="#supporting">Supporting</a></li>
+<li><a href="#alternatives-considered">Alternatives Considered</a></li>
+</ul>
+</li>
+<li><a href="#architecture-patterns">Architecture Patterns</a><ul>
+<li><a href="#recommended-project-structure">Recommended Project Structure</a></li>
+<li><a href="#pattern-1-two-pass-fail-closed-validation">Pattern 1: Two-Pass Fail-Closed Validation</a></li>
+<li><a href="#pattern-2-stable-rule-ids-for-prompt-targeting">Pattern 2: Stable Rule IDs for Prompt Targeting</a></li>
+<li><a href="#pattern-3-guided-single-edit-revalidation-loop">Pattern 3: Guided Single-Edit Revalidation Loop</a></li>
+<li><a href="#anti-patterns-to-avoid">Anti-Patterns to Avoid</a></li>
+</ul>
+</li>
+<li><a href="#dont-hand-roll">Don't Hand-Roll</a></li>
+<li><a href="#common-pitfalls">Common Pitfalls</a><ul>
+<li><a href="#pitfall-1-structural-pass-but-semantic-failure-is-ignored">Pitfall 1: Structural pass but semantic failure is ignored</a></li>
+<li><a href="#pitfall-2-non-deterministic-issue-ordering">Pitfall 2: Non-deterministic issue ordering</a></li>
+<li><a href="#pitfall-3-warning-severity-leakage-into-blocking-path">Pitfall 3: Warning severity leakage into blocking path</a></li>
+<li><a href="#pitfall-4-follow-up-prompts-are-generic-not-issue-targeted">Pitfall 4: Follow-up prompts are generic, not issue-targeted</a></li>
+</ul>
+</li>
+<li><a href="#code-examples">Code Examples</a><ul>
+<li><a href="#parse-frontmatter-with-goldmark-extension">Parse frontmatter with goldmark extension</a></li>
+<li><a href="#compile-and-apply-json-schema-validation">Compile and apply JSON Schema validation</a></li>
+<li><a href="#field-and-cross-field-semantic-checks">Field and cross-field semantic checks</a></li>
+</ul>
+</li>
+<li><a href="#state-of-the-art">State of the Art</a></li>
+<li><a href="#open-questions">Open Questions</a></li>
+<li><a href="#sources">Sources</a><ul>
+<li><a href="#primary-high-confidence">Primary (HIGH confidence)</a></li>
+<li><a href="#secondary-medium-confidence">Secondary (MEDIUM confidence)</a></li>
+<li><a href="#tertiary-low-confidence">Tertiary (LOW confidence)</a></li>
+</ul>
+</li>
+<li><a href="#metadata">Metadata</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Phase 04: Validation &amp; Quality Gates - Research</h2>
+        <p>Rendered from <code>.planning/phases/04-validation-quality-gates/04-RESEARCH.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="phase-04-validation-quality-gates-research">Phase 04: Validation &amp; Quality Gates - Research</h1>
+<p><strong>Researched:</strong> 2026-03-10
+<strong>Domain:</strong> Strict validation gates for generated Codex skills in Go CLI
+<strong>Confidence:</strong> HIGH</p>
+<h2 id="summary">Summary</h2>
+<p>Phase 04 should be planned as a deterministic validation subsystem that sits between generation and any downstream progression/install step. The validator must fail closed on structural violations, block progression on blocking issues, and drive a guided single-issue fix loop until the candidate is acceptable or the user exits.</p>
+<p>For this project, the strongest implementation is a layered validator: parse <code>SKILL.md</code> into a normalized model, run strict structural/schema checks first, then run semantic quality checks (including explicit in-scope and out-of-scope boundaries). Validation output should be machine-readable with stable rule IDs and severities (<code>Error</code>, <code>Warning</code>) so Phase 03's interaction loop can generate targeted follow-up prompts and revalidate one edit at a time.</p>
+<p>This phase should not attempt broad UX redesign or install flow logic; it should define the quality gate contract used by later phases. The main planning risk is ambiguity around "semantic acceptability", so tasks should explicitly codify rule definitions, failure messages, and prompt mapping per rule.</p>
+<p><strong>Primary recommendation:</strong> Implement a two-pass validator (<code>structural -&gt; semantic</code>) with rule IDs, fail-closed blocking on any <code>Error</code>, and a one-issue-at-a-time targeted follow-up loop that revalidates after each single edit.</p>
+<h2 id="standard-stack">Standard Stack</h2>
+<p>The established libraries/tools for this domain:</p>
+<h3 id="core">Core</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Why Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/yuin/goldmark</code></td>
+<td><code>v1.7.16</code></td>
+<td>Parse Markdown body and heading structure from <code>SKILL.md</code></td>
+<td>CommonMark-compliant AST parser with explicit extension points for robust section validation.</td>
+</tr>
+<tr>
+<td><code>go.abhg.dev/goldmark/frontmatter</code></td>
+<td><code>v0.3.0</code></td>
+<td>Parse and decode YAML/TOML frontmatter into typed structs</td>
+<td>Purpose-built frontmatter support integrated with goldmark parser context.</td>
+</tr>
+<tr>
+<td><code>github.com/santhosh-tekuri/jsonschema/v6</code></td>
+<td><code>v6.0.2</code></td>
+<td>Strict schema validation for normalized skill model</td>
+<td>Strong JSON Schema compliance (incl. draft 2020-12) with introspectable errors suited for targeted prompts.</td>
+</tr>
+<tr>
+<td><code>github.com/go-playground/validator/v10</code></td>
+<td><code>v10.30.1</code></td>
+<td>Deterministic semantic/rule-level validation beyond schema</td>
+<td>Mature rule/tag + custom-validator pattern for cross-field semantics and stable error extraction.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting">Supporting</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>charm.land/huh/v2</code></td>
+<td><code>v2.0.3</code></td>
+<td>One-question targeted follow-up prompts after validation failures</td>
+<td>Use in retry loop to present exactly one fix request and revalidate.</td>
+</tr>
+<tr>
+<td><code>gopkg.in/yaml.v3</code></td>
+<td><code>v3.0.1</code></td>
+<td>YAML decoding helpers for frontmatter and metadata handling</td>
+<td>Use when explicit YAML-node control is needed outside parser extension defaults.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alternatives-considered">Alternatives Considered</h3>
+<table>
+<thead>
+<tr>
+<th>Instead of</th>
+<th>Could Use</th>
+<th>Tradeoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go.abhg.dev/goldmark/frontmatter</code> + <code>goldmark</code></td>
+<td><code>github.com/adrg/frontmatter</code> + custom Markdown parsing</td>
+<td>Simpler frontmatter-only parse, but requires separate body/heading parser orchestration.</td>
+</tr>
+<tr>
+<td><code>jsonschema/v6</code> for structural contracts</td>
+<td>Hand-rolled map/struct checks only</td>
+<td>Faster initial coding, but weaker error consistency and higher long-term rule drift risk.</td>
+</tr>
+<tr>
+<td><code>validator/v10</code> for semantic cross-field checks</td>
+<td>All semantic checks as ad hoc <code>if</code> statements</td>
+<td>Less dependency surface, but poorer reuse/composability and harder standardized error metadata.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Installation:</strong></p>
+<pre><code class="language-bash">go get github.com/yuin/goldmark@v1.7.16
+go get go.abhg.dev/goldmark/frontmatter@v0.3.0
+go get github.com/santhosh-tekuri/jsonschema/v6@v6.0.2
+go get github.com/go-playground/validator/v10@v10.30.1
+go get charm.land/huh/v2@v2.0.3
+go get gopkg.in/yaml.v3@v3.0.1
+</code></pre>
+<h2 id="architecture-patterns">Architecture Patterns</h2>
+<h3 id="recommended-project-structure">Recommended Project Structure</h3>
+<pre><code class="language-text">internal/validation/
+├── model.go                # normalized candidate model from SKILL.md
+├── parse_skill.go          # frontmatter + markdown parsing
+├── schema_validate.go      # structural/schema checks (VAL-01)
+├── semantic_validate.go    # boundary + quality checks (VAL-03)
+├── report.go               # issue model, severity, rule IDs, ordering
+└── followup_prompt.go      # issue-&gt;targeted prompt mapping (VAL-02)
+
+internal/app/generate/
+└── fix_loop.go             # one-issue-at-a-time retry orchestration
+</code></pre>
+<h3 id="pattern-1-two-pass-fail-closed-validation">Pattern 1: Two-Pass Fail-Closed Validation</h3>
+<p><strong>What:</strong> Run structural/schema checks first, semantic checks second; any <code>Error</code> blocks progression.
+<strong>When to use:</strong> Always for Phase 04 acceptance decisions.
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/santhosh-tekuri/jsonschema/v6
+// plus project fail-closed policy.
+report := validation.NewReport()
+
+structIssues := validator.Structural(candidate)
+report.Add(structIssues...)
+if report.HasError() {
+    return report // block immediately; no progression
+}
+
+semanticIssues := validator.Semantic(candidate)
+report.Add(semanticIssues...)
+return report // caller decides pass/block from severity
+</code></pre>
+<h3 id="pattern-2-stable-rule-ids-for-prompt-targeting">Pattern 2: Stable Rule IDs for Prompt Targeting</h3>
+<p><strong>What:</strong> Each validation failure has a stable <code>rule_id</code> and severity to map into one specific follow-up prompt.
+<strong>When to use:</strong> Required for VAL-02 targeted re-ask behavior.
+<strong>Example:</strong></p>
+<pre><code class="language-go">type ValidationIssue struct {
+    RuleID   string   // e.g. &quot;VAL.SECTION.IN_SCOPE_MISSING&quot;
+    Severity Severity // Error | Warning
+    Message  string
+    Path     string   // e.g. &quot;sections.in_scope&quot;
+}
+
+func NextBlockingIssue(r Report) (ValidationIssue, bool) {
+    for _, issue := range r.Issues {
+        if issue.Severity == Error {
+            return issue, true // one-at-a-time guidance
+        }
+    }
+    return ValidationIssue{}, false
+}
+</code></pre>
+<h3 id="pattern-3-guided-single-edit-revalidation-loop">Pattern 3: Guided Single-Edit Revalidation Loop</h3>
+<p><strong>What:</strong> Present one blocking issue, ask one targeted follow-up, apply one edit, revalidate immediately.
+<strong>When to use:</strong> Every failure cycle (per locked context decisions).
+<strong>Example:</strong></p>
+<pre><code class="language-go">for {
+    report := validate(candidate)
+    issue, ok := report.NextBlockingIssue()
+    if !ok {
+        break // no blocking errors
+    }
+
+    prompt := followup.ForRule(issue.RuleID)
+    answer := askOne(prompt) // one issue, one prompt
+    candidate = applySingleEdit(candidate, issue, answer)
+}
+</code></pre>
+<h3 id="anti-patterns-to-avoid">Anti-Patterns to Avoid</h3>
+<ul>
+<li><strong>Batching all issues into one mega prompt:</strong> breaks one-at-a-time decision and reduces fix precision.</li>
+<li><strong>Severity-free validation output:</strong> prevents deterministic block/pass behavior.</li>
+<li><strong>Implicit "best effort" acceptance:</strong> violates fail-closed VAL-01 requirement.</li>
+<li><strong>Regex-only section checks on raw markdown:</strong> brittle; parse to structured model first.</li>
+</ul>
+<h2 id="dont-hand-roll">Don't Hand-Roll</h2>
+<p>Problems that look simple but have existing solutions:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Don't Build</th>
+<th>Use Instead</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown + heading parsing</td>
+<td>Custom line-scanner parser</td>
+<td><code>goldmark</code> AST parsing</td>
+<td>Section detection and heading semantics are edge-case heavy.</td>
+</tr>
+<tr>
+<td>Frontmatter extraction</td>
+<td>Manual delimiter slicing</td>
+<td><code>goldmark/frontmatter</code></td>
+<td>Handles typed decode and parser-context integration cleanly.</td>
+</tr>
+<tr>
+<td>Schema conformance engine</td>
+<td>Custom required-field checker only</td>
+<td><code>jsonschema/v6</code></td>
+<td>Better compliance, richer error details, less drift over time.</td>
+</tr>
+<tr>
+<td>Cross-field semantic checks</td>
+<td>Scattered <code>if</code> chains in handlers</td>
+<td><code>validator/v10</code> + explicit custom rules</td>
+<td>Keeps semantic policy centralized and testable.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight:</strong> In this phase, reliability comes from deterministic parsing and standardized validation primitives; hand-rolled parsers/checkers create hidden acceptance bugs that directly undermine fail-closed gating.</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<h3 id="pitfall-1-structural-pass-but-semantic-failure-is-ignored">Pitfall 1: Structural pass but semantic failure is ignored</h3>
+<p><strong>What goes wrong:</strong> Candidate passes schema but still has vague or missing scope boundaries.
+<strong>Why it happens:</strong> Teams stop at field-presence validation.
+<strong>How to avoid:</strong> Make semantic validation a required second pass, not optional linting.
+<strong>Warning signs:</strong> Many accepted skills have generic "does everything" descriptions.</p>
+<h3 id="pitfall-2-non-deterministic-issue-ordering">Pitfall 2: Non-deterministic issue ordering</h3>
+<p><strong>What goes wrong:</strong> Different runs surface different "first" issues, confusing the fix loop.
+<strong>Why it happens:</strong> Issues are emitted from unordered maps or parallel checks without sorting.
+<strong>How to avoid:</strong> Sort by deterministic priority (<code>Error</code> first, then rule weight, then path).
+<strong>Warning signs:</strong> Same input yields different first follow-up prompt across runs.</p>
+<h3 id="pitfall-3-warning-severity-leakage-into-blocking-path">Pitfall 3: Warning severity leakage into blocking path</h3>
+<p><strong>What goes wrong:</strong> Non-blocking <code>Warning</code> items accidentally block progression.
+<strong>Why it happens:</strong> Gate logic checks for "any issues" instead of "any Error".
+<strong>How to avoid:</strong> Centralize <code>HasBlockingIssues()</code> and use that everywhere.
+<strong>Warning signs:</strong> User gets blocked despite no <code>Error</code> in report.</p>
+<h3 id="pitfall-4-follow-up-prompts-are-generic-not-issue-targeted">Pitfall 4: Follow-up prompts are generic, not issue-targeted</h3>
+<p><strong>What goes wrong:</strong> Retry loop stalls because user gets broad prompts not tied to failed rule.
+<strong>Why it happens:</strong> No rule-to-prompt mapping table.
+<strong>How to avoid:</strong> Create explicit mapping from <code>rule_id -&gt; prompt template -&gt; expected edit target</code>.
+<strong>Warning signs:</strong> Multiple retries without changing the same failing rule outcome.</p>
+<h2 id="code-examples">Code Examples</h2>
+<p>Verified patterns from official sources:</p>
+<h3 id="parse-frontmatter-with-goldmark-extension">Parse frontmatter with goldmark extension</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/go.abhg.dev/goldmark/frontmatter
+md := goldmark.New(
+    goldmark.WithExtensions(&amp;frontmatter.Extender{}),
+)
+ctx := parser.NewContext()
+_ = md.Convert(src, io.Discard, parser.WithContext(ctx))
+
+fm := frontmatter.Get(ctx)
+var meta struct {
+    Name        string `yaml:&quot;name&quot;`
+    Description string `yaml:&quot;description&quot;`
+}
+if err := fm.Decode(&amp;meta); err != nil {
+    return err
+}
+</code></pre>
+<h3 id="compile-and-apply-json-schema-validation">Compile and apply JSON Schema validation</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/santhosh-tekuri/jsonschema/v6
+compiler := jsonschema.NewCompiler()
+if err := compiler.AddResource(&quot;skill.schema.json&quot;, strings.NewReader(schemaJSON)); err != nil {
+    return err
+}
+schema, err := compiler.Compile(&quot;skill.schema.json&quot;)
+if err != nil {
+    return err
+}
+if err := schema.Validate(normalizedSkill); err != nil {
+    return err // map to Error severity in report
+}
+</code></pre>
+<h3 id="field-and-cross-field-semantic-checks">Field and cross-field semantic checks</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/go-playground/validator/v10
+validate := validator.New(validator.WithRequiredStructEnabled())
+
+type Scope struct {
+    InScope    []string `validate:&quot;required,min=1,dive,min=5&quot;`
+    OutOfScope []string `validate:&quot;required,min=1,dive,min=5&quot;`
+}
+
+if err := validate.Struct(scope); err != nil {
+    return err // map each field error to stable rule_id
+}
+</code></pre>
+<h2 id="state-of-the-art">State of the Art</h2>
+<table>
+<thead>
+<tr>
+<th>Old Approach</th>
+<th>Current Approach</th>
+<th>When Changed</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regex/manual markdown scanning</td>
+<td>CommonMark AST parsing with <code>goldmark</code></td>
+<td>Ongoing ecosystem standardization</td>
+<td>Fewer false positives/negatives in required section detection.</td>
+</tr>
+<tr>
+<td>Monolithic pass/fail validation</td>
+<td>Structured reports with severity + machine-readable rules</td>
+<td>Modern CLI validation workflows</td>
+<td>Enables targeted guided fixes and policy-safe blocking.</td>
+</tr>
+<tr>
+<td>Frontmatter parsed separately from markdown pipeline</td>
+<td>Parser-integrated frontmatter extensions</td>
+<td>Recent Go markdown tooling maturity</td>
+<td>Cleaner parse pipeline and less parser glue code.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deprecated/outdated:</strong>
+- Treating semantic checks as optional warnings-only quality hints for this workflow: incompatible with project fail-closed objective.</p>
+<h2 id="open-questions">Open Questions</h2>
+<ol>
+<li><strong>Boundary quality threshold details</strong></li>
+<li>What we know: <code>in-scope</code> and <code>out-of-scope</code> sections must exist and be explicit.</li>
+<li>What's unclear: exact minimum quality rubric (for example, min item count, prohibited vague phrases).</li>
+<li>
+<p>Recommendation: define and version a concrete rubric in this phase plan (<code>VAL.SCOPE.*</code> rules) and test with fixtures.</p>
+</li>
+<li>
+<p><strong>Schema source of truth format</strong></p>
+</li>
+<li>What we know: strict schema validation is required.</li>
+<li>What's unclear: whether canonical schema artifact should be JSON Schema only, CUE only, or both.</li>
+<li>Recommendation: use JSON Schema as runtime gate in Phase 04; consider CUE only if later phases need schema composition ergonomics.</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<h3 id="primary-high-confidence">Primary (HIGH confidence)</h3>
+<ul>
+<li>https://developers.openai.com/codex/skills - required skill metadata (<code>name</code>, <code>description</code>) and boundary guidance in descriptions.</li>
+<li>https://pkg.go.dev/github.com/yuin/goldmark - CommonMark-compliant parser and extension model.</li>
+<li>https://pkg.go.dev/go.abhg.dev/goldmark/frontmatter - parser-integrated frontmatter decoding patterns.</li>
+<li>https://pkg.go.dev/github.com/santhosh-tekuri/jsonschema/v6 - strict schema validation capabilities and error model.</li>
+<li>https://pkg.go.dev/github.com/go-playground/validator/v10 - semantic/cross-field validation patterns.</li>
+<li>https://pkg.go.dev/charm.land/huh/v2 - interactive prompt flow primitives for targeted one-at-a-time follow-up.</li>
+<li>https://pkg.go.dev/gopkg.in/yaml.v3 - YAML parsing support metadata.</li>
+</ul>
+<h3 id="secondary-medium-confidence">Secondary (MEDIUM confidence)</h3>
+<ul>
+<li>https://pkg.go.dev/github.com/adrg/frontmatter - alternative frontmatter parser used for tradeoff comparison.</li>
+</ul>
+<h3 id="tertiary-low-confidence">Tertiary (LOW confidence)</h3>
+<ul>
+<li>Web ecosystem searches for "Go markdown/frontmatter/json-schema libraries 2026" used for discovery only; critical claims above were verified against package or official documentation.</li>
+</ul>
+<h2 id="metadata">Metadata</h2>
+<p><strong>Confidence breakdown:</strong>
+- Standard stack: HIGH - core libraries and versions are documented on official package pages and align with existing project stack research.
+- Architecture: HIGH - patterns directly enforce locked decisions (fail-closed, one-at-a-time issues, single-edit revalidate loop).
+- Pitfalls: MEDIUM-HIGH - grounded in common validator workflow failure modes; exact frequency depends on implementation quality.</p>
+<p><strong>Research date:</strong> 2026-03-10
+<strong>Valid until:</strong> 2026-04-09</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

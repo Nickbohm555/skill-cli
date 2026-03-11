@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>External Integrations · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>External Integrations</h1>
+      <p>.planning/codebase/INTEGRATIONS.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#external-integrations">External Integrations</a><ul>
+<li><a href="#apis-external-services">APIs &amp; External Services</a></li>
+<li><a href="#data-storage">Data Storage</a></li>
+<li><a href="#authentication-identity">Authentication &amp; Identity</a></li>
+<li><a href="#monitoring-observability">Monitoring &amp; Observability</a></li>
+<li><a href="#cicd-deployment">CI/CD &amp; Deployment</a></li>
+<li><a href="#environment-configuration">Environment Configuration</a></li>
+<li><a href="#webhooks-callbacks">Webhooks &amp; Callbacks</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>External Integrations</h2>
+        <p>Rendered from <code>.planning/codebase/INTEGRATIONS.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="external-integrations">External Integrations</h1>
+<p><strong>Analysis Date:</strong> 2026-03-10</p>
+<h2 id="apis-external-services">APIs &amp; External Services</h2>
+<p><strong>LLM Provider:</strong>
+- OpenAI Responses API - summarizing attributed chunks during content processing.
+  - SDK/Client: <code>github.com/openai/openai-go/v3</code> in <code>internal/content/summarize.go</code>.
+  - Auth: <code>OPENAI_API_KEY</code> read in <code>internal/content/summarize.go</code>.</p>
+<p><strong>Web Documentation Fetching:</strong>
+- Arbitrary user-provided docs hosts over HTTP/HTTPS - crawl and fetch source pages from <code>--url</code>.
+  - SDK/Client: <code>github.com/gocolly/colly/v2</code> in <code>internal/crawl/engine.go</code> and stdlib <code>net/http</code> in <code>internal/cli/command/process.go</code>.
+  - Auth: Not detected (unauthenticated fetch behavior in <code>internal/cli/command/process.go</code> and <code>internal/crawl/engine.go</code>).</p>
+<h2 id="data-storage">Data Storage</h2>
+<p><strong>Databases:</strong>
+- Not detected.
+  - Connection: Not applicable.
+  - Client: Not applicable.</p>
+<p><strong>File Storage:</strong>
+- Local filesystem only; generated/installed skills are written as <code>SKILL.md</code> under <code>CODEX_HOME/skills</code> (or <code>~/.codex/skills</code>) in <code>internal/install/transaction.go</code> and <code>internal/overlap/index_installed.go</code>.</p>
+<p><strong>Caching:</strong>
+- None detected (no Redis/memcached/cache client dependencies in <code>go.mod</code>; no cache integration in <code>internal/**/*.go</code>).</p>
+<h2 id="authentication-identity">Authentication &amp; Identity</h2>
+<p><strong>Auth Provider:</strong>
+- Custom environment-key auth for OpenAI only.
+  - Implementation: API key from <code>OPENAI_API_KEY</code> gates provider selection in <code>internal/content/summarize.go</code>; no user/session auth layer is present in <code>cmd/cli-skill/main.go</code> or <code>internal/cli/command/*.go</code>.</p>
+<h2 id="monitoring-observability">Monitoring &amp; Observability</h2>
+<p><strong>Error Tracking:</strong>
+- None detected (no Sentry/Datadog/Bugsnag SDKs in <code>go.mod</code>).</p>
+<p><strong>Logs:</strong>
+- CLI stdout/stderr rendering and error propagation only via <code>fmt.Fprintf</code> and command <code>RunE</code> returns in <code>cmd/cli-skill/main.go</code>, <code>internal/cli/command/crawl.go</code>, and <code>internal/cli/command/process.go</code>.</p>
+<h2 id="cicd-deployment">CI/CD &amp; Deployment</h2>
+<p><strong>Hosting:</strong>
+- Not applicable; distributed as a local CLI binary from <code>cmd/cli-skill/main.go</code>.</p>
+<p><strong>CI Pipeline:</strong>
+- Not detected (no <code>.github/workflows/*.yml</code> in repo root and no other CI manifest detected).</p>
+<h2 id="environment-configuration">Environment Configuration</h2>
+<p><strong>Required env vars:</strong>
+- <code>CODEX_HOME</code> - optional override for installed skill root in <code>internal/overlap/index_installed.go</code>.
+- <code>OPENAI_API_KEY</code> - required only for OpenAI summarization path in <code>internal/content/summarize.go</code>; fallback mode works without it.</p>
+<p><strong>Secrets location:</strong>
+- Process environment variables only (<code>os.Getenv</code> usage in <code>internal/content/summarize.go</code> and <code>internal/overlap/index_installed.go</code>); no committed secret file integration detected.</p>
+<h2 id="webhooks-callbacks">Webhooks &amp; Callbacks</h2>
+<p><strong>Incoming:</strong>
+- None (no HTTP server endpoints or webhook handlers detected in <code>cmd/</code> or <code>internal/</code>).</p>
+<p><strong>Outgoing:</strong>
+- HTTP GET crawl/fetch requests to target docs URLs in <code>internal/crawl/engine.go</code> and <code>internal/cli/command/process.go</code>.
+- OpenAI API calls for summarization when configured in <code>internal/content/summarize.go</code>.</p>
+<hr />
+<p><em>Integration audit: 2026-03-10</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

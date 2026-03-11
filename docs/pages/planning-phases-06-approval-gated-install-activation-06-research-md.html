@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 06: Approval-Gated Install &amp; Activation - Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Phase 06: Approval-Gated Install &amp; Activation - Research</h1>
+      <p>.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#phase-06-approval-gated-install-activation-research">Phase 06: Approval-Gated Install &amp; Activation - Research</a><ul>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#standard-stack">Standard Stack</a><ul>
+<li><a href="#core">Core</a></li>
+<li><a href="#supporting">Supporting</a></li>
+<li><a href="#alternatives-considered">Alternatives Considered</a></li>
+</ul>
+</li>
+<li><a href="#architecture-patterns">Architecture Patterns</a><ul>
+<li><a href="#recommended-project-structure">Recommended Project Structure</a></li>
+<li><a href="#pattern-1-fail-closed-preflight-gate">Pattern 1: Fail-Closed Preflight Gate</a></li>
+<li><a href="#pattern-2-preview-before-approval-never-after">Pattern 2: Preview Before Approval, Never After</a></li>
+<li><a href="#pattern-3-atomic-transactional-install">Pattern 3: Atomic Transactional Install</a></li>
+<li><a href="#pattern-4-activation-verification-with-fallback-message">Pattern 4: Activation Verification with Fallback Message</a></li>
+<li><a href="#anti-patterns-to-avoid">Anti-Patterns to Avoid</a></li>
+</ul>
+</li>
+<li><a href="#dont-hand-roll">Don't Hand-Roll</a></li>
+<li><a href="#common-pitfalls">Common Pitfalls</a><ul>
+<li><a href="#pitfall-1-approval-prompt-appears-but-write-already-happened">Pitfall 1: Approval prompt appears but write already happened</a></li>
+<li><a href="#pitfall-2-gate-bypass-via-stale-or-missing-phase-05-decision">Pitfall 2: Gate bypass via stale or missing Phase 05 decision</a></li>
+<li><a href="#pitfall-3-non-atomic-update-corrupts-existing-skill">Pitfall 3: Non-atomic update corrupts existing skill</a></li>
+<li><a href="#pitfall-4-interactive-assumptions-break-automation-mode">Pitfall 4: Interactive assumptions break automation mode</a></li>
+<li><a href="#pitfall-5-immediate-usability-not-verified">Pitfall 5: "Immediate usability" not verified</a></li>
+</ul>
+</li>
+<li><a href="#code-examples">Code Examples</a><ul>
+<li><a href="#explicit-yesno-confirmation-prompt">Explicit Yes/No confirmation prompt</a></li>
+<li><a href="#diff-generation-before-approval">Diff generation before approval</a></li>
+<li><a href="#atomic-move-caveat-to-account-for-in-design">Atomic move caveat to account for in design</a></li>
+</ul>
+</li>
+<li><a href="#state-of-the-art">State of the Art</a></li>
+<li><a href="#open-questions">Open Questions</a></li>
+<li><a href="#sources">Sources</a><ul>
+<li><a href="#primary-high-confidence">Primary (HIGH confidence)</a></li>
+<li><a href="#secondary-medium-confidence">Secondary (MEDIUM confidence)</a></li>
+<li><a href="#tertiary-low-confidence">Tertiary (LOW confidence)</a></li>
+</ul>
+</li>
+<li><a href="#metadata">Metadata</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Phase 06: Approval-Gated Install &amp; Activation - Research</h2>
+        <p>Rendered from <code>.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="phase-06-approval-gated-install-activation-research">Phase 06: Approval-Gated Install &amp; Activation - Research</h1>
+<p><strong>Researched:</strong> 2026-03-10
+<strong>Domain:</strong> Safe approval-gated installation and immediate activation of generated Codex skills in a Go CLI
+<strong>Confidence:</strong> HIGH</p>
+<h2 id="summary">Summary</h2>
+<p>Phase 06 should be planned as the only mutating stage in the pipeline: it renders a final preview/diff, asks for explicit approval, performs an atomic write to <code>$CODEX_HOME/skills/&lt;skill-name&gt;</code>, and verifies post-install activation signals. This phase must consume Phase 05's explicit <code>ConflictResolutionDecision</code> and remain blocked if validation or conflict state is unresolved.</p>
+<p>The recommended architecture is a fail-closed install transaction: <code>preflight gates -&gt; preview/diff -&gt; explicit confirm -&gt; stage temp dir -&gt; atomic move -&gt; post-install verification</code>. For this project, no write should happen before a positive confirmation result in interactive mode, and non-interactive invocations should hard-fail unless an explicit force/approve flag is provided by policy.</p>
+<p>Codex documentation indicates skill changes are detected automatically, with restart only as fallback when a change does not appear. Planning should treat "immediately usable" as "discoverable without extra setup in the normal path", and include deterministic verification checks plus a clear fallback message only for exceptional detection lag.</p>
+<p><strong>Primary recommendation:</strong> Implement Phase 06 as an atomic, fail-closed install transaction that requires explicit confirmation after a mandatory preview/diff and blocks on any unresolved Phase 04/05 gate state.</p>
+<h2 id="standard-stack">Standard Stack</h2>
+<p>The established libraries/tools for this domain:</p>
+<h3 id="core">Core</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Why Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Go stdlib (<code>os</code>, <code>path/filepath</code>, <code>io/fs</code>)</td>
+<td>Go 1.25.x stdlib</td>
+<td>Path resolution, staging dirs, atomic rename, permission-safe writes</td>
+<td>Canonical primitives for local filesystem transactions and install safety in Go CLIs.</td>
+</tr>
+<tr>
+<td><code>charm.land/huh/v2</code></td>
+<td><code>v2.0.3</code></td>
+<td>Explicit yes/no approval prompts and deterministic interactive flow</td>
+<td>Mature Go CLI prompt library with first-class <code>Confirm</code> and form primitives.</td>
+</tr>
+<tr>
+<td><code>github.com/sergi/go-diff</code></td>
+<td><code>v1.4.0</code></td>
+<td>Human-readable pre-approval diff rendering for <code>SKILL.md</code> and touched files</td>
+<td>Widely used text diff package with current 2025 release line and stable API.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting">Supporting</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/spf13/cobra</code></td>
+<td><code>v1.10.2</code></td>
+<td>Command/flag mode control for interactive vs non-interactive approval policy</td>
+<td>Use for explicit <code>RunE</code> error paths and deny-by-default non-interactive behavior.</td>
+</tr>
+<tr>
+<td><code>github.com/spf13/afero</code></td>
+<td><code>v1.15.0</code></td>
+<td>Filesystem abstraction for install transaction tests</td>
+<td>Use in unit/integration tests to verify fail-closed writes without mutating real <code>$CODEX_HOME</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alternatives-considered">Alternatives Considered</h3>
+<table>
+<thead>
+<tr>
+<th>Instead of</th>
+<th>Could Use</th>
+<th>Tradeoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go-diff</code> preview rendering</td>
+<td>Hand-rolled line differ</td>
+<td>Less dependency, but higher risk of misleading previews and edge-case bugs.</td>
+</tr>
+<tr>
+<td><code>huh</code> explicit prompts</td>
+<td>Raw <code>stdin</code> parsing</td>
+<td>Smaller stack, but weaker UX/input validation and harder to test reliably.</td>
+</tr>
+<tr>
+<td>Single-step direct write</td>
+<td>Stage + atomic move transaction</td>
+<td>Direct write is simpler but violates safety goals under interruption/failure.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Installation:</strong></p>
+<pre><code class="language-bash">go get charm.land/huh/v2@v2.0.3
+go get github.com/sergi/go-diff@v1.4.0
+go get github.com/spf13/cobra@v1.10.2
+go get github.com/spf13/afero@v1.15.0
+</code></pre>
+<h2 id="architecture-patterns">Architecture Patterns</h2>
+<h3 id="recommended-project-structure">Recommended Project Structure</h3>
+<pre><code class="language-text">internal/install/
+├── model.go                   # install request/result + gate states
+├── preflight_gates.go         # enforce VAL/OVLP resolution prerequisites
+├── preview_diff.go            # render preview + unified/textual diff
+├── approval_prompt.go         # explicit approval contract (interactive/non-interactive)
+├── transaction.go             # stage -&gt; write -&gt; fsync/safe close -&gt; atomic move
+├── activate_verify.go         # post-install discoverability/usability checks
+└── errors.go                  # typed fail-closed install errors
+
+internal/app/generate/
+└── install_stage.go           # consumes Phase 05 decision artifact and invokes install pipeline
+</code></pre>
+<h3 id="pattern-1-fail-closed-preflight-gate">Pattern 1: Fail-Closed Preflight Gate</h3>
+<p><strong>What:</strong> Block install unless Phase 04 validation is clear and Phase 05 conflict state is resolved and non-abort.
+<strong>When to use:</strong> Always before preview or any filesystem preparation.
+<strong>Example:</strong></p>
+<pre><code class="language-go">func Preflight(state SessionState) error {
+    if state.Validation.HasBlockingError() {
+        return ErrInstallBlockedValidation
+    }
+    if !state.ConflictDecision.IsResolved() || state.ConflictDecision.Mode == ResolutionAbort {
+        return ErrInstallBlockedConflict
+    }
+    return nil
+}
+</code></pre>
+<h3 id="pattern-2-preview-before-approval-never-after">Pattern 2: Preview Before Approval, Never After</h3>
+<p><strong>What:</strong> Show candidate content and/or diff first, then ask for explicit confirmation.
+<strong>When to use:</strong> Every install/update/merge path (INST-01, INST-02).
+<strong>Example:</strong></p>
+<pre><code class="language-go">preview := RenderPreview(candidate, existingMaybe)
+fmt.Println(preview)
+
+var approved bool
+_ = huh.NewConfirm().
+    Title(&quot;Approve install to $CODEX_HOME/skills/&lt;skill-name&gt;?&quot;).
+    Affirmative(&quot;Approve install&quot;).
+    Negative(&quot;Cancel&quot;).
+    Value(&amp;approved).
+    Run()
+if !approved {
+    return ErrInstallDeclined
+}
+</code></pre>
+<h3 id="pattern-3-atomic-transactional-install">Pattern 3: Atomic Transactional Install</h3>
+<p><strong>What:</strong> Write to temp staging under target parent, then <code>os.Rename</code> into final path after successful build/validation of staged artifact.
+<strong>When to use:</strong> Any write/overwrite path to skill registry.
+<strong>Example:</strong></p>
+<pre><code class="language-go">stageDir, err := os.MkdirTemp(targetParent, &quot;.skill-stage-*&quot;)
+if err != nil { return err }
+defer os.RemoveAll(stageDir)
+
+if err := writeSkill(stageDir, artifact); err != nil { return err }
+if err := verifyStaged(stageDir); err != nil { return err }
+
+// same parent dir helps preserve atomic behavior expectations
+if err := os.Rename(stageDir, finalPath); err != nil {
+    return err
+}
+</code></pre>
+<h3 id="pattern-4-activation-verification-with-fallback-message">Pattern 4: Activation Verification with Fallback Message</h3>
+<p><strong>What:</strong> Verify installed skill is present and parse-valid immediately after write; surface restart fallback only if discovery lag occurs.
+<strong>When to use:</strong> Always after successful transaction (INST-04).
+<strong>Example:</strong></p>
+<pre><code class="language-go">if err := VerifyInstalledSkill(finalPath); err != nil {
+    return fmt.Errorf(&quot;installed but verification failed: %w&quot;, err)
+}
+fmt.Println(&quot;Skill installed and ready. If Codex does not show it yet, restart Codex.&quot;)
+</code></pre>
+<h3 id="anti-patterns-to-avoid">Anti-Patterns to Avoid</h3>
+<ul>
+<li><strong>Write then ask approval:</strong> violates explicit approval requirement.</li>
+<li><strong>Proceed on unresolved conflict/validation warnings treated as acceptable:</strong> breaks fail-closed policy.</li>
+<li><strong>In-place overwrite without staging:</strong> risks partial/corrupt install state.</li>
+<li><strong>Silent non-interactive auto-approval:</strong> unsafe in CI/scripts without explicit force semantics.</li>
+<li><strong>Treat "restart required" as default success path:</strong> conflicts with immediate usability goal.</li>
+</ul>
+<h2 id="dont-hand-roll">Don't Hand-Roll</h2>
+<p>Problems that look simple but have existing solutions:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Don't Build</th>
+<th>Use Instead</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLI approval interaction</td>
+<td>Custom rune-by-rune stdin parser</td>
+<td><code>huh</code> <code>Confirm</code>/<code>Select</code></td>
+<td>Better validation, accessibility options, deterministic behavior.</td>
+</tr>
+<tr>
+<td>Text diff preview</td>
+<td>Bespoke line-diff formatter</td>
+<td><code>go-diff</code></td>
+<td>Established diff algorithm support and clearer preview output.</td>
+</tr>
+<tr>
+<td>Atomic install semantics</td>
+<td>Ad hoc multi-step writes to final path</td>
+<td>stdlib stage + <code>os.Rename</code> transaction</td>
+<td>Safer failure behavior and easier reasoning/testing.</td>
+</tr>
+<tr>
+<td>Gate orchestration</td>
+<td>Boolean checks scattered in handlers</td>
+<td>Centralized <code>Preflight</code> gate function</td>
+<td>Prevents accidental bypass of fail-closed install contract.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight:</strong> Most Phase 06 defects come from sequencing errors (approval/write/gate order), not algorithm complexity; centralize gate + transaction flow and use proven prompt/diff/fs primitives.</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<h3 id="pitfall-1-approval-prompt-appears-but-write-already-happened">Pitfall 1: Approval prompt appears but write already happened</h3>
+<p><strong>What goes wrong:</strong> User sees "approval" as cosmetic while filesystem has already mutated.
+<strong>Why it happens:</strong> Preview/prompt logic is wired after install side effects.
+<strong>How to avoid:</strong> Enforce operation order in a single orchestrator: <code>preflight -&gt; preview -&gt; confirm -&gt; write</code>.
+<strong>Warning signs:</strong> Declining prompt still leaves new/changed skill files on disk.</p>
+<h3 id="pitfall-2-gate-bypass-via-stale-or-missing-phase-05-decision">Pitfall 2: Gate bypass via stale or missing Phase 05 decision</h3>
+<p><strong>What goes wrong:</strong> Install proceeds even when conflict decision is unresolved or <code>abort</code>.
+<strong>Why it happens:</strong> Decision artifact not required in install request type.
+<strong>How to avoid:</strong> Make <code>ConflictResolutionDecision</code> required input and reject unresolved/abort states at preflight.
+<strong>Warning signs:</strong> Install path succeeds with empty decision metadata.</p>
+<h3 id="pitfall-3-non-atomic-update-corrupts-existing-skill">Pitfall 3: Non-atomic update corrupts existing skill</h3>
+<p><strong>What goes wrong:</strong> Interrupted writes produce mixed old/new files.
+<strong>Why it happens:</strong> In-place writes or cross-directory rename assumptions.
+<strong>How to avoid:</strong> Stage in same parent, verify staged artifact, then single move into target.
+<strong>Warning signs:</strong> Partial <code>SKILL.md</code> or orphaned temp files after interrupted run.</p>
+<h3 id="pitfall-4-interactive-assumptions-break-automation-mode">Pitfall 4: Interactive assumptions break automation mode</h3>
+<p><strong>What goes wrong:</strong> CI or piped runs hang at prompt or bypass approval unexpectedly.
+<strong>Why it happens:</strong> No explicit TTY/non-TTY policy and no force-flag contract.
+<strong>How to avoid:</strong> In non-interactive mode, fail closed unless explicit override flag is present and logged.
+<strong>Warning signs:</strong> Jobs waiting on input, or installs occurring with no recorded explicit approval path.</p>
+<h3 id="pitfall-5-immediate-usability-not-verified">Pitfall 5: "Immediate usability" not verified</h3>
+<p><strong>What goes wrong:</strong> Install succeeds but skill is not discoverable/usable and user gets no guidance.
+<strong>Why it happens:</strong> No post-install verification step; assumption that write implies availability.
+<strong>How to avoid:</strong> Verify presence + parse validity + registry visibility signal; emit fallback restart message only when needed.
+<strong>Warning signs:</strong> Frequent user reports of "installed but not available."</p>
+<h2 id="code-examples">Code Examples</h2>
+<p>Verified patterns from official sources:</p>
+<h3 id="explicit-yesno-confirmation-prompt">Explicit Yes/No confirmation prompt</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/charm.land/huh/v2
+var approved bool
+err := huh.NewConfirm().
+    Title(&quot;Are you sure?&quot;).
+    Affirmative(&quot;Yes&quot;).
+    Negative(&quot;No&quot;).
+    Value(&amp;approved).
+    Run()
+if err != nil {
+    return err
+}
+</code></pre>
+<h3 id="diff-generation-before-approval">Diff generation before approval</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/github.com/sergi/go-diff
+dmp := diffmatchpatch.New()
+diffs := dmp.DiffMain(oldText, newText, false)
+fmt.Println(dmp.DiffPrettyText(diffs))
+</code></pre>
+<h3 id="atomic-move-caveat-to-account-for-in-design">Atomic move caveat to account for in design</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/os#Rename
+// &quot;OS-specific restrictions may apply when oldpath and newpath are in different
+// directories. Even within the same directory, on non-Unix platforms Rename is
+// not an atomic operation.&quot;
+if err := os.Rename(stagePath, finalPath); err != nil {
+    return err
+}
+</code></pre>
+<h2 id="state-of-the-art">State of the Art</h2>
+<table>
+<thead>
+<tr>
+<th>Old Approach</th>
+<th>Current Approach</th>
+<th>When Changed</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Direct write then optional prompt</td>
+<td>Mandatory preview + explicit approval before any write</td>
+<td>Modern safety-first CLI workflows</td>
+<td>Restores user trust and prevents accidental mutations.</td>
+</tr>
+<tr>
+<td>Conflict checks decoupled from install gate</td>
+<td>Typed preflight contract requiring resolved validation+conflict states</td>
+<td>Current phase-driven gating architectures</td>
+<td>Enforces fail-closed behavior across phase boundaries.</td>
+</tr>
+<tr>
+<td>Assume restart required after install</td>
+<td>Automatic detection first; restart as fallback</td>
+<td>Current Codex skill docs</td>
+<td>Supports INST-04 immediate usability goal in normal path.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deprecated/outdated:</strong>
+- Treating confirmation as a UX nicety instead of a hard gate for writes.
+- Allowing install progression with "best effort" unresolved conflict/validation state.</p>
+<h2 id="open-questions">Open Questions</h2>
+<ol>
+<li><strong>Definition of "immediately usable" test oracle</strong></li>
+<li>What we know: Codex docs state automatic skill change detection; restart is fallback.</li>
+<li>What's unclear: deterministic local check to prove implicit invocation readiness (beyond file presence/parse validity).</li>
+<li>
+<p>Recommendation: phase plan should define a practical acceptance oracle (e.g., install path verification + <code>/skills</code> visibility check in E2E harness).</p>
+</li>
+<li>
+<p><strong>Non-interactive approval policy</strong></p>
+</li>
+<li>What we know: explicit approval is required before write.</li>
+<li>What's unclear: exact CLI UX for automation (<code>--yes</code>, <code>--approve</code>, or reject all non-interactive usage).</li>
+<li>Recommendation: set strict default to reject non-interactive install unless an explicit approval flag is passed and logged.</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<h3 id="primary-high-confidence">Primary (HIGH confidence)</h3>
+<ul>
+<li>https://developers.openai.com/codex/skills - skill format, install locations, automatic detection, restart fallback language.</li>
+<li>https://pkg.go.dev/charm.land/huh/v2 - interactive prompt primitives including <code>Confirm</code>.</li>
+<li>https://pkg.go.dev/github.com/sergi/go-diff - diff/match/patch package details and usage.</li>
+<li>https://pkg.go.dev/os#Rename - official rename semantics and atomicity caveats.</li>
+<li>https://cobra.dev/docs/how-to-guides/working-with-commands/ - <code>RunE</code> error-driven command flow patterns for strict gate handling.</li>
+</ul>
+<h3 id="secondary-medium-confidence">Secondary (MEDIUM confidence)</h3>
+<ul>
+<li>/Users/nickbohm/.codex/skills/.system/skill-installer/SKILL.md - local installer behavior (<code>$CODEX_HOME/skills</code> target and restart messaging convention).</li>
+</ul>
+<h3 id="tertiary-low-confidence">Tertiary (LOW confidence)</h3>
+<ul>
+<li>Web ecosystem discovery queries for 2026 CLI confirmation and diff conventions were used for discovery only; critical claims above were verified with primary/official sources.</li>
+</ul>
+<h2 id="metadata">Metadata</h2>
+<p><strong>Confidence breakdown:</strong>
+- Standard stack: HIGH - libraries and APIs are directly documented in official package/docs sources.
+- Architecture: HIGH - patterns directly implement INST-01/02/03/04 and locked fail-closed decisions.
+- Pitfalls: MEDIUM-HIGH - derived from common CLI install sequencing failures, with strong alignment to official gate semantics.</p>
+<p><strong>Research date:</strong> 2026-03-10
+<strong>Valid until:</strong> 2026-04-09</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

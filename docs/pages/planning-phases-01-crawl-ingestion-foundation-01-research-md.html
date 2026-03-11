@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 01: Crawl &amp; Ingestion Foundation - Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Phase 01: Crawl &amp; Ingestion Foundation - Research</h1>
+      <p>.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#phase-01-crawl-ingestion-foundation-research">Phase 01: Crawl &amp; Ingestion Foundation - Research</a><ul>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#standard-stack">Standard Stack</a><ul>
+<li><a href="#core">Core</a></li>
+<li><a href="#supporting">Supporting</a></li>
+<li><a href="#alternatives-considered">Alternatives Considered</a></li>
+</ul>
+</li>
+<li><a href="#architecture-patterns">Architecture Patterns</a><ul>
+<li><a href="#recommended-project-structure">Recommended Project Structure</a></li>
+<li><a href="#pattern-1-deterministic-bounded-crawl-loop">Pattern 1: Deterministic Bounded Crawl Loop</a></li>
+<li><a href="#pattern-2-canonical-url-keying-before-deduplication">Pattern 2: Canonical URL Keying Before Deduplication</a></li>
+<li><a href="#pattern-3-skip-taxonomy-as-first-class-output">Pattern 3: Skip Taxonomy as First-Class Output</a></li>
+<li><a href="#anti-patterns-to-avoid">Anti-Patterns to Avoid</a></li>
+</ul>
+</li>
+<li><a href="#dont-hand-roll">Don't Hand-Roll</a></li>
+<li><a href="#common-pitfalls">Common Pitfalls</a><ul>
+<li><a href="#pitfall-1-cap-overshoot-under-concurrency">Pitfall 1: Cap Overshoot Under Concurrency</a></li>
+<li><a href="#pitfall-2-broken-same-domain-logic">Pitfall 2: Broken Same-Domain Logic</a></li>
+<li><a href="#pitfall-3-low-signal-heuristics-too-aggressive">Pitfall 3: Low-Signal Heuristics Too Aggressive</a></li>
+<li><a href="#pitfall-4-queryfragment-policy-drift">Pitfall 4: Query/Fragment Policy Drift</a></li>
+</ul>
+</li>
+<li><a href="#code-examples">Code Examples</a><ul>
+<li><a href="#same-domain-and-url-filtering-with-colly">Same-domain and URL filtering with Colly</a></li>
+<li><a href="#parse-content-type-safely">Parse Content-Type safely</a></li>
+<li><a href="#canonicalize-query-ordering-for-stable-dedupe-keys">Canonicalize query ordering for stable dedupe keys</a></li>
+</ul>
+</li>
+<li><a href="#state-of-the-art">State of the Art</a></li>
+<li><a href="#open-questions">Open Questions</a></li>
+<li><a href="#sources">Sources</a><ul>
+<li><a href="#primary-high-confidence">Primary (HIGH confidence)</a></li>
+<li><a href="#secondary-medium-confidence">Secondary (MEDIUM confidence)</a></li>
+<li><a href="#tertiary-low-confidence">Tertiary (LOW confidence)</a></li>
+</ul>
+</li>
+<li><a href="#metadata">Metadata</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Phase 01: Crawl &amp; Ingestion Foundation - Research</h2>
+        <p>Rendered from <code>.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="phase-01-crawl-ingestion-foundation-research">Phase 01: Crawl &amp; Ingestion Foundation - Research</h1>
+<p><strong>Researched:</strong> 2026-03-10
+<strong>Domain:</strong> Same-domain documentation crawl foundation for Go CLI
+<strong>Confidence:</strong> MEDIUM-HIGH</p>
+<h2 id="summary">Summary</h2>
+<p>Phase 01 should be planned as a deterministic, bounded crawl subsystem with explicit filtering and accounting, not as a generic scraper. The implementation should prioritize exact requirement coverage for CRAWL-01..04: same-domain enforcement, hard default cap at 50 processed pages, transparent skip reasons, and a final summary with discovered/processed/skipped counts.</p>
+<p>Given current constraints and the existing Go-first architecture direction, the standard stack for this phase is <code>colly/v2</code> for crawl orchestration plus <code>net/url</code> canonicalization rules and strict HTML/docs-page filtering before enqueue and before process. The planning-critical decision left open in context (query + fragment handling) should be resolved now as a default canonicalization policy to avoid duplicate crawl explosion and inconsistent counts.</p>
+<p><strong>Primary recommendation:</strong> Implement a synchronous BFS-style crawl on top of <code>colly/v2</code> with canonical URL keys (<code>fragment stripped</code>, query normalized with tracking params removed) and mandatory per-URL skip reasons emitted into the final summary report.</p>
+<h2 id="standard-stack">Standard Stack</h2>
+<p>The established libraries/tools for this domain:</p>
+<h3 id="core">Core</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Why Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/gocolly/colly/v2</code></td>
+<td><code>v2.3.0</code></td>
+<td>Same-domain crawling, link discovery, callback lifecycle</td>
+<td>Provides <code>AllowedDomains</code>, <code>URLFilters</code>, depth controls, and request lifecycle hooks that directly map to CRAWL-01..04 without hand-rolled scheduler complexity.</td>
+</tr>
+<tr>
+<td>Go <code>net/url</code></td>
+<td>Go stdlib (<code>go1.26.1</code> docs)</td>
+<td>URL parsing, canonicalization, relative resolution</td>
+<td>Canonical URL handling is the core correctness boundary for dedupe and same-domain checks.</td>
+</tr>
+<tr>
+<td>Go <code>mime</code> (<code>ParseMediaType</code>)</td>
+<td>Go stdlib (<code>go1.26.1</code> docs)</td>
+<td>Robust content-type parsing for HTML gating</td>
+<td>Prevents false positives from loose <code>Content-Type</code> matching and supports explicit unsupported-type skip reasons.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting">Supporting</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/PuerkitoBio/goquery</code></td>
+<td><code>v1.11.0</code></td>
+<td>Parse HTML and extract anchors/content signals</td>
+<td>Use inside <code>OnResponse</code>/processing to classify docs-like pages and extract crawl candidates from HTML.</td>
+</tr>
+<tr>
+<td>Go <code>path</code></td>
+<td>Go stdlib (<code>go1.26.1</code> docs)</td>
+<td>URL path cleanup (<code>path.Clean</code>)</td>
+<td>Use during canonicalization to collapse noisy path forms before dedupe keys are generated.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alternatives-considered">Alternatives Considered</h3>
+<table>
+<thead>
+<tr>
+<th>Instead of</th>
+<th>Could Use</th>
+<th>Tradeoff</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>colly/v2</code></td>
+<td>Hand-rolled <code>net/http</code> + queue + parser</td>
+<td>More control, but reinvents crawl lifecycle, visit dedupe, and callback orchestration; higher bug risk for cap and accounting logic in Phase 01.</td>
+</tr>
+<tr>
+<td>Query normalization</td>
+<td>Drop all query params</td>
+<td>Simpler, but can collapse distinct docs pages (e.g., language/version routes encoded in query) and hide content unexpectedly.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Installation:</strong></p>
+<pre><code class="language-bash">go get github.com/gocolly/colly/v2
+go get github.com/PuerkitoBio/goquery
+</code></pre>
+<h2 id="architecture-patterns">Architecture Patterns</h2>
+<h3 id="recommended-project-structure">Recommended Project Structure</h3>
+<pre><code class="language-text">internal/crawl/
+├── engine.go          # crawl orchestration + cap enforcement + summary accounting
+├── normalize.go       # URL normalization + docs-root derivation + canonical key logic
+├── classify.go        # docs-like and low-signal page classifiers
+├── skip_reasons.go    # enum/constants for skip reason taxonomy
+└── types.go           # CrawlResult, PageRecord, SummaryCounts
+</code></pre>
+<h3 id="pattern-1-deterministic-bounded-crawl-loop">Pattern 1: Deterministic Bounded Crawl Loop</h3>
+<p><strong>What:</strong> A single orchestrator that owns all counters and enforces a hard processed-page cap (<code>50</code> default).
+<strong>When to use:</strong> Always for Phase 01; asynchronous crawling is unnecessary for this cap and makes exact accounting harder.
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: https://go-colly.org/docs/examples/max_depth/ (visit lifecycle pattern),
+// adapted for processed-cap enforcement in this project.
+processed := 0
+capPages := 50
+
+c.OnRequest(func(r *colly.Request) {
+    if processed &gt;= capPages {
+        r.Abort()
+        recordSkip(r.URL.String(), SkipCapReached)
+        return
+    }
+})
+
+c.OnResponse(func(r *colly.Response) {
+    if !isDocsLikeHTML(r) {
+        recordSkip(r.Request.URL.String(), SkipUnsupportedOrLowSignal)
+        return
+    }
+    processed++
+    recordProcessed(r.Request.URL.String())
+})
+</code></pre>
+<h3 id="pattern-2-canonical-url-keying-before-deduplication">Pattern 2: Canonical URL Keying Before Deduplication</h3>
+<p><strong>What:</strong> Normalize URL before enqueue and before counting discovered/processed/skipped.
+<strong>When to use:</strong> For every candidate URL (entry URL and extracted links).
+<strong>Example:</strong></p>
+<pre><code class="language-go">// Source: https://pkg.go.dev/net/url (Parse, ResolveReference, Values.Encode sorted by key)
+// plus project decision for fragment/query policy.
+func canonicalKey(raw string, base *url.URL) (string, error) {
+    u, err := url.Parse(raw)
+    if err != nil {
+        return &quot;&quot;, err
+    }
+    if base != nil {
+        u = base.ResolveReference(u)
+    }
+    u.Fragment = &quot;&quot; // browsers strip fragment from HTTP requests; use one canonical key
+
+    q := u.Query()
+    for _, k := range []string{&quot;utm_source&quot;, &quot;utm_medium&quot;, &quot;utm_campaign&quot;, &quot;utm_term&quot;, &quot;utm_content&quot;, &quot;gclid&quot;, &quot;fbclid&quot;} {
+        q.Del(k)
+    }
+    u.RawQuery = q.Encode() // sorted by key per net/url docs
+    u.Path = path.Clean(u.Path)
+    return u.String(), nil
+}
+</code></pre>
+<h3 id="pattern-3-skip-taxonomy-as-first-class-output">Pattern 3: Skip Taxonomy as First-Class Output</h3>
+<p><strong>What:</strong> Every non-processed candidate gets a machine-readable skip reason.
+<strong>When to use:</strong> Required for CRAWL-03 transparency and CRAWL-04 summary consistency.
+<strong>Example skip reasons:</strong>
+- <code>off_domain</code>
+- <code>already_seen</code>
+- <code>cap_reached</code>
+- <code>non_html_content_type</code>
+- <code>invalid_url</code>
+- <code>low_signal_page</code>
+- <code>fetch_error</code></p>
+<h3 id="anti-patterns-to-avoid">Anti-Patterns to Avoid</h3>
+<ul>
+<li><strong>Counter updates in multiple callbacks:</strong> Splits ownership of discovered/processed/skipped and causes inconsistent final summary.</li>
+<li><strong>Dedupe on raw URL strings:</strong> Causes duplicates from fragments, path variants, and query-order differences.</li>
+<li><strong>Silent filtering:</strong> Any skip without explicit reason breaks CRAWL-03 and makes debugging impossible.</li>
+<li><strong>Default async crawl in Phase 01:</strong> Makes exact 50-page cap and deterministic counts harder than necessary.</li>
+</ul>
+<h2 id="dont-hand-roll">Don't Hand-Roll</h2>
+<p>Problems that look simple but have existing solutions:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Don't Build</th>
+<th>Use Instead</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Crawl lifecycle + request scheduling</td>
+<td>Custom recursive fetch/queue engine</td>
+<td><code>colly/v2</code> collector callbacks</td>
+<td>Colly already provides robust request hooks, domain filters, and crawl controls.</td>
+</tr>
+<tr>
+<td>URL parsing/relative resolution</td>
+<td>String concatenation for links</td>
+<td><code>net/url</code> parse + <code>ResolveReference</code></td>
+<td>Correct RFC-compliant URL handling is subtle and error-prone when hand-built.</td>
+</tr>
+<tr>
+<td>Content-Type parsing</td>
+<td><code>strings.Contains(contentType, "html")</code> only</td>
+<td><code>mime.ParseMediaType</code></td>
+<td>Header values include params/casing; parsing avoids false decisions.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key insight:</strong> Phase 01 quality is mostly correctness of boundaries (domain, cap, skip semantics). Existing libraries solve boundary mechanics better than custom code.</p>
+<h2 id="common-pitfalls">Common Pitfalls</h2>
+<h3 id="pitfall-1-cap-overshoot-under-concurrency">Pitfall 1: Cap Overshoot Under Concurrency</h3>
+<p><strong>What goes wrong:</strong> More than 50 pages get processed due to in-flight requests.
+<strong>Why it happens:</strong> Cap checked too late or async scheduling allows bursts.
+<strong>How to avoid:</strong> Use synchronous crawl mode for Phase 01, check cap in <code>OnRequest</code>, and only increment processed count after docs-like HTML validation.
+<strong>Warning signs:</strong> <code>processed &gt; 50</code> in summary or non-deterministic counts between runs.</p>
+<h3 id="pitfall-2-broken-same-domain-logic">Pitfall 2: Broken Same-Domain Logic</h3>
+<p><strong>What goes wrong:</strong> Off-domain URLs are crawled or valid same-host URLs are skipped.
+<strong>Why it happens:</strong> Comparing raw host strings without normalization or resolving relative URLs incorrectly.
+<strong>How to avoid:</strong> Resolve against base URL, compare normalized hostnames, and apply <code>AllowedDomains</code> plus explicit guard checks.
+<strong>Warning signs:</strong> Processed URLs include external hosts or many false <code>off_domain</code> skips for relative links.</p>
+<h3 id="pitfall-3-low-signal-heuristics-too-aggressive">Pitfall 3: Low-Signal Heuristics Too Aggressive</h3>
+<p><strong>What goes wrong:</strong> Valid docs pages get filtered out.
+<strong>Why it happens:</strong> Overly broad extension/path denylists or simplistic text-length checks.
+<strong>How to avoid:</strong> Start with conservative skip rules (non-HTML + obvious binary/media paths) and keep <code>low_signal_page</code> criteria explicit and testable.
+<strong>Warning signs:</strong> Very low processed count from clearly rich docs sites.</p>
+<h3 id="pitfall-4-queryfragment-policy-drift">Pitfall 4: Query/Fragment Policy Drift</h3>
+<p><strong>What goes wrong:</strong> Duplicate inflation or page loss depending on ad hoc URL handling.
+<strong>Why it happens:</strong> Query and fragment rules are undocumented or inconsistently applied in different call sites.
+<strong>How to avoid:</strong> Centralize canonicalization in one function and document default policy in code and phase docs.
+<strong>Warning signs:</strong> Same page appears multiple times with minor URL differences.</p>
+<h2 id="code-examples">Code Examples</h2>
+<p>Verified patterns from official sources:</p>
+<h3 id="same-domain-and-url-filtering-with-colly">Same-domain and URL filtering with Colly</h3>
+<pre><code class="language-go">// Source: https://go-colly.org/docs/introduction/configuration
+// and https://go-colly.org/docs/examples/url_filter/
+c := colly.NewCollector(
+    colly.AllowedDomains(&quot;docs.example.com&quot;),
+    colly.URLFilters(regexp.MustCompile(`^https://docs\.example\.com/`)),
+    colly.MaxDepth(4),
+)
+</code></pre>
+<h3 id="parse-content-type-safely">Parse Content-Type safely</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/mime#ParseMediaType
+mediaType, _, err := mime.ParseMediaType(resp.Header.Get(&quot;Content-Type&quot;))
+if err != nil || mediaType != &quot;text/html&quot; {
+    recordSkip(url, SkipNonHTMLContentType)
+    return
+}
+</code></pre>
+<h3 id="canonicalize-query-ordering-for-stable-dedupe-keys">Canonicalize query ordering for stable dedupe keys</h3>
+<pre><code class="language-go">// Source: https://pkg.go.dev/net/url (Values.Encode sorts by key)
+q := u.Query()
+q.Del(&quot;utm_source&quot;)
+q.Del(&quot;fbclid&quot;)
+u.RawQuery = q.Encode()
+</code></pre>
+<h2 id="state-of-the-art">State of the Art</h2>
+<table>
+<thead>
+<tr>
+<th>Old Approach</th>
+<th>Current Approach</th>
+<th>When Changed</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/gocolly/colly</code> v1 import path</td>
+<td><code>github.com/gocolly/colly/v2</code> module path</td>
+<td>v2 module adoption</td>
+<td>Use v2 path for maintained releases and current APIs.</td>
+</tr>
+<tr>
+<td>Loose HTML parsing assumptions</td>
+<td>Explicit UTF-8 expectation in goquery usage</td>
+<td>Ongoing; documented in goquery README</td>
+<td>Plan to treat malformed/non-UTF-8 pages as skipped/unsupported in Phase 01 boundaries.</td>
+</tr>
+<tr>
+<td>Ad hoc URL keying</td>
+<td>Canonicalization with stdlib URL APIs</td>
+<td>Standard modern crawler practice</td>
+<td>Improves determinism of discovered/processed/skipped counts.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deprecated/outdated:</strong>
+- <code>colly</code> v1-style import path for new code: replace with <code>/v2</code> module path.</p>
+<h2 id="open-questions">Open Questions</h2>
+<ol>
+<li><strong>Query parameter policy strictness</strong></li>
+<li>What we know: fragment stripping should be unconditional; query handling was intentionally left open.</li>
+<li>What's unclear: whether to keep all non-tracking query params or use an allowlist (<code>lang</code>, <code>version</code>, etc.) from day one.</li>
+<li>
+<p>Recommendation: start with "keep non-tracking params" + canonical sort; add optional allowlist policy in a later requirement (aligns with CRAWL-05 advanced policies).</p>
+</li>
+<li>
+<p><strong>Docs-root normalization heuristic</strong></p>
+</li>
+<li>What we know: decision says normalize entry URL to nearest docs root before crawl.</li>
+<li>What's unclear: exact heuristic order (<code>/docs</code>, <code>/documentation</code>, breadcrumb/nav markers, sitemap hints).</li>
+<li>
+<p>Recommendation: document deterministic heuristic precedence in plan tasks and include fixture-based tests for at least 4 URL shapes.</p>
+</li>
+<li>
+<p><strong>Potential scope conflict with earlier single-page guidance</strong></p>
+</li>
+<li>What we know: older stack research favored single-page ingestion for v1, while current roadmap/requirements include bounded same-domain crawl.</li>
+<li>What's unclear: whether older docs should be updated before implementation to avoid planning drift.</li>
+<li>Recommendation: treat CRAWL-01..04 as source of truth and schedule a doc-alignment task in planning.</li>
+</ol>
+<h2 id="sources">Sources</h2>
+<h3 id="primary-high-confidence">Primary (HIGH confidence)</h3>
+<ul>
+<li>https://go-colly.org/docs/introduction/configuration - collector options (<code>AllowedDomains</code>, max depth env var, transport tuning)</li>
+<li>https://go-colly.org/docs/examples/max_depth/ - bounded traversal example pattern</li>
+<li>https://go-colly.org/docs/examples/url_filter/ - URL filter pattern</li>
+<li>https://pkg.go.dev/github.com/gocolly/colly/v2 - current module path/version metadata and feature set</li>
+<li>https://pkg.go.dev/net/url - parse/resolve/canonicalization APIs and <code>Values.Encode</code> sort behavior</li>
+<li>https://pkg.go.dev/mime#ParseMediaType - robust content-type parsing</li>
+<li>https://pkg.go.dev/path#Clean - path normalization behavior</li>
+<li>https://pkg.go.dev/github.com/PuerkitoBio/goquery - HTML parsing constraints and current version metadata</li>
+</ul>
+<h3 id="secondary-medium-confidence">Secondary (MEDIUM confidence)</h3>
+<ul>
+<li>https://go-colly.org/docs/best_practices/crawling - operational best practices for crawl jobs</li>
+</ul>
+<h3 id="tertiary-low-confidence">Tertiary (LOW confidence)</h3>
+<ul>
+<li>Web ecosystem discovery searches for "Go crawler best practices 2026" used only for direction; all critical claims above were verified against official docs.</li>
+</ul>
+<h2 id="metadata">Metadata</h2>
+<p><strong>Confidence breakdown:</strong>
+- Standard stack: HIGH - official package/docs coverage is strong for selected libraries.
+- Architecture: MEDIUM-HIGH - patterns are prescriptive and aligned to requirements, but exact project code constraints are still greenfield.
+- Pitfalls: MEDIUM - grounded in common crawler failure modes and doc evidence, but some are implementation-behavior dependent.</p>
+<p><strong>Research date:</strong> 2026-03-10
+<strong>Valid until:</strong> 2026-04-09</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

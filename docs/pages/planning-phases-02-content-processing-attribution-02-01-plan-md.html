@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02-01-PLAN.md · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>02-01-PLAN.md</h1>
+      <p>.planning/phases/02-content-processing-attribution/02-01-PLAN.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul></ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>02-01-PLAN.md</h2>
+        <p>Rendered from <code>.planning/phases/02-content-processing-attribution/02-01-PLAN.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <hr />
+<p>phase: 02-content-processing-attribution
+plan: 01
+type: execute
+wave: 1
+depends_on: []
+files_modified:
+  - go.mod
+  - internal/content/types.go
+  - internal/content/extract.go
+  - internal/content/normalize.go
+  - internal/content/dedupe.go
+  - internal/content/extract_normalize_test.go
+autonomous: true
+must_haves:
+  truths:
+    - "Crawled pages are transformed into normalized content objects usable by downstream chunking and summarization."
+    - "Normalization preserves meaningful structure (headings, tables, code snippets, media context) while removing clear chrome."
+    - "Duplicate suppression is conservative and explainable so unique content is not accidentally lost."
+  artifacts:
+    - path: "internal/content/types.go"
+      provides: "Shared phase-2 data contracts for normalized pages and processing metadata."
+    - path: "internal/content/extract.go"
+      provides: "Readable main-content extraction from crawled HTML pages."
+    - path: "internal/content/normalize.go"
+      provides: "HTML-to-markdown/text normalization preserving table/code/media fidelity."
+    - path: "internal/content/dedupe.go"
+      provides: "High-confidence dedupe policy over normalized page outputs."
+    - path: "internal/content/extract_normalize_test.go"
+      provides: "Behavioral tests for extraction, normalization, and conservative dedupe."
+  key_links:
+    - from: "internal/content/extract.go"
+      to: "internal/content/normalize.go"
+      via: "normalized pipeline stage consumes extracted readable HTML/text"
+      pattern: "ExtractReadable|NormalizeContent"
+    - from: "internal/content/normalize.go"
+      to: "internal/content/types.go"
+      via: "normalization output populated into shared normalized page struct"
+      pattern: "NormalizedPage"
+    - from: "internal/content/dedupe.go"
+      to: "internal/content/types.go"
+      via: "dedupe decisions attach suppression metadata to normalized page records"
+      pattern: "Deduped|DuplicateOf"</p>
+<hr />
+<p><objective>
+Create the Phase 2 processing foundation that turns crawl outputs into normalized, structure-preserving page content with conservative dedupe.</p>
+<p>Purpose: Deliver CONT-01 with explicit contracts and policy boundaries so later chunk/summarize work builds on stable, attributable inputs.
+Output: Content types, extract/normalize/dedupe pipeline functions, and test coverage for fidelity and dedupe safety.
+</objective></p>
+<p><execution_context>
+@~/.cursor/get-shit-done/workflows/execute-plan.md
+@~/.cursor/get-shit-done/templates/summary.md
+</execution_context></p>
+<p><context>
+@.planning/PROJECT.md
+@.planning/ROADMAP.md
+@.planning/REQUIREMENTS.md
+@.planning/STATE.md
+@.planning/phases/02-content-processing-attribution/02-CONTEXT.md
+@.planning/phases/02-content-processing-attribution/02-RESEARCH.md
+</context></p>
+<p><tasks></p>
+<p><task type="auto">
+  <name>Task 1: Establish content contracts and extraction dependencies</name>
+  <files>go.mod, internal/content/types.go, internal/content/extract.go</files>
+  <action>Add phase-2 core models (<code>CrawledPage</code>, <code>NormalizedPage</code>, <code>NormalizationStats</code>, dedupe markers) and implement readable-content extraction using <code>codeberg.org/readeck/go-readability/v2</code>. Keep extraction policy minimal-chrome by default (preserve content unless clearly irrelevant), and return deterministic errors for malformed URLs/HTML so later stages can classify failures instead of silently dropping pages.</action>
+  <verify>[CONT-01] Run <code>go test ./...</code> and confirm module resolves new dependencies and content package compiles with extractor API usage.</verify>
+  <done>[CONT-01] Extraction can produce typed, deterministic normalized-input candidates from crawled pages, and shared contracts exist for downstream stages.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 2: Implement structure-preserving normalization and conservative dedupe</name>
+  <files>internal/content/normalize.go, internal/content/dedupe.go</files>
+  <action>Implement HTML-to-markdown/text normalization with <code>github.com/JohannesKaufmann/html-to-markdown/v2</code>, preserving table structure, key code snippets (truncate very large code blocks with explicit marker), and media alt/caption context. Then implement dedupe policy as exact checksum + strict normalized-form match only (high-confidence gate), with explicit suppression metadata for auditability; do not apply fuzzy/semantic near-duplicate deletion in this phase.</action>
+  <verify>[CONT-01] Run <code>go test ./...</code> and ensure normalization output keeps expected structure markers and dedupe only suppresses exact/high-confidence duplicates.</verify>
+  <done>[CONT-01] Normalized outputs retain useful structure for generation while dedupe remains safe, explainable, and non-destructive.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 3: Add extraction/normalization regression tests</name>
+  <files>internal/content/extract_normalize_test.go</files>
+  <action>Create table-driven tests covering readable extraction success/failure, markdown fidelity for tables/code blocks, media alt/caption retention, and dedupe false-positive protection (similar-but-distinct pages must both survive). Include fixtures that validate light-cleanup behavior and ensure boilerplate stripping is not over-aggressive.</action>
+  <verify>[CONT-01] <code>go test ./internal/content -v</code> passes with explicit assertions for structural fidelity and conservative dedupe outcomes.</verify>
+  <done>[CONT-01] Behavior is locked by tests and ready for chunking/summarization without interpretation drift.</done>
+</task></p>
+<p></tasks></p>
+<p><verification>
+1. [CONT-01] <code>go test ./internal/content -v</code> passes and demonstrates extraction + normalization + dedupe behavior.
+2. [CONT-01] Confirm normalized content records include stable identifiers/checksums needed by later chunk attribution.
+</verification></p>
+<p><success_criteria>
+- Crawled page inputs are transformed into normalized, structured, test-covered content artifacts.
+- Output fidelity preserves tables/code/media context required by Phase 2 decisions.
+- Dedupe only removes high-confidence duplicates with explicit traceability metadata.
+</success_criteria></p>
+<output>
+After completion, create `.planning/phases/02-content-processing-attribution/02-01-SUMMARY.md`
+</output>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

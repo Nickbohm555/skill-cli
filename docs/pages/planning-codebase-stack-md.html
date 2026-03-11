@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technology Stack · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Technology Stack</h1>
+      <p>.planning/codebase/STACK.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#technology-stack">Technology Stack</a><ul>
+<li><a href="#languages">Languages</a></li>
+<li><a href="#runtime">Runtime</a></li>
+<li><a href="#frameworks">Frameworks</a></li>
+<li><a href="#key-dependencies">Key Dependencies</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#platform-requirements">Platform Requirements</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Technology Stack</h2>
+        <p>Rendered from <code>.planning/codebase/STACK.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="technology-stack">Technology Stack</h1>
+<p><strong>Analysis Date:</strong> 2026-03-10</p>
+<h2 id="languages">Languages</h2>
+<p><strong>Primary:</strong>
+- Go 1.25.8 - CLI runtime and all production code in <code>cmd/cli-skill/main.go</code> and <code>internal/**/*.go</code> (declared in <code>go.mod</code>).</p>
+<p><strong>Secondary:</strong>
+- Markdown (version not applicable) - skill payload format and docs rendered/parsed by <code>internal/install/transaction.go</code>, <code>internal/validation/parse_skill.go</code>, and <code>README.md</code>.</p>
+<h2 id="runtime">Runtime</h2>
+<p><strong>Environment:</strong>
+- Go toolchain 1.25.x with module mode (<code>go 1.25.8</code> in <code>go.mod</code>).</p>
+<p><strong>Package Manager:</strong>
+- Go Modules (managed by <code>go.mod</code> and <code>go.sum</code>).
+- Lockfile: present (<code>go.sum</code>).</p>
+<h2 id="frameworks">Frameworks</h2>
+<p><strong>Core:</strong>
+- <code>github.com/spf13/cobra</code> v1.10.2 - CLI command tree and argument parsing in <code>internal/cli/command/crawl.go</code>, <code>internal/cli/command/process.go</code>, and <code>internal/cli/command/refine.go</code>.
+- <code>github.com/gocolly/colly/v2</code> v2.3.0 - bounded same-domain crawl engine in <code>internal/crawl/engine.go</code>.</p>
+<p><strong>Testing:</strong>
+- Go standard <code>testing</code> package (version tied to Go 1.25.x) - unit/integration tests in <code>internal/**/*_test.go</code>.</p>
+<p><strong>Build/Dev:</strong>
+- Go compiler/tooling (<code>go build</code>, <code>go test</code>, <code>go vet</code>, <code>go fmt</code>) referenced in <code>README.md</code> and driven by module metadata in <code>go.mod</code>.</p>
+<h2 id="key-dependencies">Key Dependencies</h2>
+<p><strong>Critical:</strong>
+- <code>github.com/openai/openai-go/v3</code> v3.26.0 - structured chunk summarization provider in <code>internal/content/summarize.go</code>.
+- <code>github.com/gocolly/colly/v2</code> v2.3.0 - crawl orchestration and HTML link discovery in <code>internal/crawl/engine.go</code>.
+- <code>github.com/spf13/cobra</code> v1.10.2 - top-level CLI command surface in <code>cmd/cli-skill/main.go</code> and <code>internal/cli/command/crawl.go</code>.</p>
+<p><strong>Infrastructure:</strong>
+- <code>github.com/JohannesKaufmann/html-to-markdown/v2</code> v2.5.0 and <code>golang.org/x/net/html</code> v0.47.0 - content normalization/parsing in <code>internal/content/normalize.go</code> and <code>internal/content/extract.go</code>.
+- <code>github.com/pkoukk/tiktoken-go</code> v0.1.8 and <code>github.com/tmc/langchaingo</code> v0.1.14 - chunk sizing/splitting in <code>internal/content/chunk.go</code>.
+- <code>github.com/yuin/goldmark</code> v1.7.16 and <code>go.abhg.dev/goldmark/frontmatter</code> v0.3.0 - SKILL.md parsing and validation in <code>internal/validation/parse_skill.go</code>.
+- <code>charm.land/huh/v2</code> v2.0.3 - interactive prompt dependencies for refinement flows (declared in <code>go.mod</code>, integrated through prompt abstractions in <code>internal/cli/prompts/*.go</code>).</p>
+<h2 id="configuration">Configuration</h2>
+<p><strong>Environment:</strong>
+- Set <code>OPENAI_API_KEY</code> to enable OpenAI-backed summaries; without it, deterministic local fallback summaries are used in <code>internal/content/summarize.go</code>.
+- Set <code>CODEX_HOME</code> to control installed skill location; default fallback is <code>~/.codex/skills</code> in <code>internal/overlap/index_installed.go</code>.</p>
+<p><strong>Build:</strong>
+- Module and dependency config: <code>go.mod</code>, <code>go.sum</code>.
+- CLI entrypoint compile target: <code>cmd/cli-skill/main.go</code>.
+- Planning/runtime metadata used by GSD workflow: <code>.planning/config.json</code>.</p>
+<h2 id="platform-requirements">Platform Requirements</h2>
+<p><strong>Development:</strong>
+- Local machine with Go 1.25.x and filesystem write access to workspace + target skill directory (<code>README.md</code>, <code>internal/install/transaction.go</code>).
+- Network egress to docs URLs for crawl/fetch via <code>internal/crawl/engine.go</code> and <code>internal/cli/command/process.go</code>.</p>
+<p><strong>Production:</strong>
+- Not detected as a hosted service; deployment target is a local CLI binary (<code>go install ./cmd/cli-skill</code> in <code>README.md</code>) executed in user environments.</p>
+<hr />
+<p><em>Stack analysis: 2026-03-10</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

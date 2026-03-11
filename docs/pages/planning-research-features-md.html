@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feature Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Feature Research</h1>
+      <p>.planning/research/FEATURES.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#feature-research">Feature Research</a><ul>
+<li><a href="#feature-landscape">Feature Landscape</a><ul>
+<li><a href="#table-stakes-users-expect-these">Table Stakes (Users Expect These)</a></li>
+<li><a href="#differentiators-competitive-advantage">Differentiators (Competitive Advantage)</a></li>
+<li><a href="#anti-features-commonly-requested-often-problematic">Anti-Features (Commonly Requested, Often Problematic)</a></li>
+</ul>
+</li>
+<li><a href="#feature-dependencies">Feature Dependencies</a><ul>
+<li><a href="#dependency-notes">Dependency Notes</a></li>
+</ul>
+</li>
+<li><a href="#mvp-definition">MVP Definition</a><ul>
+<li><a href="#launch-with-v1">Launch With (v1)</a></li>
+<li><a href="#add-after-validation-v1x">Add After Validation (v1.x)</a></li>
+<li><a href="#future-consideration-v2">Future Consideration (v2+)</a></li>
+</ul>
+</li>
+<li><a href="#feature-prioritization-matrix">Feature Prioritization Matrix</a></li>
+<li><a href="#competitor-feature-analysis">Competitor Feature Analysis</a></li>
+<li><a href="#sources">Sources</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Feature Research</h2>
+        <p>Rendered from <code>.planning/research/FEATURES.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="feature-research">Feature Research</h1>
+<p><strong>Domain:</strong> CLI tool that converts a documentation URL into an installable Codex skill
+<strong>Researched:</strong> 2026-03-10
+<strong>Confidence:</strong> MEDIUM-HIGH</p>
+<h2 id="feature-landscape">Feature Landscape</h2>
+<h3 id="table-stakes-users-expect-these">Table Stakes (Users Expect These)</h3>
+<p>Features users assume exist. Missing these = product feels incomplete.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Why Expected</th>
+<th>Complexity</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deterministic single-URL ingestion</td>
+<td>Users expect "paste URL -&gt; get output", not manual copy/paste pipelines</td>
+<td>LOW</td>
+<td>Must accept one URL, fetch content, and return stable extraction results for repeat runs.</td>
+</tr>
+<tr>
+<td>Clean content extraction to LLM-friendly text</td>
+<td>Raw HTML/noisy nav content causes poor generated skills</td>
+<td>MEDIUM</td>
+<td>Main-content extraction and markdown normalization are baseline for usable prompt synthesis.</td>
+</tr>
+<tr>
+<td>Interactive refinement loop</td>
+<td>One-shot generation often misses critical constraints and install context</td>
+<td>MEDIUM</td>
+<td>Guided Q&amp;A should fill missing required fields before generation is finalized.</td>
+</tr>
+<tr>
+<td>Strict schema + quality validation gate</td>
+<td>Users expect output that works immediately, not "mostly right" skill files</td>
+<td>MEDIUM</td>
+<td>Block output when required sections are missing/weak; require fix-up prompts before continue.</td>
+</tr>
+<tr>
+<td>Safe write/install flow with explicit confirmation</td>
+<td>CLI coding tools now default to explicit permission controls for risky actions</td>
+<td>LOW</td>
+<td>Require approval before write to <code>$CODEX_HOME/skills</code>; default to no silent install/overwrite.</td>
+</tr>
+<tr>
+<td>Dry-run preview and diff before apply</td>
+<td>Users expect visibility before filesystem changes in local agent tooling</td>
+<td>LOW</td>
+<td>Show generated <code>SKILL.md</code> preview and planned file operations before install.</td>
+</tr>
+<tr>
+<td>Existing-skill collision detection</td>
+<td>Skill registries become noisy quickly without duplicate/conflict checks</td>
+<td>MEDIUM</td>
+<td>Check by name and semantic overlap; surface clear conflict reason before install path step.</td>
+</tr>
+<tr>
+<td>Resumable/iterative session UX</td>
+<td>CLI users expect resume/continue workflows in modern coding assistants</td>
+<td>MEDIUM</td>
+<td>Persist session state so user can refine skill later instead of restarting from scratch.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="differentiators-competitive-advantage">Differentiators (Competitive Advantage)</h3>
+<p>Features that set the product apart. Not required, but valuable.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Value Proposition</th>
+<th>Complexity</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adaptive questioning based on validation failures</td>
+<td>Minimizes user effort while improving output correctness</td>
+<td>HIGH</td>
+<td>Dynamic follow-ups targeted to failed constraints outperform static questionnaires.</td>
+</tr>
+<tr>
+<td>Overlap-aware merge/update planner</td>
+<td>Prevents skill sprawl while preserving existing customizations</td>
+<td>HIGH</td>
+<td>Generate "new vs merge vs update" options with conflict explanation and impact preview.</td>
+</tr>
+<tr>
+<td>Skill atomicity scorer (single-capability guardrail)</td>
+<td>Produces higher-quality skills that are composable and reusable</td>
+<td>MEDIUM</td>
+<td>Detect over-broad scope and ask user to split before install.</td>
+</tr>
+<tr>
+<td>Install simulation with rollback plan</td>
+<td>Reduces trust barrier for local registry writes</td>
+<td>MEDIUM</td>
+<td>Simulate write path, report changed files, and produce rollback command before approval.</td>
+</tr>
+<tr>
+<td>Provenance block in generated skill metadata</td>
+<td>Makes long-term maintenance easier ("where did this come from?")</td>
+<td>LOW</td>
+<td>Store source URL, fetch timestamp, and generation assumptions in generated artifact metadata.</td>
+</tr>
+<tr>
+<td>Context-aware question presets by doc type</td>
+<td>Faster onboarding for API docs vs tutorials vs reference pages</td>
+<td>MEDIUM</td>
+<td>Infer page type and choose targeted prompts to reduce question count and improve precision.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="anti-features-commonly-requested-often-problematic">Anti-Features (Commonly Requested, Often Problematic)</h3>
+<p>Features that seem good but create problems.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Why Requested</th>
+<th>Why Problematic</th>
+<th>Alternative</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fully automatic install with no approval</td>
+<td>Feels faster and "hands-off"</td>
+<td>High risk of polluting or breaking local skill registry; violates user-control expectations</td>
+<td>Mandatory approval gate plus preview/diff before write</td>
+</tr>
+<tr>
+<td>Multi-page/domain crawling in v1</td>
+<td>Users want "complete skill from whole docs site"</td>
+<td>Large ambiguity, token cost, and extraction variance reduce reliability for first release</td>
+<td>Keep v1 single-page deterministic; add curated multi-page ingestion later</td>
+</tr>
+<tr>
+<td>"One-shot no-questions" generation mode as default</td>
+<td>Looks simple in demos</td>
+<td>Produces brittle skills that miss boundaries, conflicts, and install constraints</td>
+<td>Keep interactive adaptive Q&amp;A as default; optional fast mode behind explicit flag</td>
+</tr>
+<tr>
+<td>Auto-merge on detected overlap</td>
+<td>Reduces prompts in happy path</td>
+<td>Silent semantic drift and accidental behavior changes to trusted skills</td>
+<td>Require merge plan review and explicit confirmation of merge strategy</td>
+</tr>
+<tr>
+<td>Aggressive remote telemetry by default</td>
+<td>Useful for analytics and tuning</td>
+<td>Misaligned with local-dev trust model and single-user first scope</td>
+<td>Local-only logs by default; explicit opt-in diagnostics export</td>
+</tr>
+</tbody>
+</table>
+<h2 id="feature-dependencies">Feature Dependencies</h2>
+<pre><code class="language-text">[URL ingestion + extraction]
+    └──requires──&gt; [Content normalization]
+                        └──requires──&gt; [Schema/quality validator]
+                                             └──drives──&gt; [Adaptive Q&amp;A loop]
+                                                              └──enables──&gt; [Final generation]
+
+[Existing-skill index + overlap detection]
+    └──requires──&gt; [Skill parser + semantic matcher]
+                        └──enables──&gt; [Merge/update planner]
+                                             └──gates──&gt; [Install approval]
+
+[Preview/diff]
+    └──enhances──&gt; [Install approval]
+
+[Session persistence]
+    └──enhances──&gt; [Adaptive Q&amp;A loop]
+
+[Multi-page crawling]
+    └──conflicts (v1 reliability/scope)──&gt; [Deterministic single-URL ingestion]
+</code></pre>
+<h3 id="dependency-notes">Dependency Notes</h3>
+<ul>
+<li><strong>Adaptive Q&amp;A requires schema + quality validation:</strong> you need explicit failed checks to generate targeted follow-up questions.</li>
+<li><strong>Merge/update handling requires overlap detection first:</strong> no safe merge path exists without both name-level and semantic conflict signals.</li>
+<li><strong>Approval gate depends on preview/diff quality:</strong> users can only provide meaningful consent when they can inspect exact changes.</li>
+<li><strong>Session resume depends on persisted intermediate model state:</strong> to avoid re-asking already answered questions.</li>
+<li><strong>Single-page v1 scope conflicts with crawling:</strong> crawl breadth changes extraction determinism and dramatically increases conflict surface.</li>
+</ul>
+<h2 id="mvp-definition">MVP Definition</h2>
+<h3 id="launch-with-v1">Launch With (v1)</h3>
+<p>Minimum viable product - what's needed to validate the concept.</p>
+<ul>
+<li>[ ] Single URL ingest + robust content extraction - foundation for all downstream generation quality.</li>
+<li>[ ] Adaptive interactive Q&amp;A tied to strict validator - ensures required skill sections are complete and usable.</li>
+<li>[ ] Overlap detection + explicit merge/update choice - avoids duplicate/conflicting installed skills.</li>
+<li>[ ] Approval-gated install to <code>$CODEX_HOME/skills</code> with preview - preserves user control and trust.</li>
+<li>[ ] Fail-closed behavior (no install on validation/merge uncertainty) - prioritizes reliability over throughput.</li>
+</ul>
+<h3 id="add-after-validation-v1x">Add After Validation (v1.x)</h3>
+<p>Features to add once core is working.</p>
+<ul>
+<li>[ ] Skill atomicity scorer and split recommendations - add when users create too-broad generated skills.</li>
+<li>[ ] Install simulation + rollback helper - add when users request safer upgrade workflows.</li>
+<li>[ ] Doc-type-aware question presets - add when question fatigue appears in usage feedback.</li>
+<li>[ ] Better semantic overlap engine (embeddings/classifier hybrid) - add when false positives/negatives become operational pain.</li>
+</ul>
+<h3 id="future-consideration-v2">Future Consideration (v2+)</h3>
+<p>Features to defer until product-market fit is established.</p>
+<ul>
+<li>[ ] Controlled multi-page ingestion - defer until deterministic chunking and confidence scoring are proven.</li>
+<li>[ ] Team/shared governance features - defer due to single-user-first constraint.</li>
+<li>[ ] Optional IDE companion UX - defer until core CLI flow quality is stable.</li>
+</ul>
+<h2 id="feature-prioritization-matrix">Feature Prioritization Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>User Value</th>
+<th>Implementation Cost</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single URL ingest + extraction</td>
+<td>HIGH</td>
+<td>MEDIUM</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>Adaptive Q&amp;A + strict validation gate</td>
+<td>HIGH</td>
+<td>HIGH</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>Overlap detection + merge/update choice</td>
+<td>HIGH</td>
+<td>HIGH</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>Explicit approval + preview install</td>
+<td>HIGH</td>
+<td>LOW</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>Session resume/refinement</td>
+<td>MEDIUM</td>
+<td>MEDIUM</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>Atomicity scoring</td>
+<td>MEDIUM</td>
+<td>MEDIUM</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>Install simulation + rollback</td>
+<td>MEDIUM</td>
+<td>MEDIUM</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>Multi-page ingestion</td>
+<td>MEDIUM</td>
+<td>HIGH</td>
+<td>P3</td>
+</tr>
+<tr>
+<td>Team governance/workflows</td>
+<td>LOW (for v1 persona)</td>
+<td>HIGH</td>
+<td>P3</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Priority key:</strong>
+- P1: Must have for launch
+- P2: Should have, add when possible
+- P3: Nice to have, future consideration</p>
+<h2 id="competitor-feature-analysis">Competitor Feature Analysis</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Codex CLI</th>
+<th>Claude Code</th>
+<th>Aider</th>
+<th>Skill Weaver Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Permission/approval gating</td>
+<td>Explicit approval + sandbox modes</td>
+<td>Fine-grained permission modes and rules</td>
+<td>User confirms edits in workflow</td>
+<td>Mandatory approval before install to skill registry</td>
+</tr>
+<tr>
+<td>Session continuation</td>
+<td>Resume/fork support</td>
+<td>Continue/resume support</td>
+<td>Conversational iterative loop</td>
+<td>Persist Q&amp;A state + resumable refinement sessions</td>
+</tr>
+<tr>
+<td>Structured output guardrails</td>
+<td>JSON/schema-oriented automation flags</td>
+<td>JSON schema in print mode</td>
+<td>Diff/test/lint guardrails</td>
+<td>Strict skill schema + quality gate before write</td>
+</tr>
+<tr>
+<td>Extensibility pattern</td>
+<td>MCP/tool integrations</td>
+<td>Skills + hooks + subagents</td>
+<td>Commands + scripts + model flexibility</td>
+<td>URL-to-skill pipeline with conflict-aware install semantics</td>
+</tr>
+<tr>
+<td>URL content handling</td>
+<td>Web search/fetch integrations</td>
+<td>WebFetch + hooks ecosystem</td>
+<td>URL/web page support in usage modes</td>
+<td>Deterministic single-page extraction + adaptive clarification</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://developers.openai.com/codex/cli/reference/">OpenAI Codex CLI Reference</a> (HIGH)</li>
+<li><a href="https://help.openai.com/en/articles/11096431">OpenAI Codex CLI Overview</a> (HIGH)</li>
+<li><a href="https://code.claude.com/docs/en/permissions">Claude Code Permissions</a> (HIGH)</li>
+<li><a href="https://code.claude.com/docs/en/cli-reference">Claude Code CLI Reference</a> (HIGH)</li>
+<li><a href="https://code.claude.com/docs/en/slash-commands">Claude Code Skills/Slash Commands</a> (HIGH)</li>
+<li><a href="https://code.claude.com/docs/en/hooks">Claude Code Hooks</a> (HIGH)</li>
+<li><a href="https://aider.chat/docs/usage.html">Aider Usage</a> (HIGH)</li>
+<li><a href="https://aider.chat/docs/usage/lint-test.html">Aider Linting and Testing</a> (HIGH)</li>
+<li><a href="https://docs.firecrawl.dev/features/scrape">Firecrawl Scrape Feature Docs</a> (MEDIUM-HIGH)</li>
+<li><a href="https://r.jina.ai/docs">Jina Reader Docs</a> (MEDIUM)</li>
+</ul>
+<hr />
+<p><em>Feature research for: CLI skill generator (Skill Weaver)</em>
+<em>Researched: 2026-03-10</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

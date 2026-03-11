@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stack Research · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Stack Research</h1>
+      <p>.planning/research/STACK.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#stack-research">Stack Research</a><ul>
+<li><a href="#recommended-stack">Recommended Stack</a><ul>
+<li><a href="#core-technologies">Core Technologies</a></li>
+<li><a href="#supporting-libraries">Supporting Libraries</a></li>
+<li><a href="#development-tools">Development Tools</a></li>
+</ul>
+</li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#alternatives-considered">Alternatives Considered</a></li>
+<li><a href="#what-not-to-use">What NOT to Use</a></li>
+<li><a href="#stack-patterns-by-variant">Stack Patterns by Variant</a></li>
+<li><a href="#version-compatibility">Version Compatibility</a></li>
+<li><a href="#sources">Sources</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Stack Research</h2>
+        <p>Rendered from <code>.planning/research/STACK.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="stack-research">Stack Research</h1>
+<p><strong>Domain:</strong> Go CLI tool that generates Codex skills from one docs URL
+<strong>Researched:</strong> 2026-03-10
+<strong>Confidence:</strong> HIGH</p>
+<h2 id="recommended-stack">Recommended Stack</h2>
+<h3 id="core-technologies">Core Technologies</h3>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>Why Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Go</td>
+<td>1.25.x</td>
+<td>Primary language/runtime</td>
+<td>Current stable Go line for 2025+ CLIs; strong stdlib for filesystem/path/process ops needed for <code>$CODEX_HOME/skills</code> install gates. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/spf13/cobra</code></td>
+<td>v1.10.2</td>
+<td>CLI command model and UX</td>
+<td>De-facto Go CLI standard for subcommands, help/completion, and predictable UX. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>charm.land/huh/v2</code></td>
+<td>v2.0.3</td>
+<td>Adaptive interactive questioning flow</td>
+<td>Modern maintained prompt/form system; strong fit for iterative ask/validate/re-ask loops. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/openai/openai-go/v3</code></td>
+<td>v3.26.0</td>
+<td>LLM-powered draft generation + targeted follow-up prompts</td>
+<td>Official Go SDK; fastest path to robust generation + constrained retries from validation feedback. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/spf13/viper</code></td>
+<td>v1.21.0</td>
+<td>Config and env management</td>
+<td>Standard pairing with Cobra for API keys, model defaults, and runtime behavior toggles. <strong>Confidence: HIGH</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="supporting-libraries">Supporting Libraries</h3>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th>Version</th>
+<th>Purpose</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/PuerkitoBio/goquery</code></td>
+<td>v1.11.0</td>
+<td>Parse fetched HTML and extract canonical doc text</td>
+<td>Use for single-page URL ingestion in v1; deterministic extraction and simpler failure handling than crawlers. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/hashicorp/go-retryablehttp</code></td>
+<td>v0.7.8</td>
+<td>Retry/backoff around URL fetch and API calls</td>
+<td>Use for flaky docs hosts and transient API/network failures. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/santhosh-tekuri/jsonschema/v6</code></td>
+<td>v6.0.2</td>
+<td>Strict schema validation of generated skill structure</td>
+<td>Use as hard gate before approval/install; fail fast with structured errors for targeted re-asks. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/go-playground/validator/v10</code></td>
+<td>v10.30.1</td>
+<td>Semantic/field validation beyond schema</td>
+<td>Use for quality checks schema cannot express well (scope narrowness, boundary rules, required examples). <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/BurntSushi/toml</code></td>
+<td>v1.6.0</td>
+<td>Parse skill metadata and existing skill manifests</td>
+<td>Use when scanning installed skills and validating template metadata blocks. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/sahilm/fuzzy</code></td>
+<td>v0.1.1</td>
+<td>Fast candidate overlap detection by name/keywords</td>
+<td>Use as first-pass overlap candidate filter before deeper similarity checks. <strong>Confidence: MEDIUM</strong></td>
+</tr>
+<tr>
+<td><code>dario.cat/mergo</code></td>
+<td>v1.0.2</td>
+<td>Merge/update behavior when overlap is approved</td>
+<td>Use for controlled map/struct merge semantics in update paths. <strong>Confidence: HIGH</strong></td>
+</tr>
+<tr>
+<td><code>github.com/spf13/afero</code></td>
+<td>v1.15.0</td>
+<td>Filesystem abstraction for install + tests</td>
+<td>Use to unit test install/approval paths without touching real <code>$CODEX_HOME</code>. <strong>Confidence: HIGH</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="development-tools">Development Tools</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>golangci-lint</code></td>
+<td>Lint and static checks</td>
+<td>Gate PRs; enable <code>gosec</code>, <code>errcheck</code>, <code>staticcheck</code>, <code>govet</code> for CLI reliability.</td>
+</tr>
+<tr>
+<td><code>goreleaser</code></td>
+<td>Cross-platform binary packaging</td>
+<td>Produce reproducible single-binary releases for macOS/Linux/Windows.</td>
+</tr>
+<tr>
+<td><code>gotestsum</code> + <code>testing</code></td>
+<td>Test execution/reporting</td>
+<td>Keep approval-gate, validation-retry, and install behavior under deterministic tests.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-bash"># Core
+go get github.com/spf13/cobra@v1.10.2
+go get charm.land/huh/v2@v2.0.3
+go get github.com/openai/openai-go/v3@v3.26.0
+go get github.com/spf13/viper@v1.21.0
+
+# Supporting
+go get github.com/PuerkitoBio/goquery@v1.11.0
+go get github.com/hashicorp/go-retryablehttp@v0.7.8
+go get github.com/santhosh-tekuri/jsonschema/v6@v6.0.2
+go get github.com/go-playground/validator/v10@v10.30.1
+go get github.com/BurntSushi/toml@v1.6.0
+go get github.com/sahilm/fuzzy@v0.1.1
+go get dario.cat/mergo@v1.0.2
+go get github.com/spf13/afero@v1.15.0
+
+# Dev dependencies / tools
+go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+go install github.com/goreleaser/goreleaser/v2@latest
+go install gotest.tools/gotestsum@latest
+</code></pre>
+<h2 id="alternatives-considered">Alternatives Considered</h2>
+<table>
+<thead>
+<tr>
+<th>Recommended</th>
+<th>Alternative</th>
+<th>When to Use Alternative</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cobra</code></td>
+<td><code>urfave/cli</code> (<code>v3.7.0</code> latest)</td>
+<td>Use <code>urfave/cli</code> only if you want a flatter command model and minimal framework conventions.</td>
+</tr>
+<tr>
+<td><code>huh/v2</code></td>
+<td>Bubble Tea custom prompts only</td>
+<td>Use pure Bubble Tea if you need full-screen bespoke TUI control beyond form workflows.</td>
+</tr>
+<tr>
+<td><code>jsonschema/v6</code> + <code>validator/v10</code></td>
+<td>Hand-rolled validation only</td>
+<td>Use hand-rolled only for very small prototypes; not for strict block-and-re-ask production gates.</td>
+</tr>
+<tr>
+<td><code>goquery</code> single-page extraction</td>
+<td>Full crawler stacks</td>
+<td>Use crawler stacks only in post-v1 when multi-page/domain ingestion becomes a requirement.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-not-to-use">What NOT to Use</h2>
+<table>
+<thead>
+<tr>
+<th>Avoid</th>
+<th>Why</th>
+<th>Use Instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>github.com/AlecAivazis/survey</code></td>
+<td>Archived/read-only; weak long-term maintenance signal for core UX dependency.</td>
+<td><code>charm.land/huh/v2</code></td>
+</tr>
+<tr>
+<td>Unvalidated direct template writes</td>
+<td>Allows malformed skills to pass through and fail only at runtime in Codex.</td>
+<td><code>jsonschema/v6</code> + semantic validators + block-and-re-ask loop</td>
+</tr>
+<tr>
+<td>Auto-install without explicit confirmation</td>
+<td>Violates approval gate requirement and increases risk of unwanted local skill mutations.</td>
+<td>Explicit yes/no install gate before writes</td>
+</tr>
+<tr>
+<td>Multi-page crawling in v1</td>
+<td>Expands ambiguity and failure modes; conflicts with single-URL deterministic v1 scope.</td>
+<td>Single-page URL fetch + extraction</td>
+</tr>
+</tbody>
+</table>
+<h2 id="stack-patterns-by-variant">Stack Patterns by Variant</h2>
+<p><strong>If running API-backed adaptive generation (recommended v1):</strong>
+- Use <code>openai-go/v3</code> + strict schema validation + targeted re-ask prompts.
+- Because this delivers the highest success rate for "usable in Codex" output with explicit correction loops.</p>
+<p><strong>If running deterministic/offline mode later:</strong>
+- Keep same CLI/validation/install stack, swap generation engine for local rules or local model adapter.
+- Because architecture remains stable while generation backend changes independently.</p>
+<h2 id="version-compatibility">Version Compatibility</h2>
+<table>
+<thead>
+<tr>
+<th>Package A</th>
+<th>Compatible With</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>go@1.25.x</code></td>
+<td><code>goquery@v1.11.0</code></td>
+<td><code>goquery@v1.11.0</code> requires Go 1.24+, so Go 1.25 is safe.</td>
+</tr>
+<tr>
+<td><code>go@1.25.x</code></td>
+<td><code>validator/v10@v10.30.1</code></td>
+<td>Published metadata shows Go 1.24.0 requirement; Go 1.25 is safe.</td>
+</tr>
+<tr>
+<td><code>huh/v2@v2.0.3</code></td>
+<td><code>bubbletea@v2.0.2</code> + <code>lipgloss@v2.0.1</code></td>
+<td>Keep Charm ecosystem major versions aligned on v2 to reduce UI integration friction.</td>
+</tr>
+<tr>
+<td><code>openai-go/v3@v3.26.0</code></td>
+<td><code>go@1.25.x</code></td>
+<td>SDK requires Go 1.22+, so Go 1.25 is safe.</td>
+</tr>
+<tr>
+<td><code>jsonschema/v6@v6.0.2</code></td>
+<td><code>go@1.25.x</code></td>
+<td>Module metadata lists Go 1.21 requirement; Go 1.25 is safe.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://go.dev/doc/devel/release">Go release history</a> - verified Go 1.25 line and patch cadence. (HIGH)</li>
+<li><a href="https://github.com/spf13/cobra/releases">Cobra releases</a> - verified <code>v1.10.2</code> latest. (HIGH)</li>
+<li><a href="https://github.com/spf13/viper/releases">Viper releases</a> - verified <code>v1.21.0</code> latest. (HIGH)</li>
+<li><a href="https://github.com/charmbracelet/huh/releases">Huh releases</a> - verified <code>v2.0.3</code> latest. (HIGH)</li>
+<li><a href="https://github.com/charmbracelet/bubbletea/releases">Bubble Tea releases</a> - verified <code>v2.0.2</code> latest. (HIGH)</li>
+<li><a href="https://github.com/charmbracelet/lipgloss/releases">Lip Gloss releases</a> - verified <code>v2.0.1</code> latest. (HIGH)</li>
+<li><a href="https://github.com/openai/openai-go/releases">OpenAI Go releases</a> and <a href="https://raw.githubusercontent.com/openai/openai-go/main/README.md">OpenAI Go README</a> - verified <code>v3.26.0</code> and Go version requirement. (HIGH)</li>
+<li><a href="https://github.com/PuerkitoBio/goquery/releases">goquery releases</a> - verified <code>v1.11.0</code> and Go 1.24+ requirement. (HIGH)</li>
+<li><a href="https://pkg.go.dev/github.com/hashicorp/go-retryablehttp?tab=versions">go-retryablehttp on pkg.go.dev</a> - verified <code>v0.7.8</code> default release metadata. (HIGH)</li>
+<li><a href="https://github.com/santhosh-tekuri/jsonschema/releases">jsonschema releases</a> and <a href="https://pkg.go.dev/github.com/santhosh-tekuri/jsonschema/v6">jsonschema v6 pkg page</a> - verified <code>v6.0.2</code> and Go requirement. (HIGH)</li>
+<li><a href="https://github.com/go-playground/validator/releases">validator releases</a> and <a href="https://pkg.go.dev/github.com/go-playground/validator/v10">validator pkg page</a> - verified <code>v10.30.1</code> and Go requirement metadata. (HIGH)</li>
+<li><a href="https://github.com/BurntSushi/toml/releases">BurntSushi/toml releases</a> - verified <code>v1.6.0</code> latest. (HIGH)</li>
+<li><a href="https://github.com/sahilm/fuzzy/releases">sahilm/fuzzy releases</a> - verified <code>v0.1.1</code> latest (older cadence). (MEDIUM)</li>
+<li><a href="https://github.com/darccio/mergo/releases">mergo releases</a> - verified <code>v1.0.2</code> latest. (HIGH)</li>
+<li><a href="https://github.com/spf13/afero/releases">afero releases</a> - verified <code>v1.15.0</code> latest. (HIGH)</li>
+<li><a href="https://github.com/urfave/cli/releases">urfave/cli releases</a> - verified <code>v3.7.0</code> latest for alternative comparison. (HIGH)</li>
+<li>Web search corroboration for archived <code>survey</code> status. (MEDIUM)</li>
+</ul>
+<hr />
+<p><em>Stack research for: Skill Weaver (CLI skill generation)</em>
+<em>Researched: 2026-03-10</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

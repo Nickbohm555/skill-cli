@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Architecture</h1>
+      <p>.planning/codebase/ARCHITECTURE.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#architecture">Architecture</a><ul>
+<li><a href="#pattern-overview">Pattern Overview</a></li>
+<li><a href="#layers">Layers</a></li>
+<li><a href="#data-flow">Data Flow</a></li>
+<li><a href="#key-abstractions">Key Abstractions</a></li>
+<li><a href="#entry-points">Entry Points</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#cross-cutting-concerns">Cross-Cutting Concerns</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Architecture</h2>
+        <p>Rendered from <code>.planning/codebase/ARCHITECTURE.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="architecture">Architecture</h1>
+<p><strong>Analysis Date:</strong> 2026-03-10</p>
+<h2 id="pattern-overview">Pattern Overview</h2>
+<p><strong>Overall:</strong> Layered CLI pipeline with package-level domain modules</p>
+<p><strong>Key Characteristics:</strong>
+- CLI entrypoint and command routing are isolated in <code>cmd/cli-skill/main.go</code> and <code>internal/cli/command/</code>.
+- Domain logic is split by phase-aligned packages in <code>internal/crawl/</code>, <code>internal/content/</code>, <code>internal/refinement/</code>, <code>internal/validation/</code>, <code>internal/overlap/</code>, and <code>internal/install/</code>.
+- Orchestration stages for downstream generation/install gates are centralized in <code>internal/app/generate/</code> as composable stage structs and loop controllers.</p>
+<h2 id="layers">Layers</h2>
+<p><strong>CLI Entry Layer:</strong>
+- Purpose: Parse commands/flags, run command handlers, and render user-facing output.
+- Location: <code>cmd/cli-skill/main.go</code>, <code>internal/cli/command/crawl.go</code>, <code>internal/cli/command/process.go</code>, <code>internal/cli/command/refine.go</code>
+- Contains: Cobra root/subcommands, command flag parsing, stdout/stderr report rendering, refinement REPL loop wiring.
+- Depends on: <code>internal/crawl/</code>, <code>internal/content/</code>, <code>internal/refinement/</code>, <code>internal/cli/prompts/</code>, <code>github.com/spf13/cobra</code>.
+- Used by: End users invoking the <code>cli-skill</code> binary.</p>
+<p><strong>Prompt/Presentation Layer:</strong>
+- Purpose: Adapt refinement field definitions into interactive prompt plans and review output text.
+- Location: <code>internal/cli/prompts/refinement_form.go</code>, <code>internal/cli/prompts/review_renderer.go</code>
+- Contains: Prompt plan adapters, control metadata (<code>input</code> vs <code>select</code>), review rendering helpers.
+- Depends on: <code>internal/refinement/</code>.
+- Used by: <code>internal/cli/command/refine.go</code> through <code>prompts.RefinementFormAdapter</code>.</p>
+<p><strong>Crawl Domain Layer:</strong>
+- Purpose: Execute bounded same-domain URL discovery and classify processed/skipped pages with reasons.
+- Location: <code>internal/crawl/engine.go</code>, <code>internal/crawl/classify.go</code>, <code>internal/crawl/normalize.go</code>, <code>internal/crawl/docs_root.go</code>, <code>internal/crawl/types.go</code>
+- Contains: Crawl queue/state machine, canonicalization, docs-root derivation, skip taxonomy, summary counters.
+- Depends on: <code>github.com/gocolly/colly/v2</code>, Go <code>net/url</code>, <code>net/http</code>.
+- Used by: <code>internal/cli/command/crawl.go</code>, <code>internal/cli/command/process.go</code>.</p>
+<p><strong>Content Processing Layer:</strong>
+- Purpose: Transform crawled pages into normalized content, attributed chunks, and summary-first review projections.
+- Location: <code>internal/content/extract.go</code>, <code>internal/content/normalize.go</code>, <code>internal/content/dedupe.go</code>, <code>internal/content/chunk.go</code>, <code>internal/content/pipeline.go</code>, <code>internal/content/summarize.go</code>, <code>internal/content/review_view.go</code>
+- Contains: Readability extraction, markdown/plaintext normalization, conservative dedupe, chunk attribution, summarization with deterministic fallback, expansion mapping.
+- Depends on: <code>codeberg.org/readeck/go-readability/v2</code>, <code>github.com/JohannesKaufmann/html-to-markdown/v2</code>, <code>github.com/openai/openai-go/v3</code>, <code>github.com/pkoukk/tiktoken-go</code>.
+- Used by: <code>internal/cli/command/process.go</code>.</p>
+<p><strong>Refinement State Machine Layer:</strong>
+- Purpose: Maintain required refinement fields, run adaptive question/deepening flow, and enforce commit readiness.
+- Location: <code>internal/refinement/session.go</code>, <code>internal/refinement/flow.go</code>, <code>internal/refinement/clarity.go</code>, <code>internal/refinement/validator.go</code>, <code>internal/refinement/field_graph.go</code>, <code>internal/refinement/revise.go</code>
+- Contains: Session field registry/state, flow events, deepening policy, revise dependency graph, validation report for review gate.
+- Depends on: Go stdlib only.
+- Used by: <code>internal/cli/command/refine.go</code>, <code>internal/cli/prompts/</code>.</p>
+<p><strong>Validation Layer:</strong>
+- Purpose: Parse skill markdown and enforce structural + semantic quality rules.
+- Location: <code>internal/validation/parse_skill.go</code>, <code>internal/validation/schema_validate.go</code>, <code>internal/validation/semantic_validate.go</code>, <code>internal/validation/report.go</code>, <code>internal/validation/model.go</code>, <code>internal/validation/skill.schema.json</code>
+- Contains: Candidate model binding, JSON schema compiler/mapper, semantic scope rules, issue prioritization, follow-up prompt text.
+- Depends on: <code>github.com/santhosh-tekuri/jsonschema/v6</code>, <code>github.com/yuin/goldmark</code>, <code>go.abhg.dev/goldmark/frontmatter</code>.
+- Used by: <code>internal/app/generate/fix_loop.go</code>, <code>internal/install/transaction.go</code>, <code>internal/install/activate_verify.go</code>, <code>internal/overlap/index_installed.go</code>.</p>
+<p><strong>Overlap &amp; Install Layer:</strong>
+- Purpose: Compare candidate skill against installed inventory, collect explicit resolution decision, and perform approval-gated atomic install.
+- Location: <code>internal/overlap/detect.go</code>, <code>internal/overlap/decision_flow.go</code>, <code>internal/overlap/index_installed.go</code>, <code>internal/install/preflight_gates.go</code>, <code>internal/install/approval_prompt.go</code>, <code>internal/install/transaction.go</code>, <code>internal/install/activate_verify.go</code>
+- Contains: Installed skill indexing, weighted overlap classification, decision prompt flow, preflight blockers, preview/diff rendering, staged rename transaction, post-install verification.
+- Depends on: <code>charm.land/huh/v2</code>, filesystem APIs, <code>internal/validation/</code>.
+- Used by: <code>internal/app/generate/overlap_stage.go</code>, <code>internal/app/generate/install_stage.go</code>.</p>
+<p><strong>Application Orchestration Layer:</strong>
+- Purpose: Compose validation/overlap/install gates into reusable stage APIs for full generation pipeline control.
+- Location: <code>internal/app/generate/gate.go</code>, <code>internal/app/generate/fix_loop.go</code>, <code>internal/app/generate/overlap_stage.go</code>, <code>internal/app/generate/install_stage.go</code>
+- Contains: Gate decisions, iterative fix loop, overlap handoff shaping, install stage dependency injection points.
+- Depends on: <code>internal/validation/</code>, <code>internal/overlap/</code>, <code>internal/install/</code>.
+- Used by: Package tests currently (<code>internal/app/generate/*_test.go</code>); not yet wired into <code>internal/cli/command/</code>.</p>
+<h2 id="data-flow">Data Flow</h2>
+<p><strong>Crawl Command Flow (<code>crawl</code>):</strong></p>
+<ol>
+<li><code>cmd/cli-skill/main.go</code> builds root command via <code>internal/cli/command.NewRootCommand()</code>.</li>
+<li><code>internal/cli/command/crawl.go</code> validates <code>--url</code>, calls <code>crawl.ExecuteCrawl(entryURL)</code>.</li>
+<li><code>internal/crawl/engine.go</code> canonicalizes URLs, enforces same-domain + cap, classifies responses, and records <code>CrawlResult</code>.</li>
+<li><code>internal/cli/command/crawl.go</code> renders processed/skipped pages and summary counts.</li>
+</ol>
+<p><strong>Process Command Flow (<code>process</code>):</strong></p>
+<ol>
+<li><code>internal/cli/command/process.go</code> runs <code>crawl.ExecuteCrawl</code>, then fetches processed page HTML.</li>
+<li><code>internal/content/extract.go</code> + <code>internal/content/normalize.go</code> convert HTML into normalized page content.</li>
+<li><code>internal/content/dedupe.go</code> marks duplicates; <code>internal/content/pipeline.go</code> produces attributed chunks.</li>
+<li><code>internal/content/summarize.go</code> summarizes chunks via OpenAI provider or deterministic fallback.</li>
+<li><code>internal/content/review_view.go</code> builds summary-first review records + expansion map.</li>
+<li><code>internal/cli/command/process.go</code> prints review blocks and warnings.</li>
+</ol>
+<p><strong>Refine Command Flow (<code>refine</code>):</strong></p>
+<ol>
+<li><code>internal/cli/command/refine.go</code> creates <code>refinement.SessionState</code> and <code>refinement.Flow</code>.</li>
+<li><code>internal/refinement/flow.go</code> asks primaries/deepening through the command-layer console interface.</li>
+<li><code>internal/cli/prompts/refinement_form.go</code> produces prompt plans from field state.</li>
+<li><code>internal/refinement/validator.go</code> returns readiness report; flow enters review when all required fields are complete.</li>
+<li><code>internal/cli/command/refine.go</code> handles <code>revise &lt;field&gt;</code> and <code>commit</code>, then emits JSON payload.</li>
+</ol>
+<p><strong>Validation to Install Pipeline Flow (orchestration package):</strong></p>
+<ol>
+<li><code>internal/app/generate/fix_loop.go</code> repeatedly validates candidate skill (<code>ValidateStructural</code> + <code>ValidateSemantic</code>) and applies one blocking fix at a time.</li>
+<li><code>internal/app/generate/overlap_stage.go</code> runs <code>overlap.Detect</code> and <code>overlap.DecisionFlow.Decide</code>, then emits install handoff only when explicitly resolved.</li>
+<li><code>internal/app/generate/install_stage.go</code> runs <code>install.Preflight</code>, preview/diff rendering, approval capture, staged transaction, and activation verification.</li>
+<li><code>internal/install/transaction.go</code> writes <code>SKILL.md</code> to stage dir, validates parseability, and atomically activates via rename.</li>
+</ol>
+<p><strong>State Management:</strong>
+- Crawl state is mutable and internal to <code>internal/crawl/engine.go</code> (<code>crawlState</code> with queue/seen/finalized maps).
+- Refinement state is explicit in <code>internal/refinement/session.go</code> (<code>SessionState</code> with revision counter and per-field status).
+- Validation/overlap/install states are immutable-ish value objects passed between stages (<code>validation.ValidationReport</code>, <code>overlap.OverlapReport</code>, <code>install.InstallRequest</code>).</p>
+<h2 id="key-abstractions">Key Abstractions</h2>
+<p><strong>Command Tree:</strong>
+- Purpose: Provide binary contract and subcommand entrypoints.
+- Examples: <code>internal/cli/command/crawl.go</code>, <code>internal/cli/command/process.go</code>, <code>internal/cli/command/refine.go</code>
+- Pattern: Cobra command factory functions with local flag vars and <code>RunE</code>.</p>
+<p><strong>Candidate Skill Model:</strong>
+- Purpose: Canonical structured representation used by validation, overlap indexing, and install rendering.
+- Examples: <code>internal/validation/model.go</code>, <code>internal/install/model.go</code>, <code>internal/overlap/index_installed.go</code>
+- Pattern: Shared struct-based DTOs with normalization and path/rule annotations.</p>
+<p><strong>Stage/Gate Decision Objects:</strong>
+- Purpose: Make progression blockers explicit instead of implicit boolean returns.
+- Examples: <code>internal/app/generate/gate.go</code>, <code>internal/app/generate/overlap_stage.go</code>, <code>internal/install/preflight_gates.go</code>
+- Pattern: <code>Allowed + Reason + BlockingIssue</code> structs propagated to caller.</p>
+<p><strong>Provider/Function Injection Seams:</strong>
+- Purpose: Allow deterministic tests without live API/IO for major flows.
+- Examples: <code>internal/content/summarize.go</code> (<code>SummaryProvider</code>), <code>internal/app/generate/install_stage.go</code> function fields, <code>internal/install/transaction.go</code> filesystem interface
+- Pattern: Struct fields for replaceable behavior with defaults applied at runtime.</p>
+<h2 id="entry-points">Entry Points</h2>
+<p><strong>Binary Main:</strong>
+- Location: <code>cmd/cli-skill/main.go</code>
+- Triggers: User runs <code>cli-skill ...</code>.
+- Responsibilities: Construct root command, route stderr, execute command tree, set exit code on failure.</p>
+<p><strong>Root Command Factory:</strong>
+- Location: <code>internal/cli/command/crawl.go</code> (<code>NewRootCommand</code>)
+- Triggers: Called by <code>main</code>.
+- Responsibilities: Register <code>crawl</code>, <code>process</code>, and <code>refine</code> subcommands.</p>
+<p><strong>Pipeline Stages (Library Entry Points):</strong>
+- Location: <code>internal/app/generate/fix_loop.go</code>, <code>internal/app/generate/overlap_stage.go</code>, <code>internal/app/generate/install_stage.go</code>
+- Triggers: Called by tests and future generate command wiring.
+- Responsibilities: Drive gating progression from validation through install activation.</p>
+<h2 id="error-handling">Error Handling</h2>
+<p><strong>Strategy:</strong> Fail closed with wrapped context errors and explicit gate blockers.</p>
+<p><strong>Patterns:</strong>
+- Command handlers return wrapped errors (<code>fmt.Errorf("...: %w", err)</code>) and <code>main</code> owns process exit in <code>cmd/cli-skill/main.go</code>.
+- Domain packages return typed blocker states plus sentinel errors where needed (<code>internal/install/errors.go</code>, <code>internal/app/generate/fix_loop.go</code>).
+- Partial failures that should not abort are accumulated as warnings (<code>internal/cli/command/process.go</code>, <code>internal/overlap/index_installed.go</code>).</p>
+<h2 id="cross-cutting-concerns">Cross-Cutting Concerns</h2>
+<p><strong>Logging:</strong> No centralized logger; user-visible status is emitted directly via command/report rendering in <code>internal/cli/command/</code> and prompt renderers in <code>internal/cli/prompts/</code>.</p>
+<p><strong>Validation:</strong> Structural + semantic validation is centralized in <code>internal/validation/</code> and reused by fix loop plus install verification.</p>
+<p><strong>Authentication:</strong> External auth is limited to OpenAI API key discovery in <code>internal/content/summarize.go</code> (<code>OPENAI_API_KEY</code>); no internal user/session auth layer.</p>
+<hr />
+<p><em>Architecture analysis: 2026-03-10</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

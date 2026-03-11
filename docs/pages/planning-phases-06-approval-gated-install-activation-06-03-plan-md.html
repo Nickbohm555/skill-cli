@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06-03-PLAN.md · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>06-03-PLAN.md</h1>
+      <p>.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul></ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>06-03-PLAN.md</h2>
+        <p>Rendered from <code>.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <hr />
+<p>phase: 06-approval-gated-install-activation
+plan: 03
+type: execute
+wave: 3
+depends_on:
+  - 06-01
+  - 06-02
+files_modified:
+  - internal/install/activate_verify.go
+  - internal/install/activate_verify_test.go
+  - internal/app/generate/install_stage.go
+  - internal/app/generate/install_stage_test.go
+autonomous: true
+must_haves:
+  truths:
+    - "After successful install transaction, the workflow verifies installed skill presence and parse validity as immediate activation signals."
+    - "Generate pipeline cannot bypass install sequencing; it must execute preflight -&gt; preview -&gt; explicit approval -&gt; transaction -&gt; activation verification."
+    - "If activation verification fails, workflow reports actionable fallback guidance while preserving fail-closed status semantics."
+  artifacts:
+    - path: "internal/install/activate_verify.go"
+      provides: "Post-install verification logic for presence, parse validity, and discoverability signal checks."
+    - path: "internal/app/generate/install_stage.go"
+      provides: "Pipeline stage wiring that invokes full Phase 06 install flow in strict order."
+    - path: "internal/install/activate_verify_test.go"
+      provides: "Tests for success and verification-failure paths, including fallback messaging behavior."
+    - path: "internal/app/generate/install_stage_test.go"
+      provides: "Integration tests proving unresolved gates block and approved installs become immediately usable."
+  key_links:
+    - from: "internal/app/generate/install_stage.go"
+      to: "internal/install/preflight_gates.go"
+      via: "stage gate checks execute before preview/prompt/transaction"
+      pattern: "Preflight|ErrInstallBlockedValidation|ErrInstallBlockedConflict"
+    - from: "internal/app/generate/install_stage.go"
+      to: "internal/install/transaction.go"
+      via: "write-capable path called only after explicit approval decision"
+      pattern: "RequestApproval|ExecuteTransaction"
+    - from: "internal/app/generate/install_stage.go"
+      to: "internal/install/activate_verify.go"
+      via: "post-transaction verification determines immediate-usability success state"
+      pattern: "VerifyInstalledSkill|ReadyNow|RestartFallback"</p>
+<hr />
+<p><objective>
+Complete end-to-end install activation by wiring Phase 06 flow into generation pipeline and validating immediate usability after successful install.</p>
+<p>Purpose: Fulfill INST-04 and close Phase 06 by proving installed skills are usable immediately in the normal path while preserving strict fail-closed sequencing.
+Output: Activation verification module, generate-stage orchestration, and integration tests for success and blocked/error paths.
+</objective></p>
+<p><execution_context>
+@~/.cursor/get-shit-done/workflows/execute-plan.md
+@~/.cursor/get-shit-done/templates/summary.md
+</execution_context></p>
+<p><context>
+@.planning/PROJECT.md
+@.planning/ROADMAP.md
+@.planning/REQUIREMENTS.md
+@.planning/STATE.md
+@.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md
+@.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md
+@.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md
+@.planning/phases/06-approval-gated-install-activation/06-02-SUMMARY.md
+</context></p>
+<p><tasks></p>
+<p><task type="auto">
+  <name>Task 1: Implement post-install activation verification contract</name>
+  <files>internal/install/activate_verify.go, internal/install/activate_verify_test.go</files>
+  <action>Implement verification that runs immediately after transaction success: confirm target path exists, confirm required skill artifact(s) parse/validate, and emit readiness status indicating immediate usability in normal path. Add explicit fallback guidance for rare discovery lag ("restart Codex") only when verification indicates installation succeeded but discoverability signal is missing. Keep this as verification/reporting logic, not a second write phase.</action>
+  <verify><code>go test ./internal/install -run Activate -v</code> passes with cases for ready-now success, parse-invalid failure, and fallback-guidance scenario.</verify>
+  <done>Install stage can deterministically report whether the newly installed skill is usable immediately and why if not.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 2: Wire strict install sequence into generation pipeline stage</name>
+  <files>internal/app/generate/install_stage.go</files>
+  <action>Create/install pipeline stage that consumes validated candidate + resolved conflict decision and executes strict order: <code>Preflight</code> -&gt; <code>RenderPreview/RenderDiff</code> -&gt; <code>RequestApproval</code> -&gt; <code>ExecuteTransaction</code> -&gt; <code>VerifyInstalledSkill</code>. Ensure unresolved gate states and non-approved outcomes return explicit blocked statuses and do not call transaction. Emit structured stage result with approval source, install target, and activation verification outcome.</action>
+  <verify><code>go test ./internal/app/generate -run InstallStage -v</code> passes with assertions on enforced order and blocked-state short-circuit behavior.</verify>
+  <done>Generation workflow enforces Phase 06 ordering contract and never allows write or activation checks when gates/approval fail.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 3: Add end-to-end tests for INST-01..INST-04 acceptance paths</name>
+  <files>internal/app/generate/install_stage_test.go, internal/install/activate_verify_test.go</files>
+  <action>Add integration tests that map directly to Phase 6 requirements: (a) preview appears before approval, (b) write only after explicit approval, (c) unresolved validation/conflict blocks install, (d) successful install returns immediate-usability pass signal. Include a decline path test proving no-write and a verification-fallback test proving restart guidance is exceptional, not default success path.</action>
+  <verify><code>go test ./internal/install ./internal/app/generate -run "InstallStage|Activate|INST" -v</code> passes and each INST requirement has at least one explicit assertion-backed case.</verify>
+  <done>Phase 06 has executable proof for all install and activation requirements, including blocked and success paths.</done>
+</task></p>
+<p></tasks></p>
+<p><verification>
+1. Run <code>go test ./internal/install ./internal/app/generate -v</code> and confirm all install-stage and activation tests pass.
+2. Validate blocked scenarios (validation unresolved, conflict unresolved, approval declined) never call transaction write logic.
+3. Validate successful scenario emits immediate-usability signal without requiring manual setup in the normal path.
+</verification></p>
+<p><success_criteria>
+- INST-04 satisfied: successful install provides immediate-usability verification signal.
+- End-to-end sequence is enforced exactly once in pipeline wiring with no bypass path.
+- All INST-01..INST-04 behaviors are covered by deterministic automated tests.
+</success_criteria></p>
+<output>
+After completion, create `.planning/phases/06-approval-gated-install-activation/06-03-SUMMARY.md`
+</output>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

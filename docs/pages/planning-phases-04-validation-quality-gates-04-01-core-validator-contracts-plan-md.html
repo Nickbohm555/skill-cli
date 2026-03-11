@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Section 1: Core validator contracts - strict structural and semantic checks · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Section 1: Core validator contracts - strict structural and semantic checks</h1>
+      <p>.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#section-1-core-validator-contracts-strict-structural-and-semantic-checks">Section 1: Core validator contracts - strict structural and semantic checks</a></li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Section 1: Core validator contracts - strict structural and semantic checks</h2>
+        <p>Rendered from <code>.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <hr />
+<p>phase: 04-validation-quality-gates
+plan: 01
+type: execute
+wave: 1
+depends_on: []
+files_modified:
+  - internal/validation/model.go
+  - internal/validation/parse_skill.go
+  - internal/validation/report.go
+  - internal/validation/schema_validate.go
+  - internal/validation/semantic_validate.go
+  - internal/validation/skill.schema.json
+  - internal/validation/validation_test.go
+autonomous: true
+must_haves:
+  truths:
+    - "A generated skill is rejected immediately when required sections or schema constraints are missing or malformed."
+    - "Validation output is deterministic and machine-readable with stable rule IDs and severity labels."
+    - "In-scope and out-of-scope boundaries are required and semantically checked, not just string-present."
+  artifacts:
+    - path: "internal/validation/model.go"
+      provides: "Normalized skill candidate model used by all validation passes."
+    - path: "internal/validation/parse_skill.go"
+      provides: "Frontmatter plus markdown section parsing into normalized model."
+    - path: "internal/validation/schema_validate.go"
+      provides: "Structural/schema validation with blocking error mapping."
+    - path: "internal/validation/semantic_validate.go"
+      provides: "Boundary-focused semantic validation rules for scope quality."
+    - path: "internal/validation/report.go"
+      provides: "Ordered issue report model with stable rule IDs and severity."
+    - path: "internal/validation/skill.schema.json"
+      provides: "Runtime schema source of truth for strict required-field checks."
+  key_links:
+    - from: "internal/validation/parse_skill.go"
+      to: "internal/validation/model.go"
+      via: "parser output normalized into candidate struct used by validators"
+      pattern: "ParseSkill|CandidateSkill"
+    - from: "internal/validation/schema_validate.go"
+      to: "internal/validation/report.go"
+      via: "schema failures converted into stable Error issues"
+      pattern: "RuleID|SeverityError|AddIssue"
+    - from: "internal/validation/semantic_validate.go"
+      to: "internal/validation/report.go"
+      via: "semantic scope checks emit deterministic prioritized issues"
+      pattern: "VAL\.SCOPE|SortIssues"</p>
+<hr />
+<p><objective>
+Implement the deterministic validation core that enforces strict structural gates first and semantic scope quality second.</p>
+<p>Purpose: Fulfill VAL-01 and VAL-03 by establishing fail-closed acceptance rules and explicit boundary requirements before any downstream progression.
+Output: Validation model/parser, schema contract, semantic boundary checks, and deterministic report/test coverage.
+</objective></p>
+<p><execution_context>
+@~/.cursor/get-shit-done/workflows/execute-plan.md
+@~/.cursor/get-shit-done/templates/summary.md
+</execution_context></p>
+<p><context>
+@.planning/PROJECT.md
+@.planning/ROADMAP.md
+@.planning/REQUIREMENTS.md
+@.planning/STATE.md
+@.planning/phases/04-validation-quality-gates/04-CONTEXT.md
+@.planning/phases/04-validation-quality-gates/04-RESEARCH.md
+</context></p>
+<p><tasks></p>
+<p><task type="auto">
+  <name>Task 1: Create normalized skill model, markdown parser, and issue report contract</name>
+  <files>internal/validation/model.go, internal/validation/parse_skill.go, internal/validation/report.go</files>
+  <action>Define <code>CandidateSkill</code> and section-level model types that represent all required fields for Codex skill acceptability. Implement parser logic that reads <code>SKILL.md</code> frontmatter and required headings into that model (avoid regex-only parsing; parse by structured markdown traversal). Add <code>ValidationIssue</code>/<code>ValidationReport</code> with stable <code>RuleID</code>, <code>Severity</code> (<code>Error</code>, <code>Warning</code>), deterministic ordering, and helper methods (<code>HasBlockingIssues</code>, <code>NextBlockingIssue</code>).</action>
+  <verify><code>go test ./...</code> compiles and parser/report tests validate deterministic issue ordering for repeated runs on the same fixture.</verify>
+  <done>A single normalized input contract and deterministic issue-report contract exist for all validation passes, with stable IDs suitable for prompt targeting.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 2: Implement strict structural/schema validation pass</name>
+  <files>internal/validation/schema_validate.go, internal/validation/skill.schema.json, internal/validation/validation_test.go</files>
+  <action>Create JSON Schema that enforces required sections/fields and strict shape constraints for candidate skill structure. Implement structural validation that compiles/applies the schema and maps violations into stable blocking <code>Error</code> issues (no best-effort bypasses). Ensure required-section absence and malformed values produce explicit rule IDs/messages that can be consumed by the fix loop in the next plan.</action>
+  <verify><code>go test ./internal/validation -run Structural -v</code> passes with fixtures that prove missing required sections fail closed.</verify>
+  <done>Structural validation is deterministic and blocks progression on any missing/malformed required content as required by VAL-01.</done>
+</task></p>
+<p><task type="auto">
+  <name>Task 3: Implement semantic boundary validation for in-scope/out-of-scope quality</name>
+  <files>internal/validation/semantic_validate.go, internal/validation/validation_test.go</files>
+  <action>Add semantic checks for explicit scope boundaries: both in-scope and out-of-scope sections must exist, contain non-trivial entries, and avoid vague catch-all phrasing. Emit stable <code>VAL.SCOPE.*</code> rule IDs with deterministic priority so the first blocking issue is predictable. Keep semantic validation as required pass two after structural validation, not optional linting.</action>
+  <verify><code>go test ./internal/validation -run Semantic -v</code> passes and includes positive/negative fixtures for boundary specificity.</verify>
+  <done>Validator enforces explicit and semantically acceptable scope boundaries, satisfying VAL-03 and producing deterministic rule-level output.</done>
+</task></p>
+<p></tasks></p>
+<p><verification>
+1. Run <code>go test ./internal/validation -v</code> and confirm structural and semantic suites both pass.
+2. Validate deterministic ordering by executing the same fixture test multiple times and confirming the same first blocking issue is reported.
+3. Confirm <code>HasBlockingIssues()</code> only reacts to <code>Error</code> severity and does not block on warning-only reports.
+</verification></p>
+<p><success_criteria>
+- Any missing required section or schema violation yields at least one blocking <code>Error</code> and fails closed.
+- Semantic boundary checks require explicit in-scope and out-of-scope definitions with rule-level traceability.
+- Validation report is machine-readable and deterministic, enabling targeted follow-up prompts in the next wave.
+</success_criteria></p>
+<output>
+After completion, create `.planning/phases/04-validation-quality-gates/04-01-SUMMARY.md`
+</output>
+
+<h2 id="section-1-core-validator-contracts-strict-structural-and-semantic-checks">Section 1: Core validator contracts - strict structural and semantic checks</h2>
+<p><strong>Single goal:</strong> Establish a deterministic validation core that blocks invalid skill output and emits stable issue data for guided remediation.</p>
+<p><strong>Details:</strong>
+- Parse <code>SKILL.md</code> into normalized typed structures before applying validation rules.
+- Run validation in two passes: structural/schema first, semantic boundary rules second.
+- Enforce fail-closed behavior on any blocking <code>Error</code>.
+- Use stable rule IDs and deterministic issue ordering to support one-issue-at-a-time follow-up.</p>
+<p><strong>Tech stack and dependencies</strong>
+- Libraries/packages (Go modules): <code>github.com/yuin/goldmark</code>, <code>go.abhg.dev/goldmark/frontmatter</code>, <code>github.com/santhosh-tekuri/jsonschema/v6</code>, and <code>github.com/go-playground/validator/v10</code> as documented in <code>04-RESEARCH.md</code>.
+- Tooling/runtime: no Docker or runtime changes; validation executes within existing Go CLI test/build workflow.</p>
+<p><strong>Files and purpose</strong></p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>internal/validation/model.go</td>
+<td>Defines normalized candidate skill structures shared by parser and validators.</td>
+</tr>
+<tr>
+<td>internal/validation/parse_skill.go</td>
+<td>Parses markdown/frontmatter into the normalized model.</td>
+</tr>
+<tr>
+<td>internal/validation/report.go</td>
+<td>Defines issue severities, rule IDs, sorting, and blocking helpers.</td>
+</tr>
+<tr>
+<td>internal/validation/schema_validate.go</td>
+<td>Runs strict schema validation and maps violations to blocking issues.</td>
+</tr>
+<tr>
+<td>internal/validation/semantic_validate.go</td>
+<td>Enforces explicit in-scope/out-of-scope semantic rules.</td>
+</tr>
+<tr>
+<td>internal/validation/skill.schema.json</td>
+<td>Declares structural source-of-truth constraints for candidate skills.</td>
+</tr>
+<tr>
+<td>internal/validation/validation_test.go</td>
+<td>Covers structural fail-closed behavior, semantic boundaries, and deterministic issue ordering.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>How to test:</strong> Run <code>go test ./internal/validation -v</code> and verify failing fixtures return explicit blocking errors while valid fixtures pass both validation passes.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

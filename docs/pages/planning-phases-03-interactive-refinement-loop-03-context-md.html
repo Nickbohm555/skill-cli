@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phase 3: Interactive Refinement Loop - Context · cli-skill</title>
+  
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #1d1d1b;
+      --muted: #5e5a53;
+      --line: #ddd4c6;
+      --accent: #8f4f22;
+      --accent-soft: #f4e1ce;
+      --panel: rgba(255, 253, 248, 0.94);
+      --shadow: 0 16px 40px rgba(48, 34, 19, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.58;
+      background:
+        radial-gradient(circle at top left, rgba(143, 79, 34, 0.12), transparent 28%),
+        linear-gradient(180deg, #efe6d9 0%, var(--bg) 22%, #fbf9f5 100%);
+    }
+
+    a { color: var(--accent); }
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+      background: #f5ede3;
+      border-radius: 0.3rem;
+      padding: 0.08rem 0.32rem;
+    }
+    pre {
+      background: #f5ede3;
+      border-radius: 14px;
+      padding: 16px;
+      overflow: auto;
+      font-size: 0.92rem;
+    }
+    pre code { background: none; padding: 0; }
+
+    .layout {
+      width: min(1200px, calc(100vw - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 20px;
+      align-self: start;
+      background: rgba(255, 253, 248, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .sidebar h1 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+      line-height: 1.05;
+    }
+
+    .sidebar p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--ink);
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+
+    .toc a:hover,
+    .toc a:focus {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .content { min-width: 0; }
+
+    .hero,
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -50px;
+      top: -70px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(143, 79, 34, 0.18) 0%, rgba(143, 79, 34, 0) 70%);
+      pointer-events: none;
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 2.7rem);
+      line-height: 1.02;
+      max-width: 18ch;
+    }
+
+    .hero p {
+      margin: 0;
+      max-width: 74ch;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    section {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    section h2 { margin: 0 0 14px; font-size: 1.6rem; }
+    section h3 { margin: 22px 0 10px; font-size: 1.1rem; }
+    p { margin: 0 0 14px; }
+    ul, ol { margin: 0 0 14px 20px; padding: 0; }
+    li + li { margin-top: 6px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 14px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">Documentation</p>
+      <h1>Phase 3: Interactive Refinement Loop - Context</h1>
+      <p>.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md</p>
+      <a class="back-link" href="../index.html">← Back to index</a>
+      <div class="toc"><div class="toc">
+<ul>
+<li><a href="#phase-3-interactive-refinement-loop-context">Phase 3: Interactive Refinement Loop - Context</a><ul>
+<li><a href="#phase-boundary">Phase Boundary</a></li>
+<li><a href="#implementation-decisions">Implementation Decisions</a><ul>
+<li><a href="#adaptive-questioning-flow">Adaptive questioning flow</a></li>
+<li><a href="#answer-revision-experience">Answer revision experience</a></li>
+<li><a href="#final-review-and-commit">Final review and commit</a></li>
+<li><a href="#claudes-discretion">Claude's Discretion</a></li>
+</ul>
+</li>
+<li><a href="#specific-ideas">Specific Ideas</a></li>
+<li><a href="#deferred-ideas">Deferred Ideas</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+    </aside>
+    <main class="content">
+      <div class="hero">
+        <h2>Phase 3: Interactive Refinement Loop - Context</h2>
+        <p>Rendered from <code>.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md</code>.</p>
+        <div class="meta">
+          <span>Updated 2026-03-11 00:00:56</span>
+        </div>
+      </div>
+      <section>
+        <h1 id="phase-3-interactive-refinement-loop-context">Phase 3: Interactive Refinement Loop - Context</h1>
+<p><strong>Gathered:</strong> 2026-03-10
+<strong>Status:</strong> Ready for planning</p>
+<p><domain></p>
+<h2 id="phase-boundary">Phase Boundary</h2>
+<p>Enable an adaptive conversation that collects and refines all required skill inputs before generation finalization, including the ability to revise prior answers before commit. This phase does not add new capabilities beyond the refinement loop itself.</p>
+<p></domain></p>
+<p><decisions></p>
+<h2 id="implementation-decisions">Implementation Decisions</h2>
+<h3 id="adaptive-questioning-flow">Adaptive questioning flow</h3>
+<ul>
+<li>Start in domain chunks (for example: purpose, inputs, constraints, examples), with depth within each chunk.</li>
+<li>Use confidence-driven branching: ask deeper follow-ups when answers are vague or ambiguous.</li>
+<li>For unclear answers, use concrete multiple-choice clarifications with an "other" path.</li>
+<li>Move to review only when required fields reach a higher quality/clarity bar, not just minimum completion.</li>
+</ul>
+<h3 id="answer-revision-experience">Answer revision experience</h3>
+<ul>
+<li>Revision entry uses command-style interaction (<code>revise &lt;field&gt;</code>).</li>
+<li>Editing a field auto re-asks directly affected follow-up questions.</li>
+<li>Show only the latest answer during revision (no visible history trail).</li>
+<li>After saving, show a brief summary of what changed and what may be impacted.</li>
+</ul>
+<h3 id="final-review-and-commit">Final review and commit</h3>
+<ul>
+<li>Final review is grouped by sections (purpose, constraints, examples, boundaries), not a flat list.</li>
+<li>Show clear readiness indicators per field (ready vs needs attention).</li>
+<li>Block final commit when required fields are missing or low-clarity.</li>
+<li>After commit confirmation, lock answers and proceed directly to generation.</li>
+</ul>
+<h3 id="claudes-discretion">Claude's Discretion</h3>
+<ul>
+<li>Exact wording and visual style of prompts and readiness indicators.</li>
+<li>How confidence/clarity thresholds are operationalized internally.</li>
+<li>Exact formatting of sectioned review output.</li>
+</ul>
+<p></decisions></p>
+<p><specifics></p>
+<h2 id="specific-ideas">Specific Ideas</h2>
+<p>No external product references were specified. Preferences emphasize adaptive depth, command-driven revision, and strict commit gating on required-field clarity.</p>
+<p></specifics></p>
+<p><deferred></p>
+<h2 id="deferred-ideas">Deferred Ideas</h2>
+<p>None — discussion stayed within phase scope.</p>
+<p></deferred></p>
+<hr />
+<p><em>Phase: 03-interactive-refinement-loop</em>
+<em>Context gathered: 2026-03-10</em></p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
