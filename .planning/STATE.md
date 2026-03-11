@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-02 Task 2 is implemented; the next scoped run is the verification session for Plan 03-02 Task 2.
+- **Current focus:** Phase 3 Plan 03-02 Task 2 is verified; the next scoped run is the execution session for Plan 03-02 Task 3.
 
 ## Current Position
 
@@ -65,10 +65,11 @@
 - Plan `03-02` Task `2` now adds [`internal/cli/prompts/review_renderer.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/review_renderer.go), which converts `refinement.ValidationReport` output into a sectioned review model and plain-text renderer with stable `ready`, `needs attention`, and `missing` labels plus an overall commit-readiness banner.
 - [`internal/cli/prompts/review_renderer_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/prompts/review_renderer_test.go) now locks grouped section ordering, missing-field rendering, commit-ready summary output, and revision-impact hint messaging so the final review stays aligned with validator semantics.
 - Verification for Plan `03-02` Task `2` ran `go test ./...` cleanly and confirmed the CLI prompt layer continues to consume domain policy outputs from `internal/refinement` rather than duplicating clarity or readiness rules locally.
+- Verification for Plan `03-02` Task `2` reran `go test ./...` plus `go test ./internal/cli/prompts -v` cleanly, confirming the review renderer tests still pass and the CLI prompt layer continues to consume `refinement.ValidationReport`, `ReadinessStatus`, `ClarityPolicy`, and `DeepeningDecision` outputs instead of reimplementing clarity/readiness policy in the prompt package.
 
 ### Active Todos
 
-- Verify Plan `03-02` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`.
+- Execute Plan `03-02` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -77,12 +78,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `03-02` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md` within verification-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 46.
+- **Next command:** Execute Plan `03-02` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md` within execution-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 47.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-02
 - task=2
-- status=implemented
+- status=verified
