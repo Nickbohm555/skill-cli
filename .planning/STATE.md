@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-01 Task 1 is implemented; the next scoped run is Phase 6 Plan 06-01 Task 1 verification.
+- **Current focus:** Phase 6 Plan 06-01 Task 1 is verified; the next scoped run is Phase 6 Plan 06-01 Task 2 execution.
 
 ## Current Position
 
 - **Current phase:** 6 - Approval-Gated Install & Activation
 - **Current plan:** 06-01
-- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plan 06-01 Task 1 awaiting verification.
+- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plan 06-01 Task 1 verified and Task 2 next in scope.
 - **Progress:** 5/6 phases complete
 - **Progress bar:** [#####-] 83%
 
@@ -137,11 +137,11 @@
 - Phase 5 is now complete after writing `.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md`, marking the roadmap phase status complete, and advancing state to Phase `06` Plan `06-01` Task `1`.
 - Plan `06-01` Task `1` now adds [`internal/install/model.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model.go) and [`internal/install/errors.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/errors.go), introducing typed install request/candidate/target/result contracts plus approval provenance fields (`approved`, `approval_source`, `decision_at`) and fail-closed install error taxonomy for blocked validation, blocked conflict resolution, declined approval, and missing non-interactive approval.
 - [`internal/install/model_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model_test.go) now locks Task `1` behavior with JSON-shape coverage for the install request contract, explicit-approval detection, write-readiness derivation from validation/conflict/approval state, and wrapped error classification helpers.
-- Task `1` verification in execution scope ran `go fmt ./internal/install/...` and `go test ./internal/install -run "Model|Errors" -v` cleanly; no preflight or prompt logic was added in this run, keeping Phase 06 Task `1` write-agnostic as required.
+- Verification for Plan `06-01` Task `1` reran the focused install model/error suite plus the broader `internal/install` package tests cleanly, and static inspection confirmed the package still has no filesystem writes or `$CODEX_HOME/skills` mutation path.
 
 ### Active Todos
 
-- Verify Plan `06-01` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`.
+- Execute Plan `06-01` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -150,12 +150,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `06-01` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 80.
+- **Next command:** Execute Plan `06-01` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 81.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-01
 - task=1
-- status=implemented
+- status=verified

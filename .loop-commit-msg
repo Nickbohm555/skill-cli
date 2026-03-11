@@ -1,6 +1,1 @@
-Add install contracts and fail-closed error taxonomy
-
-Built typed Phase 06 install request/result and approval provenance contracts in
-`internal/install`, plus typed sentinel errors for blocked validation, blocked
-conflict resolution, declined approval, and missing non-interactive approval.
-Tested with `go test ./internal/install -run "Model|Errors" -v`.
+verify install task 1 contracts and advance to preflight gating

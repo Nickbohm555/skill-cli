@@ -1538,3 +1538,23 @@ Notes:
 - Verification run output:
   - `go fmt ./internal/install/...` -> `internal/install/errors.go` / `internal/install/model.go` / `internal/install/model_test.go`
   - `go test ./internal/install -run "Model|Errors" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.581s`
+
+## Section 80 — 06-approval-gated-install-activation — 06-01 — Task 1 (Verification)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 1 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-01` / `task=1` / `status=verified`.
+
+Notes:
+- Re-ran the focused Task `1` verification in verification scope without expanding implementation scope because Section 80 is verification-only.
+- Broader package verification for `internal/install` stayed clean, so no production code changes were required during this run.
+- Static inspection confirmed the current Phase 06 Task `1` install package remains write-agnostic: there are still no filesystem writes, target-directory mutations, or `$CODEX_HOME/skills` paths in `internal/install`.
+- The fail-closed boundary remains intact at the contract layer: unresolved validation keeps `ValidationResolved` false, missing or unresolved conflict decisions keep `ConflictResolved` false, and `ReadyForWrite` still requires both resolved gates plus explicit approval provenance.
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/install -run "Model|Errors" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
+  - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.643s`
+  - `rg -n '\$CODEX_HOME/skills|os\.WriteFile|afero\.WriteFile|os\.Mkdir|os\.Rename|WriteFile\(|Create\(' internal/install` -> no matches
