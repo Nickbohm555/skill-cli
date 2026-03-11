@@ -1378,3 +1378,24 @@ Notes:
 - Verification run output:
   - `go fmt ./internal/overlap/...` -> `internal/overlap/classify.go` / `internal/overlap/detect.go`
   - `go test ./internal/overlap -run Detect -v` -> `=== RUN   TestDetectNoOverlapReturnsEmptyReport` / `=== RUN   TestDetectClassifiesMediumOverlapWithSignals` / `=== RUN   TestDetectClassifiesHighExactNameCollision` / `=== RUN   TestDetectClassifiesExactContentMatch` / `=== RUN   TestDetectOrdersFindingsDeterministically` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.543s`
+
+## Section 72 — 05-overlap-conflict-resolution — 05-01 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-01` / `task=3` / `status=verified`.
+4. Create `05-01-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+
+Notes:
+- Re-ran the broader plan verification for Task `3`; the full `internal/overlap` suite passed cleanly with no production code changes required.
+- Repeated the focused detect suite with `-count=2`, confirming findings order and severity remain stable across repeated runs on the same fixtures.
+- Static verification confirmed production overlap code is still read-only: `internal/overlap/index_installed.go` uses `filepath.WalkDir`, and the only write APIs matched in the package are test fixture setup calls in [`internal/overlap/index_installed_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed_test.go).
+- Created `.planning/phases/05-overlap-conflict-resolution/05-01-SUMMARY.md` and advanced `.planning/STATE.md` to Plan `05-02` / Task `1` as the next execution target.
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/overlap -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.760s`
+  - `go test ./internal/overlap -run Detect -count=2 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.583s`
+  - `rg -n "os\\.(WriteFile|Create|Mkdir|MkdirAll|Remove|RemoveAll|Rename)|afero\\.(WriteFile|Create|Mkdir|MkdirAll|Remove|RemoveAll|Rename)|filepath\\.WalkDir|os\\.OpenFile" internal/overlap` -> production code matches only `filepath.WalkDir` in `internal/overlap/index_installed.go`; write APIs appear only in `internal/overlap/index_installed_test.go`

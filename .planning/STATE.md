@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 5 Plan 05-01 Task 3 is implemented; the next scoped run is Task 3 verification.
+- **Current focus:** Phase 5 Plan 05-01 is complete; the next scoped run is Plan 05-02 Task 1 execution.
 
 ## Current Position
 
 - **Current phase:** 5 - Overlap & Conflict Resolution
-- **Current plan:** 05-01
-- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 Task 3 implemented and queued for verification.
+- **Current plan:** 05-02
+- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 complete and Plan 05-02 queued for Task 1 execution.
 - **Progress:** 4/6 phases complete
 - **Progress bar:** [####--] 67%
 
@@ -119,10 +119,12 @@
 - Plan `05-01` Task `3` now adds [`internal/overlap/classify.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/classify.go), [`internal/overlap/detect.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect.go), and [`internal/overlap/detect_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/detect_test.go), implementing a deterministic read-only overlap detector that compares a candidate profile against indexed installed skills using hard path/name collisions, exact-content matching, weighted structural scoring, scope-conflict checks, and stable signal-level explanations.
 - The new detector consumes `InstalledIndex` directly so index warnings carry into the final `OverlapReport`, normalizes both candidate and installed profiles with the existing overlap package helpers, and keeps findings order stable regardless of input ordering by re-sorting profiles before classification.
 - Task `3` verification in execution scope ran `go fmt ./internal/overlap/...` and `go test ./internal/overlap -run Detect -v` cleanly after tightening exact-content matching to require substantive non-name content and relaxing one score assertion to tolerate floating-point math.
+- Verification for Plan `05-01` Task `3` reran the full `internal/overlap` suite cleanly, repeated the focused detect tests with `-count=2` to confirm deterministic ordering and severity on identical fixtures, and statically confirmed production overlap code remains read-only with no `$CODEX_HOME/skills` write path.
+- Phase 5 Plan `05-01` is now complete after writing `.planning/phases/05-overlap-conflict-resolution/05-01-SUMMARY.md` and advancing state to Plan `05-02` / Task `1`.
 
 ### Active Todos
 
-- Verify Plan `05-01` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`.
+- Execute Plan `05-02` Task `1` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -131,12 +133,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `05-01` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 72.
+- **Next command:** Execute Plan `05-02` Task `1` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 73.
 
 ## Execution Tracking
 
 - phase=05-overlap-conflict-resolution
-- plan=05-01
-- task=3
-- status=implemented
+- plan=05-02
+- task=1
+- status=queued

@@ -1,3 +1,5 @@
-Implement overlap detection and severity classification
+Verify overlap detection plan 05-01 and advance to 05-02
 
-Built deterministic overlap detection for installed skill comparisons, including exact path/name/content checks, weighted structural scoring, and signal-rich overlap reports. Tested with `go test ./internal/overlap -run Detect -v`.
+- ran go test ./internal/overlap -v
+- reran detect tests with -count=2 for determinism
+- confirmed production overlap package remains read-only
