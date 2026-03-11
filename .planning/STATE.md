@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-03 Task 1 is implemented; the next scoped run is Phase 6 Plan 06-03 Task 1 verification.
+- **Current focus:** Phase 6 Plan 06-03 Task 1 is verified; the next scoped run is Phase 6 Plan 06-03 Task 2 execution.
 
 ## Current Position
 
@@ -162,10 +162,11 @@
 - Plan `06-03` Task `1` now adds [`internal/install/activate_verify.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify.go), introducing a post-install activation verifier that confirms installed path presence, reparses `SKILL.md`, reruns structural plus semantic validation, and emits either an immediate-usability `ReadyNow` signal or an exceptional restart fallback guidance path when discoverability is missing.
 - [`internal/install/activate_verify_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go) now locks ready-now success, parse-invalid fail-closed behavior, and the rare discoverability-lag fallback case so later pipeline wiring can depend on a deterministic activation contract without adding a second write phase.
 - Task `1` verification in execution scope ran `go fmt ./internal/install/...` and `go test ./internal/install -run Activate -v` cleanly after tightening the legacy transaction fixture to produce a structurally valid installed skill for activation checks; no blockers came up, and `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent.
+- Verification for Plan `06-03` Task `1` reran the focused activation suite plus the broader `internal/install` package tests cleanly, confirming the activation verifier still reports ready-now success, parse-invalid fail-closed behavior, and restart fallback only for exceptional discoverability lag with no code changes required.
 
 ### Active Todos
 
-- Verify Plan `06-03` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
+- Execute Plan `06-03` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -174,12 +175,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `06-03` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 92.
+- **Next command:** Execute Plan `06-03` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 93.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-03
 - task=1
-- status=implemented
+- status=verified

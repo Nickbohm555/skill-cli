@@ -1772,3 +1772,21 @@ Notes:
 - Verification run output:
   - `go fmt ./internal/install/...` -> no output
   - `go test ./internal/install -run Activate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.632s`
+
+## Section 92 — 06-approval-gated-install-activation — 06-03 — Task 1 (Verification)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 1 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-03` / `task=1` / `status=verified`.
+
+Notes:
+- Re-ran Task `1` in verification scope without expanding implementation scope because Section 92 is verification-only.
+- The focused activation suite and the broader `internal/install` package suite both passed cleanly, so no code fixes were required.
+- Static inspection confirmed the activation contract still stays read-only after transaction success: it verifies installed path presence, reparses `SKILL.md`, reruns validation, and reports either immediate usability or exceptional restart fallback guidance without introducing any second write phase.
+- `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so verification used the available plan, research, state, and install-package sources only.
+- Verification run output:
+  - `go test ./internal/install -run Activate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
+  - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.766s`
