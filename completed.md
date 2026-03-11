@@ -1102,3 +1102,23 @@ Notes:
 - Verification run output:
   - `go fmt ./...` -> `internal/validation/schema_validate.go`
   - `go test ./internal/validation -run Structural -v` -> `=== RUN   TestStructuralValidationAcceptsValidCandidate` / `=== RUN   TestStructuralValidationFailsClosedOnMissingRequiredSections` / `=== RUN   TestStructuralValidationRejectsMalformedValues` / `=== RUN   TestStructuralValidationOrderingIsDeterministic` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.566s`
+
+## Section 58 — 04-validation-quality-gates — 04-01 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-01` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the phase-plan verification in verification-only scope and no implementation fixes were needed because the full `internal/validation` suite stayed clean.
+- Repeated the structural deterministic-ordering check with `go test ./internal/validation -run TestStructuralValidationOrderingIsDeterministic -count=5 -v`; the first blocking structural issue remained stable across all runs.
+- Repeated the warning-only blocking guard with `go test ./internal/validation -run TestValidationReportWarningsDoNotBlock -count=5 -v`; `HasBlockingIssues()` and `NextBlockingIssue()` continued to ignore warning-only reports as required.
+- No blockers surfaced. The next scoped run is the execution session for `04-01` Task `3`.
+- Verification run output:
+- `go test ./internal/validation -v` -> `=== RUN   TestParseSkillNormalizesFrontmatterAndSections` / `=== RUN   TestParseSkillLeavesMissingSectionsEmpty` / `=== RUN   TestValidationReportOrderingIsDeterministic` / `=== RUN   TestValidationReportWarningsDoNotBlock` / `=== RUN   TestStructuralValidationAcceptsValidCandidate` / `=== RUN   TestStructuralValidationFailsClosedOnMissingRequiredSections` / `=== RUN   TestStructuralValidationRejectsMalformedValues` / `=== RUN   TestStructuralValidationOrderingIsDeterministic` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.915s`
+- `go test ./internal/validation -run TestStructuralValidationOrderingIsDeterministic -count=5 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.593s`
+- `go test ./internal/validation -run TestValidationReportWarningsDoNotBlock -count=5 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.728s`
