@@ -1302,3 +1302,22 @@ Notes:
 - Verification run output:
   - `go fmt ./internal/overlap/...` -> `internal/overlap/model.go` / `internal/overlap/report.go`
   - `go test ./internal/overlap -run "Model|Report" -v` -> `=== RUN   TestModelOverlapContractsJSON` / `=== RUN   TestReportSortFindingsDeterministically` / `=== RUN   TestModelConflictResolutionDecisionResolutionState` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.731s`
+
+## Section 68 — 05-overlap-conflict-resolution — 05-01 — Task 1 (Verification)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 1 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-01` / `task=1` / `status=verified`.
+
+Notes:
+- Re-ran the scoped Task 1 contract checks without expanding into Task 2 implementation work; the overlap report and decision contract tests stayed green with no code changes required.
+- Repeated the same test selection with `-count=2` to confirm deterministic repeatability, and both runs remained stable.
+- Static verification of `internal/overlap` found no write-path behavior into `$CODEX_HOME/skills`; the only `.codex/skills` matches are inert fixture strings in [`internal/overlap/model_report_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/model_report_test.go).
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/overlap -run "Model|Report" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)`
+  - `go test ./internal/overlap -run "Model|Report" -count=2` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.490s`
+  - `rg -n '\b(os\.(WriteFile|Create|OpenFile)|afero\.|filepath\.Walk|Mkdir(All)?|Remove(All)?|Rename)\b|\.codex/skills|\$CODEX_HOME/skills' internal/overlap` -> matches only in `internal/overlap/model_report_test.go`

@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 5 Plan 05-01 Task 1 is implemented; the next scoped run is its verification session.
+- **Current focus:** Phase 5 Plan 05-01 Task 1 is verified; the next scoped run is Task 2 execution.
 
 ## Current Position
 
 - **Current phase:** 5 - Overlap & Conflict Resolution
 - **Current plan:** 05-01
-- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 Task 1 implemented and queued for verification.
+- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 Task 1 verified and Task 2 queued for execution.
 - **Progress:** 4/6 phases complete
 - **Progress bar:** [####--] 67%
 
@@ -111,10 +111,11 @@
 - Plan `05-01` Task `1` now adds [`internal/overlap/model.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/model.go) and [`internal/overlap/report.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/report.go), establishing typed overlap contracts for `SkillProfile`, `OverlapFinding`, `OverlapReport`, `ResolutionMode`, and `ConflictResolutionDecision` with stable JSON field names, explanation metadata, and explicit Phase 06 handoff fields such as `TargetSkillID`, `Mode`, `Blocking`, and `SelectedAt`.
 - [`internal/overlap/model_report_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/model_report_test.go) now locks the contract surface with JSON-shape assertions for report and decision serialization, deterministic finding/warning ordering, overall-severity aggregation, and resolved-vs-blocked decision semantics.
 - Task `1` verification in execution scope ran `go fmt ./internal/overlap/...` and `go test ./internal/overlap -run "Model|Report" -v` cleanly; no blockers came up while introducing the new overlap package.
+- Verification for Plan `05-01` Task `1` reran the focused overlap contract suite cleanly, repeated the same test selection with `-count=2` to confirm deterministic results, and statically confirmed `internal/overlap` still contains no skill-install write paths.
 
 ### Active Todos
 
-- Verify Plan `05-01` Task `1` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`.
+- Execute Plan `05-01` Task `2` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -123,12 +124,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `05-01` Task `1` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 68.
+- **Next command:** Execute Plan `05-01` Task `2` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 69.
 
 ## Execution Tracking
 
 - phase=05-overlap-conflict-resolution
 - plan=05-01
 - task=1
-- status=implemented
+- status=verified
