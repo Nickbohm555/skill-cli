@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 5 Plan 05-02 Task 1 is verified; the next scoped run is Plan 05-02 Task 2 execution.
+- **Current focus:** Phase 5 Plan 05-02 Task 2 is implemented; the next scoped run is Plan 05-02 Task 2 verification.
 
 ## Current Position
 
 - **Current phase:** 5 - Overlap & Conflict Resolution
 - **Current plan:** 05-02
-- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 complete and Plan 05-02 Task 1 verified.
+- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 complete and Plan 05-02 Task 2 implemented.
 - **Progress:** 4/6 phases complete
 - **Progress bar:** [####--] 67%
 
@@ -125,10 +125,13 @@
 - The new decision flow preserves the existing typed `ConflictResolutionDecision` contract, captures the highest-priority overlap target from the sorted report, exposes only the explicit overlap-resolution modes in the prompt contract, and keeps interrupted sessions unresolved by leaving `SelectedAt` unset while marking `Blocking=true`.
 - Task `1` verification in execution scope ran `go fmt ./internal/overlap/...` and `go test ./internal/overlap -run Decision -v` cleanly; the focused suite covered explicit-choice persistence, no-overlap shortcut messaging, interrupted prompt fallback, and invalid selection fallback.
 - Verification for Plan `05-02` Task `1` reran the focused decision-flow suite cleanly, repeated it with `-count=2` to confirm deterministic results, and statically confirmed the prompt contract still exposes only the explicit `update_existing`, `merge_with_existing`, and `abort` choices for overlap cases.
+- Plan `05-02` Task `2` now adds [`internal/overlap/resolution_summary.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/resolution_summary.go) and [`internal/app/generate/overlap_stage.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage.go), introducing a read-only overlap stage that runs detect -> decide -> resolution-summary rendering and always returns a dedicated pre-install summary block before any later install-capable phase handoff.
+- [`internal/app/generate/overlap_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go) now locks the Task `2` contract with focused checks for resolved and unresolved summaries, including the selected mode, target skill, next-step line, and explicit pre-install status line.
+- Task `2` verification in execution scope ran `go fmt ./internal/overlap ./internal/app/generate`, `go test ./internal/app/generate -run OverlapStageSummary -v`, and `go test ./internal/overlap ./internal/app/generate -v` cleanly; no blockers came up while adding the summary artifact and overlap-stage orchestration.
 
 ### Active Todos
 
-- Execute Plan `05-02` Task `2` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`.
+- Verify Plan `05-02` Task `2` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -137,12 +140,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `05-02` Task `2` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 75.
+- **Next command:** Verify Plan `05-02` Task `2` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 76.
 
 ## Execution Tracking
 
 - phase=05-overlap-conflict-resolution
 - plan=05-02
-- task=1
-- status=verified
+- task=2
+- status=implemented

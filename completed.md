@@ -1437,3 +1437,23 @@ Notes:
   - `go test ./internal/overlap -run Decision -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)`
   - `go test ./internal/overlap -run Decision -count=2` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.617s`
   - `rg -n "ResolutionUpdate|ResolutionMerge|ResolutionAbort|ResolutionNewInstall|explicitResolutionOptions|PromptDecision|DecisionPrompt" internal/overlap` -> prompt and decision-flow references remain centralized in `internal/overlap/decision_flow.go`, `internal/overlap/model.go`, `internal/overlap/report.go`, and related tests
+
+## Section 75 — 05-overlap-conflict-resolution — 05-02 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Add resolution summary artifact and pre-install display contract).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-02` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/overlap/resolution_summary.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/resolution_summary.go) with a dedicated `ResolutionSummary` artifact that formats findings, selected mode, target skill, next step, and explicit pre-install status from the typed overlap report and decision state.
+- Added [`internal/app/generate/overlap_stage.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage.go) to orchestrate the read-only `detect -> decide -> resolution-summary` flow and return a summary block plus handoff readiness without introducing any write/install behavior in Phase 05.
+- Added [`internal/app/generate/overlap_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go) with focused coverage for both resolved and unresolved summaries so the stage always surfaces selected mode and explicit pre-install status before any later phase consumes the result.
+- No blockers came up. I reused the existing `overlap.Detect`, `DecisionFlow.Decide`, `ConflictResolutionDecision.IsResolved`, and `ProfileFromCandidate`-compatible contracts instead of introducing parallel overlap-stage types.
+- Verification run output:
+  - `go fmt ./internal/overlap ./internal/app/generate` -> no output
+  - `go test ./internal/app/generate -run OverlapStageSummary -v` -> `=== RUN   TestOverlapStageSummaryIncludesSelectedModeAndReadyStatus` / `=== RUN   TestOverlapStageSummaryStaysBlockedWhenDecisionIsMissing` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.618s`
+  - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.745s` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.558s`
