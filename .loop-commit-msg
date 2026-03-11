@@ -1,3 +1,1 @@
-Build adaptive huh prompt adapters for refinement fields
-
-Tested with `go test ./internal/cli/prompts -run Prompt -v`.
+Verify prompt adapter determinism and domain-policy boundary for plan 03-02 task 1
