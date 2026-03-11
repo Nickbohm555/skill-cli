@@ -1,1 +1,1 @@
-ralph loop 81 (build): Add install preflight gating and tests
+ralph loop 82 (build): verify install preflight gates and broader internal/install suite

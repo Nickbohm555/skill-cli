@@ -1576,3 +1576,22 @@ Notes:
 - Verification run output:
   - `go fmt ./internal/install/...` -> `internal/install/model.go`
   - `go test ./internal/install -run Preflight -v` -> `=== RUN   TestPreflightPassThrough` / `=== RUN   TestPreflightBlockedValidation` / `=== RUN   TestPreflightBlockedConflictMissingOrUnresolved` / `=== RUN   TestPreflightBlockedConflictAbort` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.557s`
+
+## Section 82 — 06-approval-gated-install-activation — 06-01 — Task 2 (Verification)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 2 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-01` / `task=2` / `status=verified`.
+
+Notes:
+- Re-ran the focused Task `2` preflight verification in verification scope without expanding implementation scope because Section 82 is verification-only.
+- Broader package verification for `internal/install` stayed clean, and static inspection found no `$CODEX_HOME/skills` path or filesystem write primitives under `internal/install`, so Phase 06 remains contracts-and-gates only at this point.
+- Confirmed the fail-closed boundary still holds: blocking validation returns `ErrInstallBlockedValidation`, while missing, unresolved, and `abort` conflict states return `ErrInstallBlockedConflict` with explicit `PreflightStatus` reason metadata for CLI-facing status output.
+- The plan referenced `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md`, but that file is absent in the repository; verification proceeded from the available plan, research, state, and install-package sources with no blocker from the missing reference.
+- Verification run output:
+  - `go test ./internal/install -run Preflight -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
+  - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.616s`
+  - `rg -n '\$CODEX_HOME/skills|CODEX_HOME|Mkdir|Rename|WriteFile|Create|OpenFile|afero\.(WriteFile|NewOsFs|NewMemMapFs)' internal/install` -> no matches

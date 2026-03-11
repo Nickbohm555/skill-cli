@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-01 Task 2 is implemented; the next scoped run is Phase 6 Plan 06-01 Task 2 verification.
+- **Current focus:** Phase 6 Plan 06-01 Task 2 is verified; the next scoped run is Phase 6 Plan 06-01 Task 3 execution.
 
 ## Current Position
 
 - **Current phase:** 6 - Approval-Gated Install & Activation
 - **Current plan:** 06-01
-- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plan 06-01 Task 2 implemented and its verification next in scope.
+- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plan 06-01 Task 2 verified and Task 3 execution next in scope.
 - **Progress:** 5/6 phases complete
 - **Progress bar:** [#####-] 83%
 
@@ -141,10 +141,11 @@
 - Plan `06-01` Task `2` now adds [`internal/install/preflight_gates.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preflight_gates.go), centralizing Phase 06 preflight enforcement so validation errors, missing conflict decisions, unresolved conflict decisions, and `abort` decisions all fail closed before any preview or write-capable step can begin.
 - [`internal/install/preflight_gates_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preflight_gates_test.go) now locks pass-through, blocked-validation, missing/unresolved-conflict, and abort-conflict outcomes, while [`internal/install/model.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model.go) now carries `PreflightStatus` metadata for CLI-facing block reasons and the first blocking validation issue.
 - Task `2` verification in execution scope ran `go test ./internal/install -run Preflight -v` cleanly; no blockers came up while reusing `ValidationReport.NextBlockingIssue()` and `ConflictResolutionDecision.IsResolved()` instead of duplicating gate logic.
+- Verification for Plan `06-01` Task `2` reran the focused preflight suite plus the broader `internal/install` package tests cleanly, and static inspection confirmed `internal/install` still has no `$CODEX_HOME/skills` path or filesystem write primitives, so unresolved validation/conflict states remain fail-closed at the preflight boundary only.
 
 ### Active Todos
 
-- Verify Plan `06-01` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`.
+- Execute Plan `06-01` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -153,12 +154,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `06-01` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 82.
+- **Next command:** Execute Plan `06-01` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 83.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-01
 - task=2
-- status=implemented
+- status=verified
