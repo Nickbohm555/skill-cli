@@ -1655,3 +1655,21 @@ Notes:
 - No blockers came up. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, summary, and source files only.
 - Verification run output:
   - `go test ./internal/install -run "Preview|Diff" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.559s`
+
+## Section 86 — 06-approval-gated-install-activation — 06-02 — Task 1 (Verification)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 1 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-02` / `task=1` / `status=verified`.
+
+Notes:
+- Re-ran the focused preview/diff verification in verification scope without expanding implementation scope because Section 86 is verification-only.
+- The broader `internal/install` package suite stayed clean, and static inspection still shows the preview/diff surface is read-only: there are no production filesystem mutation paths or `$CODEX_HOME/skills` writes in `internal/install` yet, so preview rendering remains approval-prep only.
+- No fixes were required. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so verification used the available plan, research, state, and install-package sources only.
+- Verification run output:
+  - `go test ./internal/install -run "Preview|Diff" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
+  - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.608s`
+  - `rg -n '\$CODEX_HOME/skills|os\.(WriteFile|Rename|Mkdir|MkdirAll|Create|OpenFile|Remove|RemoveAll)|afero\.|filepath\.Join\(.*skills' internal/install` -> no matches

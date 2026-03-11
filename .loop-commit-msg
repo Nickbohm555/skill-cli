@@ -1,4 +1,7 @@
-Add deterministic install preview and diff rendering
+verify preview/diff install flow
 
-Built read-only install preview/diff helpers in internal/install and added focused Preview|Diff tests.
-Tested with: go test ./internal/install -run "Preview|Diff" -v
+Tested Section 86 verification for Phase 06 Plan 06-02 Task 1 with:
+- go test ./internal/install -run "Preview|Diff" -v
+- go test ./internal/install -v
+
+Confirmed preview/diff remains deterministic and read-only with no production install write path yet.
