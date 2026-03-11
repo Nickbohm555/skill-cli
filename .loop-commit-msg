@@ -1,1 +1,1 @@
-build summary-first review projection with raw expansion lookup and tests
+Verify review-view projection keeps summary attribution and expansion paths intact
