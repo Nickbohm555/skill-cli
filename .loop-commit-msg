@@ -1,4 +1,5 @@
-centralize validation progression gate
+verify phase-4 remediation gate and advance to phase 5
 
-Built a fail-closed generate gate with explicit blocked-state reasons, wired the fix loop through it, and added gate coverage for warning-only allow and deterministic first-error blocking.
-Tested with `go test ./internal/app/generate -run Gate -v` and `go test ./internal/validation ./internal/app/generate -v`.
+Tested:
+- go test ./internal/validation ./internal/app/generate -v
+- go test ./internal/app/generate -run 'TestFixLoopPromptsOneBlockingIssuePerIteration|TestFixLoopReturnsUserCanceledAfterFirstBlockingIssue|TestGateAllowsWarningOnlyReports|TestGateBlocksOnFirstErrorDeterministically|TestGateMatchesValidateCandidateProgressionPolicy' -v

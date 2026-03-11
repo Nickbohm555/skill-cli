@@ -3,22 +3,22 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 4 Plan 04-02 Task 3 is implemented, and the next scoped run is Task 3 verification.
+- **Current focus:** Phase 5 Plan 05-01 Task 1 is the next scoped execution run.
 
 ## Current Position
 
-- **Current phase:** 4 - Validation & Quality Gates
-- **Current plan:** 04-02
-- **Overall status:** Phases 1, 2, and 3 are complete. Phase 4 is in progress, Plan 04-01 is complete, and Plan 04-02 Task 3 is implemented with verification next.
-- **Progress:** 3/6 phases complete
-- **Progress bar:** [###---] 50%
+- **Current phase:** 5 - Overlap & Conflict Resolution
+- **Current plan:** 05-01
+- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is next, with Plan 05-01 Task 1 queued for execution.
+- **Progress:** 4/6 phases complete
+- **Progress bar:** [####--] 67%
 
 ## Performance Metrics
 
 - **v1 requirements total:** 20
 - **Mapped to phases:** 20
 - **Coverage:** 100%
-- **Validated requirements complete:** 11
+- **Validated requirements complete:** 14
 
 ## Accumulated Context
 
@@ -106,10 +106,12 @@
 - [`internal/app/generate/fix_loop.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/fix_loop.go) now routes its continue/stop decision through `CanProceed` instead of directly branching on ad hoc blocking checks, so generation-flow progression policy lives in one place while the loop still uses the selected blocking issue for targeted prompting.
 - [`internal/app/generate/gate_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/gate_test.go) now locks warning-only allow behavior, deterministic first-error blocking, and parity between `CanProceed(ValidateCandidate(...))` and the combined structural-plus-semantic validation flow.
 - Task `3` verification in execution scope ran `go fmt ./internal/app/generate/... ./internal/validation/...`, `go test ./internal/app/generate -run Gate -v`, and `go test ./internal/validation ./internal/app/generate -v` cleanly; the existing fix-loop tests continued to prove that a two-error candidate still prompts exactly one issue per iteration until cleared.
+- Verification for Plan `04-02` Task `3` reran the full `internal/validation` plus `internal/app/generate` suites cleanly and repeated the focused gate/fix-loop checks, confirming one-issue-at-a-time prompting still holds, warning-only reports still pass, and any `Error` still blocks progression through the centralized gate.
+- Phase 4 Plan `04-02` is now complete after writing `.planning/phases/04-validation-quality-gates/04-02-SUMMARY.md`, and Phase 4 is marked complete in `.planning/ROADMAP.md`.
 
 ### Active Todos
 
-- Verify Plan `04-02` Task `3` from `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md`.
+- Implement Plan `05-01` Task `1` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -118,12 +120,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `04-02` Task `3` from `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 66.
+- **Next command:** Implement Plan `05-01` Task `1` from `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 67.
 
 ## Execution Tracking
 
-- phase=04-validation-quality-gates
-- plan=04-02
-- task=3
-- status=implemented
+- phase=05-overlap-conflict-resolution
+- plan=05-01
+- task=1
+- status=ready
