@@ -1321,3 +1321,22 @@ Notes:
   - `go test ./internal/overlap -run "Model|Report" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)`
   - `go test ./internal/overlap -run "Model|Report" -count=2` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.490s`
   - `rg -n '\b(os\.(WriteFile|Create|OpenFile)|afero\.|filepath\.Walk|Mkdir(All)?|Remove(All)?|Rename)\b|\.codex/skills|\$CODEX_HOME/skills' internal/overlap` -> matches only in `internal/overlap/model_report_test.go`
+
+## Section 69 — 05-overlap-conflict-resolution — 05-01 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Build installed-skill indexer with normalized profile extraction).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-01` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/overlap/index_installed.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed.go) with a read-only installed-skill indexer that resolves the default `$CODEX_HOME/skills` root, scans local `SKILL.md` files, reuses [`internal/validation/parse_skill.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/parse_skill.go), and converts installed skills into normalized `SkillProfile` records with deterministic IDs, cleaned scope fields, extracted command lists, and sorted non-fatal warnings for malformed entries.
+- Added [`internal/overlap/index_installed_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/index_installed_test.go) with task-scoped fixtures covering valid installed skills, malformed frontmatter warning behavior, `CODEX_HOME` default-root resolution, case-insensitive `SKILL.md` discovery, and case/path normalization of indexed profile data.
+- Tightened the command-extraction heuristic so dependency/version text like `Go 1.25.x` is not misclassified as a command overlap signal, which keeps later overlap scoring focused on actual executable examples.
+- No blockers remained after fixing two test-scope issues during execution: one `t.Setenv` parallelization conflict and one overly broad command detector that initially treated `go 1.25.x` as a command.
+- Verification run output:
+  - `go fmt ./internal/overlap/...` -> `internal/overlap/index_installed.go` / `internal/overlap/index_installed_test.go`
+  - `go test ./internal/overlap -run Index -v` -> `=== RUN   TestIndexInstalledSkillsBuildsNormalizedProfiles` / `=== RUN   TestIndexInstalledSkillsWarnsOnMalformedSkillFile` / `=== RUN   TestIndexInstalledSkillsUsesDefaultCodexHomeRoot` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.573s`
