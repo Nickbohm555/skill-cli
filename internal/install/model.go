@@ -37,6 +37,25 @@ type ApprovalDecision struct {
 	Explanation    string         `json:"explanation,omitempty"`
 }
 
+type PreflightBlockReason string
+
+const (
+	PreflightBlockReasonNone               PreflightBlockReason = "none"
+	PreflightBlockReasonValidationBlocking PreflightBlockReason = "validation_blocking"
+	PreflightBlockReasonConflictMissing    PreflightBlockReason = "conflict_missing"
+	PreflightBlockReasonConflictUnresolved PreflightBlockReason = "conflict_unresolved"
+	PreflightBlockReasonConflictAbort      PreflightBlockReason = "conflict_abort"
+)
+
+type PreflightStatus struct {
+	Allowed                 bool                                `json:"allowed"`
+	Reason                  PreflightBlockReason                `json:"reason"`
+	ErrorCode               ErrorCode                           `json:"error_code,omitempty"`
+	Message                 string                              `json:"message,omitempty"`
+	BlockingValidationIssue *validation.ValidationIssue         `json:"blocking_validation_issue,omitempty"`
+	ConflictDecision        *overlap.ConflictResolutionDecision `json:"conflict_decision,omitempty"`
+}
+
 func (d ApprovalDecision) IsExplicitApproval() bool {
 	if !d.Approved || d.DecisionAt == nil {
 		return false
@@ -84,21 +103,51 @@ type InstallResult struct {
 	ValidationReport validation.ValidationReport         `json:"validation_report"`
 	ConflictDecision *overlap.ConflictResolutionDecision `json:"conflict_decision,omitempty"`
 	Approval         ApprovalDecision                    `json:"approval"`
+	Preflight        PreflightStatus                     `json:"preflight"`
 	PreflightPassed  bool                                `json:"preflight_passed"`
 	WriteReady       bool                                `json:"write_ready"`
 	Installed        bool                                `json:"installed"`
 }
 
 func NewInstallResult(request InstallRequest) InstallResult {
-	preflightPassed := request.ValidationResolved() && request.ConflictResolved()
+	preflight := PreflightStatus{
+		Allowed:          request.ValidationResolved() && request.ConflictResolved(),
+		Reason:           PreflightBlockReasonNone,
+		ConflictDecision: request.ConflictDecision,
+	}
+
+	if issue, ok := request.ValidationReport.NextBlockingIssue(); ok {
+		preflight.Allowed = false
+		preflight.Reason = PreflightBlockReasonValidationBlocking
+		preflight.ErrorCode = ErrorBlockedValidation
+		preflight.Message = ErrInstallBlockedValidation.Error()
+		preflight.BlockingValidationIssue = &issue
+	} else if request.ConflictDecision == nil {
+		preflight.Allowed = false
+		preflight.Reason = PreflightBlockReasonConflictMissing
+		preflight.ErrorCode = ErrorBlockedConflict
+		preflight.Message = ErrInstallBlockedConflict.Error()
+	} else if request.ConflictDecision.Mode == overlap.ResolutionAbort {
+		preflight.Allowed = false
+		preflight.Reason = PreflightBlockReasonConflictAbort
+		preflight.ErrorCode = ErrorBlockedConflict
+		preflight.Message = ErrInstallBlockedConflict.Error()
+	} else if !request.ConflictDecision.IsResolved() {
+		preflight.Allowed = false
+		preflight.Reason = PreflightBlockReasonConflictUnresolved
+		preflight.ErrorCode = ErrorBlockedConflict
+		preflight.Message = ErrInstallBlockedConflict.Error()
+	}
+
 	return InstallResult{
 		Candidate:        request.Candidate,
 		Target:           request.Target,
 		ValidationReport: request.ValidationReport,
 		ConflictDecision: request.ConflictDecision,
 		Approval:         request.Approval,
-		PreflightPassed:  preflightPassed,
-		WriteReady:       preflightPassed && request.Approval.IsExplicitApproval(),
+		Preflight:        preflight,
+		PreflightPassed:  preflight.Allowed,
+		WriteReady:       preflight.Allowed && request.Approval.IsExplicitApproval(),
 		Installed:        false,
 	}
 }

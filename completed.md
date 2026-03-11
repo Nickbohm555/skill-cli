@@ -1558,3 +1558,21 @@ Notes:
   - `go test ./internal/install -run "Model|Errors" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.643s`
   - `rg -n '\$CODEX_HOME/skills|os\.WriteFile|afero\.WriteFile|os\.Mkdir|os\.Rename|WriteFile\(|Create\(' internal/install` -> no matches
+
+## Section 81 — 06-approval-gated-install-activation — 06-01 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Implement centralized preflight gate for validation and conflict prerequisites).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-01` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/install/preflight_gates.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preflight_gates.go) with a centralized `Preflight` gate that consumes `validation.ValidationReport` plus `overlap.ConflictResolutionDecision` and fails closed on blocking validation, missing conflict decisions, unresolved conflict decisions, and `abort`.
+- Extended [`internal/install/model.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model.go) with `PreflightStatus` and explicit block-reason metadata so later CLI/install stages can surface deterministic pre-install status without re-deriving why the gate blocked.
+- Added [`internal/install/preflight_gates_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preflight_gates_test.go) covering pass-through, blocked-validation, missing/unresolved conflict, and abort outcomes. No blockers came up; I reused `ValidationReport.NextBlockingIssue()` and `ConflictResolutionDecision.IsResolved()` instead of adding parallel validation/conflict logic.
+- Verification run output:
+  - `go fmt ./internal/install/...` -> `internal/install/model.go`
+  - `go test ./internal/install -run Preflight -v` -> `=== RUN   TestPreflightPassThrough` / `=== RUN   TestPreflightBlockedValidation` / `=== RUN   TestPreflightBlockedConflictMissingOrUnresolved` / `=== RUN   TestPreflightBlockedConflictAbort` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.557s`

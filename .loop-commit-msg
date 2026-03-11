@@ -1,1 +1,3 @@
-verify install task 1 contracts and advance to preflight gating
+Add install preflight gating and tests
+
+Built centralized Phase 06 preflight checks for validation and conflict prerequisites, added preflight status metadata to install models, and verified with `go test ./internal/install -run Preflight -v`.

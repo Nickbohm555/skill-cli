@@ -1,1 +1,1 @@
-ralph loop 80 (build): verify install task 1 contracts and advance to preflight gating
+ralph loop 81 (build): Add install preflight gating and tests
