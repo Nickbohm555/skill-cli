@@ -1,3 +1,3 @@
-Implement refinement clarity scoring and deepening safeguards
+Verify Phase 3 clarity policy
 
-Tested: go test ./internal/refinement -run Clarity -v
+Re-ran internal/refinement verification for Task 2, confirmed clarity and session tests pass, and recorded the prompt-free domain check.
