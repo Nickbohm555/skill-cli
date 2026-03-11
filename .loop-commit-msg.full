@@ -1,1 +1,1 @@
-ralph loop 87 (build): Implement atomic install transaction with approval gate
+ralph loop 88 (build): Verify atomic install transaction gating and cleanup with full internal/install suite

@@ -1,4 +1,1 @@
-Implement atomic install transaction with approval gate
-
-Built the Phase 06-02 Task 2 write path in `internal/install/transaction.go`, including staged `SKILL.md` verification, same-parent promote/backup swap logic, rollback on activation failure, and explicit approval-required rejection.
-Tested with `go test ./internal/install -run Transaction -v`.
+Verify atomic install transaction gating and cleanup with full internal/install suite
