@@ -1,4 +1,4 @@
-verify validation task 2 structural gates
+implement semantic scope validation
 
-Re-ran Phase 04 Plan 04-01 Task 2 verification and confirmed the validation suite,
-deterministic structural ordering check, and warning-only non-blocking guard all pass.
+- add deterministic VAL.SCOPE boundary checks for brief and vague in/out-of-scope entries
+- add semantic validation tests and run `go test ./internal/validation -run Semantic -v`

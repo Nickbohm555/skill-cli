@@ -1122,3 +1122,23 @@ Notes:
 - `go test ./internal/validation -v` -> `=== RUN   TestParseSkillNormalizesFrontmatterAndSections` / `=== RUN   TestParseSkillLeavesMissingSectionsEmpty` / `=== RUN   TestValidationReportOrderingIsDeterministic` / `=== RUN   TestValidationReportWarningsDoNotBlock` / `=== RUN   TestStructuralValidationAcceptsValidCandidate` / `=== RUN   TestStructuralValidationFailsClosedOnMissingRequiredSections` / `=== RUN   TestStructuralValidationRejectsMalformedValues` / `=== RUN   TestStructuralValidationOrderingIsDeterministic` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.915s`
 - `go test ./internal/validation -run TestStructuralValidationOrderingIsDeterministic -count=5 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.593s`
 - `go test ./internal/validation -run TestValidationReportWarningsDoNotBlock -count=5 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.728s`
+
+## Section 59 — 04-validation-quality-gates — 04-01 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Implement semantic boundary validation for in-scope/out-of-scope quality).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-01` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/validation/semantic_validate.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/semantic_validate.go) to enforce a dedicated semantic second pass over scope boundaries, rejecting entries that are too brief to define a concrete boundary and rejecting vague catch-all phrasing in both `In Scope` and `Out Of Scope`.
+- Expanded [`internal/validation/validation_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/validation_test.go) with semantic-only coverage for valid specific boundaries, too-brief entries, vague catch-all phrases, and repeated-run deterministic ordering for the first blocking semantic issue.
+- Reused the existing `ValidationReport` contract and priority ordering rather than introducing a separate semantic issue model, so structural and semantic failures continue to sort through the same stable machine-readable path.
+- No blockers surfaced during implementation. The semantic heuristics were kept deterministic and local to scope sections so this task stays within the current plan’s boundary-validation contract.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./internal/validation -run Semantic -v` -> `=== RUN   TestSemanticValidationAcceptsSpecificBoundaries` / `=== RUN   TestSemanticValidationRejectsBriefBoundaryEntries` / `=== RUN   TestSemanticValidationRejectsVagueCatchAllPhrasing` / `=== RUN   TestSemanticValidationOrderingIsDeterministic` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.589s`

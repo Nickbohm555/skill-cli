@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 4 Plan 04-01 Task 2 is verified, and the next scoped run is the execution session for Task 3.
+- **Current focus:** Phase 4 Plan 04-01 Task 3 is implemented, and the next scoped run is the verification session for Task 3.
 
 ## Current Position
 
@@ -89,10 +89,13 @@
 - [`internal/validation/validation_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/validation_test.go) now adds task-scoped structural coverage for valid candidates, fail-closed missing required sections, malformed values such as blank metadata or blank list entries, and repeated-run ordering stability for the first blocking structural issue.
 - Task `2` verification in execution scope ran `go test ./internal/validation -run Structural -v` cleanly after one schema-loader fix: `jsonschema/v6` `AddResource` needed parsed JSON via `jsonschema.UnmarshalJSON`, not an `io.Reader`.
 - Verification for Plan `04-01` Task `2` reran the full `internal/validation` suite plus repeated deterministic checks for structural ordering and warning-only non-blocking behavior, all clean with no follow-up fixes required.
+- Plan `04-01` Task `3` now adds [`internal/validation/semantic_validate.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/semantic_validate.go), introducing a deterministic semantic scope pass that validates `In Scope` and `Out Of Scope` entries for non-trivial specificity and blocks vague catch-all phrasing with stable blocking `VAL.SCOPE.*` rule IDs and priorities.
+- [`internal/validation/validation_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/validation_test.go) now adds task-scoped semantic coverage for valid specific boundaries, too-brief boundary entries, vague catch-all phrasing in both scope sections, and repeated-run ordering stability for the first blocking semantic issue.
+- Task `3` verification in execution scope ran `go test ./internal/validation -run Semantic -v` cleanly after adding the semantic boundary heuristics; no broader verification session was run in this execution turn.
 
 ### Active Todos
 
-- Execute Plan `04-01` Task `3` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`.
+- Verify Plan `04-01` Task `3` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -101,12 +104,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `04-01` Task `3` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 59.
+- **Next command:** Verify Plan `04-01` Task `3` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 60.
 
 ## Execution Tracking
 
 - phase=04-validation-quality-gates
 - plan=04-01
-- task=2
-- status=verified
+- task=3
+- status=implemented

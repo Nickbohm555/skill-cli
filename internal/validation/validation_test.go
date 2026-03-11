@@ -293,6 +293,133 @@ func TestStructuralValidationOrderingIsDeterministic(t *testing.T) {
 	}
 }
 
+func TestSemanticValidationAcceptsSpecificBoundaries(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill(validSkillFixture())
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	report := ValidateSemantic(candidate)
+	if report.HasBlockingIssues() {
+		t.Fatalf("ValidateSemantic() blocking issues = %#v, want none", report.Issues)
+	}
+}
+
+func TestSemanticValidationRejectsBriefBoundaryEntries(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill(validSkillFixture())
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	candidate.InScope.Items = []string{"Go docs"}
+	candidate.OutOfScope.Items = []string{"Other topics"}
+
+	report := ValidateSemantic(candidate)
+	if !report.HasBlockingIssues() {
+		t.Fatal("ValidateSemantic() blocking issues = false, want true")
+	}
+
+	want := []ValidationIssue{
+		{
+			RuleID:   "VAL.SCOPE.IN_SCOPE_ENTRY_TOO_BRIEF",
+			Severity: SeverityError,
+			Path:     "sections.in_scope.items[0]",
+			Message:  "In Scope entries must be specific enough to define a concrete boundary.",
+			Priority: 130,
+		},
+		{
+			RuleID:   "VAL.SCOPE.OUT_OF_SCOPE_ENTRY_TOO_BRIEF",
+			Severity: SeverityError,
+			Path:     "sections.out_of_scope.items[0]",
+			Message:  "Out Of Scope entries must be specific enough to define a concrete boundary.",
+			Priority: 150,
+		},
+	}
+
+	for _, wantIssue := range want {
+		if !containsIssue(report.Issues, wantIssue) {
+			t.Fatalf("ValidateSemantic() issues = %#v, want %#v present", report.Issues, wantIssue)
+		}
+	}
+}
+
+func TestSemanticValidationRejectsVagueCatchAllPhrasing(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill(validSkillFixture())
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	candidate.InScope.Items = []string{"Handle Go standard library setup and anything else users need."}
+	candidate.OutOfScope.Items = []string{"Exclude unrelated deployment platforms and miscellaneous requests."}
+
+	report := ValidateSemantic(candidate)
+	if !report.HasBlockingIssues() {
+		t.Fatal("ValidateSemantic() blocking issues = false, want true")
+	}
+
+	want := []ValidationIssue{
+		{
+			RuleID:   "VAL.SCOPE.IN_SCOPE_VAGUE_CATCH_ALL",
+			Severity: SeverityError,
+			Path:     "sections.in_scope.items[0]",
+			Message:  "In Scope entries must avoid vague catch-all phrasing.",
+			Priority: 140,
+		},
+		{
+			RuleID:   "VAL.SCOPE.OUT_OF_SCOPE_VAGUE_CATCH_ALL",
+			Severity: SeverityError,
+			Path:     "sections.out_of_scope.items[0]",
+			Message:  "Out Of Scope entries must avoid vague catch-all phrasing.",
+			Priority: 160,
+		},
+	}
+
+	for _, wantIssue := range want {
+		if !containsIssue(report.Issues, wantIssue) {
+			t.Fatalf("ValidateSemantic() issues = %#v, want %#v present", report.Issues, wantIssue)
+		}
+	}
+}
+
+func TestSemanticValidationOrderingIsDeterministic(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill(validSkillFixture())
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	candidate.InScope.Items = []string{"General docs"}
+	candidate.OutOfScope.Items = []string{"Handle unrelated product areas and anything else."}
+
+	const runs = 5
+	var first []ValidationIssue
+	for i := 0; i < runs; i++ {
+		report := ValidateSemantic(candidate)
+		next, ok := report.NextBlockingIssue()
+		if !ok {
+			t.Fatal("NextBlockingIssue() = none, want first blocking issue")
+		}
+		if next.RuleID != "VAL.SCOPE.IN_SCOPE_ENTRY_TOO_BRIEF" {
+			t.Fatalf("NextBlockingIssue().RuleID = %q, want %q", next.RuleID, "VAL.SCOPE.IN_SCOPE_ENTRY_TOO_BRIEF")
+		}
+
+		if i == 0 {
+			first = append([]ValidationIssue(nil), report.Issues...)
+			continue
+		}
+		if !reflect.DeepEqual(report.Issues, first) {
+			t.Fatalf("ordered issues run %d = %#v, want %#v", i, report.Issues, first)
+		}
+	}
+}
+
 func containsIssue(issues []ValidationIssue, want ValidationIssue) bool {
 	for _, issue := range issues {
 		if reflect.DeepEqual(issue, want) {
