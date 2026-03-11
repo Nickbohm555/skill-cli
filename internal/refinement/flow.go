@@ -22,6 +22,8 @@ const (
 	FlowEventFieldReady             FlowEventType = "field_ready"
 	FlowEventEnterReview            FlowEventType = "enter_review"
 	FlowEventDeepeningAttemptCapped FlowEventType = "deepening_attempt_capped"
+	FlowEventRevise                 FlowEventType = "revise"
+	FlowEventReaskDependent         FlowEventType = "reask_dependent"
 	FlowEventCommit                 FlowEventType = "commit"
 )
 
@@ -62,6 +64,7 @@ type Flow struct {
 	policy             ClarityPolicy
 	asker              QuestionAsker
 	handoff            SummarizeFirstHandler
+	graph              FieldGraph
 	runtimeState       FlowState
 	deepeningAttempts  map[FieldID]int
 	events             []FlowEvent
@@ -86,6 +89,7 @@ func NewFlow(state *SessionState, asker QuestionAsker, handoff SummarizeFirstHan
 		policy:            DefaultClarityPolicy(),
 		asker:             asker,
 		handoff:           handoff,
+		graph:             DefaultFieldGraph(),
 		runtimeState:      FlowStateCollecting,
 		deepeningAttempts: make(map[FieldID]int, len(state.RequiredFields())),
 		events:            make([]FlowEvent, 0, len(state.RequiredFields())*2),
@@ -182,19 +186,74 @@ func (f *Flow) Commit() (FlowResult, error) {
 	}, nil
 }
 
+func (f *Flow) Revise(command string, answer string) (FlowResult, error) {
+	if f.runtimeState == FlowStateCommitted {
+		return FlowResult{}, fmt.Errorf("flow already committed")
+	}
+
+	revision, err := ParseReviseCommand(command)
+	if err != nil {
+		return FlowResult{}, err
+	}
+
+	field, err := ValidateRevisionTarget(f.state, revision.FieldID)
+	if err != nil {
+		return FlowResult{}, err
+	}
+
+	impacted, err := f.state.ReviseAnswer(revision.FieldID, answer, f.graph)
+	if err != nil {
+		return FlowResult{}, err
+	}
+	f.deepeningAttempts[revision.FieldID] = 0
+	f.events = append(f.events, FlowEvent{
+		Type:    FlowEventRevise,
+		FieldID: revision.FieldID,
+		Section: field.Definition.Section,
+		Detail:  strings.TrimSpace(command),
+	})
+
+	if err := f.reassessField(revision.FieldID); err != nil {
+		return FlowResult{}, err
+	}
+
+	for _, dependentID := range f.graph.DirectDependents(revision.FieldID) {
+		current, ok := f.state.Field(dependentID)
+		if !ok {
+			return FlowResult{}, fmt.Errorf("flow dependent field %q not found", dependentID)
+		}
+		f.deepeningAttempts[dependentID] = 0
+		f.events = append(f.events, FlowEvent{
+			Type:    FlowEventReaskDependent,
+			FieldID: dependentID,
+			Section: current.Definition.Section,
+			Detail:  fmt.Sprintf("reopened after revise %s", revision.FieldID),
+		})
+		if err := f.reaskField(current); err != nil {
+			return FlowResult{}, err
+		}
+	}
+
+	report, err := f.validator.Evaluate(f.state)
+	if err != nil {
+		return FlowResult{}, err
+	}
+	f.lastValidation = report
+
+	if len(impacted) > 0 {
+		f.runtimeState = FlowStateReview
+	}
+
+	return FlowResult{
+		State:  f.runtimeState,
+		Report: report,
+		Events: f.Events(),
+	}, nil
+}
+
 func (f *Flow) processField(field FieldState) error {
 	if strings.TrimSpace(field.Answer.Value) == "" {
-		answer, err := f.asker.AskPrimary(field)
-		if err != nil {
-			return fmt.Errorf("ask primary for %q: %w", field.Definition.ID, err)
-		}
-		f.events = append(f.events, FlowEvent{
-			Type:    FlowEventAskPrimary,
-			FieldID: field.Definition.ID,
-			Section: field.Definition.Section,
-			Detail:  "primary question answered",
-		})
-		if err := f.state.SetAnswer(field.Definition.ID, answer); err != nil {
+		if err := f.askPrimary(field); err != nil {
 			return err
 		}
 	}
@@ -275,4 +334,61 @@ func (f *Flow) processField(field FieldState) error {
 			return nil
 		}
 	}
+}
+
+func (f *Flow) reaskField(field FieldState) error {
+	if err := f.askPrimary(field); err != nil {
+		return err
+	}
+
+	updated, ok := f.state.Field(field.Definition.ID)
+	if !ok {
+		return fmt.Errorf("flow field %q not found after primary answer", field.Definition.ID)
+	}
+
+	return f.processField(updated)
+}
+
+func (f *Flow) askPrimary(field FieldState) error {
+	answer, err := f.asker.AskPrimary(field)
+	if err != nil {
+		return fmt.Errorf("ask primary for %q: %w", field.Definition.ID, err)
+	}
+	f.events = append(f.events, FlowEvent{
+		Type:    FlowEventAskPrimary,
+		FieldID: field.Definition.ID,
+		Section: field.Definition.Section,
+		Detail:  "primary question answered",
+	})
+	if err := f.state.SetAnswer(field.Definition.ID, answer); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *Flow) reassessField(fieldID FieldID) error {
+	field, ok := f.state.Field(fieldID)
+	if !ok {
+		return fmt.Errorf("flow field %q not found for reassessment", fieldID)
+	}
+
+	decision, err := f.policy.DeepeningDecision(field.Definition.ID, field.Answer.Value, f.deepeningAttempts[field.Definition.ID])
+	if err != nil {
+		return err
+	}
+	if decision.Mode != DeepeningModeNone {
+		return nil
+	}
+
+	if err := f.state.MarkReady(field.Definition.ID); err != nil {
+		return err
+	}
+	f.events = append(f.events, FlowEvent{
+		Type:    FlowEventFieldReady,
+		FieldID: field.Definition.ID,
+		Section: field.Definition.Section,
+		Attempt: f.deepeningAttempts[field.Definition.ID],
+		Detail:  "clarity threshold met",
+	})
+	return nil
 }

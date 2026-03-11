@@ -164,6 +164,125 @@ func TestFlowSequenceStopsAtDeepeningAttemptCap(t *testing.T) {
 	}
 }
 
+func TestFlowReviseReasksDirectDependentsOnly(t *testing.T) {
+	t.Parallel()
+
+	state, err := NewSessionState()
+	if err != nil {
+		t.Fatalf("NewSessionState() error = %v", err)
+	}
+
+	asker := &stubQuestionAsker{primaryAnswers: readyAnswers()}
+	handoff := &stubSummarizeFirstHandler{}
+
+	flow, err := NewFlow(state, asker, handoff)
+	if err != nil {
+		t.Fatalf("NewFlow() error = %v", err)
+	}
+	if _, err := flow.Run(); err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	asker.primaryOrder = nil
+	asker.sequence = nil
+	asker.primaryAnswers = revisedDirectDependentAnswers()
+
+	result, err := flow.Revise(
+		"revise purpose_summary",
+		"Refocus the skill on Go documentation only, with deterministic extraction, install steps, and clear source boundaries.",
+	)
+	if err != nil {
+		t.Fatalf("Revise() error = %v", err)
+	}
+
+	wantReasked := []FieldID{
+		FieldPrimaryTasks,
+		FieldSuccessCriteria,
+		FieldExampleRequests,
+		FieldInScope,
+		FieldOutOfScope,
+	}
+	if !reflect.DeepEqual(asker.primaryOrder, wantReasked) {
+		t.Fatalf("reasked order = %v, want %v", asker.primaryOrder, wantReasked)
+	}
+
+	transitive, _ := state.Field(FieldExampleOutputs)
+	if transitive.Status != ReadinessNeedsAttention {
+		t.Fatalf("transitive impacted status = %q, want %q", transitive.Status, ReadinessNeedsAttention)
+	}
+	if containsField(asker.primaryOrder, FieldExampleOutputs) {
+		t.Fatalf("transitive impacted field %q should not be re-asked directly", FieldExampleOutputs)
+	}
+	if result.Report.CommitReady {
+		t.Fatalf("Revise().Report.CommitReady = true, want false with transitive follow-up still reopened")
+	}
+}
+
+func TestFlowReviseRejectsInvalidTarget(t *testing.T) {
+	t.Parallel()
+
+	state, err := NewSessionState()
+	if err != nil {
+		t.Fatalf("NewSessionState() error = %v", err)
+	}
+
+	flow, err := NewFlow(state, &stubQuestionAsker{}, &stubSummarizeFirstHandler{})
+	if err != nil {
+		t.Fatalf("NewFlow() error = %v", err)
+	}
+
+	if _, err := flow.Revise("revise does_not_exist", "new answer"); err == nil {
+		t.Fatal("Revise() error = nil, want invalid target error")
+	}
+	if _, err := flow.Revise("revise purpose_summary now", "new answer"); err == nil {
+		t.Fatal("Revise() error = nil, want strict command-form error")
+	}
+}
+
+func TestFlowReviseBlocksCommitUntilImpactedFieldsAreResolved(t *testing.T) {
+	t.Parallel()
+
+	state, err := NewSessionState()
+	if err != nil {
+		t.Fatalf("NewSessionState() error = %v", err)
+	}
+
+	asker := &stubQuestionAsker{primaryAnswers: readyAnswers()}
+	handoff := &stubSummarizeFirstHandler{}
+
+	flow, err := NewFlow(state, asker, handoff)
+	if err != nil {
+		t.Fatalf("NewFlow() error = %v", err)
+	}
+	if _, err := flow.Run(); err != nil {
+		t.Fatalf("Run() error = %v", err)
+	}
+
+	asker.primaryAnswers = revisedDirectDependentAnswers()
+	result, err := flow.Revise(
+		"revise purpose_summary",
+		"Refocus the skill on Go documentation only, with deterministic extraction, install steps, and clear source boundaries.",
+	)
+	if err != nil {
+		t.Fatalf("Revise() error = %v", err)
+	}
+
+	if result.Report.CommitReady {
+		t.Fatalf("Revise().Report.CommitReady = true, want false")
+	}
+	if _, err := flow.Commit(); err == nil {
+		t.Fatal("Commit() error = nil, want blocked commit after revision drift")
+	}
+
+	fieldReport := result.Report.Fields[FieldExampleOutputs]
+	if fieldReport.Status != ReadinessNeedsAttention {
+		t.Fatalf("field status = %q, want %q", fieldReport.Status, ReadinessNeedsAttention)
+	}
+	if !containsReason(fieldReport.Reasons, ValidationReasonNeedsRevalidation) {
+		t.Fatalf("field reasons = %v, want %q included", fieldReport.Reasons, ValidationReasonNeedsRevalidation)
+	}
+}
+
 type stubQuestionAsker struct {
 	primaryAnswers   map[FieldID][]string
 	deepeningAnswers map[FieldID][]string
@@ -270,4 +389,42 @@ func indexOfEvent(events []FlowEvent, wantType FlowEventType, fieldID FieldID) i
 		}
 	}
 	return -1
+}
+
+func revisedDirectDependentAnswers() map[FieldID][]string {
+	return map[FieldID][]string{
+		FieldPrimaryTasks: {
+			"Extract the Go docs guidance from one source, turn it into a Codex skill, and keep the generated instructions installable and scoped.",
+		},
+		FieldSuccessCriteria: {
+			"The skill installs cleanly, stays anchored to Go documentation, and includes concrete operating constraints plus usable examples.",
+		},
+		FieldExampleRequests: {
+			"Examples should cover generating a Go docs skill and tightening scope when the source mixes reference material with tutorials.",
+		},
+		FieldInScope: {
+			"In scope: Go documentation extraction, skill instruction synthesis, install steps, and supported request examples from that source.",
+		},
+		FieldOutOfScope: {
+			"Out of scope: mixing non-Go sources, inventing undocumented capabilities, or broadening the skill beyond the chosen Go docs site.",
+		},
+	}
+}
+
+func containsField(fields []FieldID, want FieldID) bool {
+	for _, field := range fields {
+		if field == want {
+			return true
+		}
+	}
+	return false
+}
+
+func containsReason(reasons []ValidationReason, want ValidationReason) bool {
+	for _, reason := range reasons {
+		if reason == want {
+			return true
+		}
+	}
+	return false
 }

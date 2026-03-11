@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-03 Task 1 is verified, and the next scoped run is the execution session for Plan 03-03 Task 2.
+- **Current focus:** Phase 3 Plan 03-03 Task 2 is implemented, and the next scoped run is the verification session for that task.
 
 ## Current Position
 
@@ -73,10 +73,13 @@
 - Plan `03-03` Task `1` now adds [`internal/refinement/flow.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go), introducing a deterministic runtime loop with explicit `collecting`, `review`, and `committed` states, summarize-first handoff signals/events before any deepening prompt, per-field deepening attempt accounting, and a validator-backed commit gate.
 - [`internal/refinement/flow_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go) now locks the Task 1 behavior with focused coverage for normal progression to review, summarize-first ordering before deepening, and capped deepening that leaves low-clarity fields blocked in review instead of looping indefinitely.
 - Verification for Plan `03-03` Task `1` ran `go test ./internal/refinement -run 'Flow|Handoff|Sequence' -v` cleanly after a small test-stub wiring fix in the call-sequence recorder; no production logic changes were required beyond the new flow runtime.
+- Plan `03-03` Task `2` now adds [`internal/refinement/revise.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/revise.go), introducing strict `revise <field>` parsing plus revision-target validation so review-mode edits stay deterministic and constrained to known refinement fields.
+- [`internal/refinement/flow.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go) now exposes a revision path that applies answer updates through the field graph, resets revision/deepening state for the edited branch, re-asks only direct dependents, and leaves broader impacted descendants marked `needs_attention` so stale-ready states cannot slip through commit.
+- [`internal/refinement/flow_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go) now covers valid revision reopening behavior, invalid target/command errors, and commit blocking after readiness drift from a revision.
 
 ### Active Todos
 
-- Execute Plan `03-03` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
+- Verify Plan `03-03` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -85,12 +88,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `03-03` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within execution-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 51.
+- **Next command:** Verify Plan `03-03` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within verification-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 52.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-03
-- task=1
-- status=verified
+- task=2
+- status=implemented

@@ -1,1 +1,3 @@
-Verify refinement flow task 1 sequencing and advance plan to section 51
+Add refinement revise command handling and flow coverage
+
+Built strict `revise <field>` parsing plus impact-aware flow revision handling in `internal/refinement`, and verified with `go test ./internal/refinement -run 'Flow|Revise' -v`.

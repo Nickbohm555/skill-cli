@@ -962,3 +962,23 @@ Notes:
 - No blockers came up during verification. The next scoped run is the execution session for `03-03` Task `2`.
 - Verification run output:
   - `go test ./internal/refinement -run 'Flow|Handoff|Sequence' -v` -> `=== RUN   TestFlowRunProgressesToCommitReadyReview` / `=== RUN   TestFlowHandoffOccursBeforeDeepeningSequence` / `=== RUN   TestFlowSequenceStopsAtDeepeningAttemptCap` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
+
+## Section 51 — 03-interactive-refinement-loop — 03-03 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Add `revise &lt;field&gt;` handling with impact-aware re-ask).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-03` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/refinement/revise.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/revise.go) with strict `revise <field>` parsing and explicit revision-target validation so the domain layer rejects malformed review commands and unknown field IDs deterministically.
+- Extended [`internal/refinement/flow.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go) with `Flow.Revise(...)`, reusing `SessionState.ReviseAnswer` plus `FieldGraph` so a revision updates the source field, resets that branch's attempt state, re-asks only direct dependents, and leaves transitive descendants marked `needs_attention` instead of silently staying commit-ready.
+- Expanded [`internal/refinement/flow_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go) with revision-path coverage for direct-dependent re-ask behavior, strict invalid-target/invalid-command failures, and commit blocking when revision drift leaves impacted descendants unresolved.
+- One small implementation issue surfaced during development: a primary-question helper could recurse on blank answers during revision re-asks. I split primary prompting from per-field processing to keep blank answers fail-closed without looping.
+- Verification run output:
+  - `go fmt ./internal/refinement/...` -> no output
+  - `go test ./internal/refinement -run 'Flow|Revise' -v` -> `=== RUN   TestFlowRunProgressesToCommitReadyReview` / `=== RUN   TestFlowHandoffOccursBeforeDeepeningSequence` / `=== RUN   TestFlowSequenceStopsAtDeepeningAttemptCap` / `=== RUN   TestFlowReviseReasksDirectDependentsOnly` / `=== RUN   TestFlowReviseRejectsInvalidTarget` / `=== RUN   TestFlowReviseBlocksCommitUntilImpactedFieldsAreResolved` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	0.488s`
