@@ -1615,3 +1615,24 @@ Notes:
   - `go test ./internal/install -run Approval -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.788s`
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.672s`
   - `rg -n "\\.codex/skills|CODEX_HOME/skills|afero\\.New|os\\.(WriteFile|Rename|Mkdir|MkdirAll|Create|OpenFile|Remove|RemoveAll)|filepath\\.Join\\(.*skills" internal/install` -> matches only in `internal/install/model_test.go`
+
+## Section 84 — 06-approval-gated-install-activation — 06-01 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-01` / `task=3` / `status=verified`.
+4. Create `06-01-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+
+Notes:
+- Re-ran the full Phase `06-01` install verification in verification scope without expanding implementation scope because Section 84 is verification-only.
+- The full `internal/install` suite stayed clean, and repeating the combined `Preflight|Approval` selection with `-count=2` confirmed the fail-closed gate and approval behavior remain deterministic across repeated runs.
+- Static inspection confirmed `internal/install` still has no production `$CODEX_HOME/skills` path handling or filesystem mutation primitives; the only skill-path matches remain in test fixtures under `internal/install/model_test.go`.
+- The plan referenced `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md`, but that file is absent in the repository; verification proceeded from the available plan, research, state, and install-package sources with no blocker from the missing reference.
+- Created `.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md` and advanced `.planning/STATE.md` to Plan `06-02` / Task `1` as the next execution target. No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
+  - `go test ./internal/install -run 'Preflight|Approval' -count=2 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.632s`
+  - `rg -n '\$CODEX_HOME/skills|os\.(WriteFile|Rename|Mkdir|MkdirAll|Create|OpenFile)|afero\.|filepath\.Join\(.*CODEX_HOME|RootDir|SkillDir' internal/install` -> matches only `RootDir`/`SkillDir` model fields in `internal/install/model.go` and fixture paths in `internal/install/model_test.go`
