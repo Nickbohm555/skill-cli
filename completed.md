@@ -1519,3 +1519,22 @@ Notes:
   - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
   - `go test ./internal/overlap -run Decision -count=2 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.618s`
   - `rg -n "Update existing skill|Merge with existing skill|Abort|Proceed to Phase 06 install approval|Resolution Summary|Selected mode|Status:" internal/overlap internal/app/generate` -> prompt options and summary/status lines remain centralized in `internal/overlap/decision_flow.go`, `internal/overlap/resolution_summary.go`, and `internal/app/generate/overlap_stage_test.go`
+
+## Section 79 — 06-approval-gated-install-activation — 06-01 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Create typed install contracts and fail-closed error taxonomy).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-01` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/install/model.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model.go) with typed `InstallRequest`, `InstallCandidate`, `InstallTarget`, `ApprovalDecision`, and `InstallResult` contracts that carry validation state, conflict-decision handoff, approval provenance, and a derived write-readiness boundary without introducing any write behavior.
+- Added [`internal/install/errors.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/errors.go) with typed sentinel errors and classification helpers for blocked validation, blocked conflict resolution, declined approval, and missing explicit non-interactive approval.
+- Added [`internal/install/model_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/model_test.go) to lock the JSON contract shape, explicit-approval detection, write-readiness derivation, and wrapped error classification behavior required by the task.
+- One verification mismatch came up initially in the JSON assertion because the existing `validation.CandidateSkill` and `overlap.ConflictResolutionDecision` wire shapes omit empty list fields and include an empty `explanation_meta` object; I corrected the expected contract to match the repository’s current serialized shapes.
+- Verification run output:
+  - `go fmt ./internal/install/...` -> `internal/install/errors.go` / `internal/install/model.go` / `internal/install/model_test.go`
+  - `go test ./internal/install -run "Model|Errors" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.581s`

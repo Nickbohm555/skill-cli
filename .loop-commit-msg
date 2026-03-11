@@ -1,4 +1,6 @@
-verify overlap gating and close phase 5
+Add install contracts and fail-closed error taxonomy
 
-- rerun overlap gate and decision verification suites
-- record phase 5 summary, roadmap/state completion, and next section handoff
+Built typed Phase 06 install request/result and approval provenance contracts in
+`internal/install`, plus typed sentinel errors for blocked validation, blocked
+conflict resolution, declined approval, and missing non-interactive approval.
+Tested with `go test ./internal/install -run "Model|Errors" -v`.
