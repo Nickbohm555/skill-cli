@@ -765,3 +765,24 @@ Notes:
 - Verification run output:
   - `go test ./internal/refinement -v` -> `=== RUN   TestClarityAssessmentHighSpecificityPasses` / `=== RUN   TestClarityAssessmentShortAmbiguousFails` / `=== RUN   TestClarityAssessmentStructuredExamplePasses` / `=== RUN   TestClarityDeepeningDecisionEscalatesAndCaps` / `=== RUN   TestClarityDeepeningDecisionStopsForClearAnswer` / `=== RUN   TestSessionStateInitializesRequiredFieldsAndSections` / `=== RUN   TestSessionFieldGraphRevisionMarksImpactedFieldsNeedsAttention` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	0.484s`
   - `rg -n "huh|survey|bufio|stdin|fmt\\.Scan|prompt" internal/refinement` -> only `internal/refinement/session.go:69` comment match; no prompt-library imports or stdin usage
+
+## Section 41 — 03-interactive-refinement-loop — 03-01 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Build readiness validator and test commit gate behavior).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-01` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/refinement/validator.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/validator.go) with a transport-free `Validator` that evaluates required fields in stable section order, combines completeness, clarity thresholds, and pre-existing `needs_attention` drift state, and emits sectioned field-level readiness plus overall `CommitReady`.
+- Added [`internal/refinement/validator_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/validator_test.go) with table-driven commit-gate coverage for missing required fields, low-clarity required fields, revision-induced readiness drift after `ReviseAnswer`, and fully-ready sessions.
+- The first verification run exposed a weak “ready” fixture for `dependencies` plus nil-vs-empty slice expectations in the new tests; tightening that fixture and normalizing expectations resolved the failures without changing validator semantics.
+- No blockers remain. This run stayed within execution scope and did not create the plan summary, which is deferred to the verification session for Section 42.
+- Verification run output:
+  - `go fmt ./internal/refinement/...` -> `internal/refinement/validator.go` / `internal/refinement/validator_test.go`
+  - `go test ./internal/refinement -v` -> `=== RUN   TestClarityAssessmentHighSpecificityPasses` / `=== RUN   TestClarityAssessmentShortAmbiguousFails` / `=== RUN   TestClarityAssessmentStructuredExamplePasses` / `=== RUN   TestClarityDeepeningDecisionEscalatesAndCaps` / `=== RUN   TestClarityDeepeningDecisionStopsForClearAnswer` / `=== RUN   TestSessionStateInitializesRequiredFieldsAndSections` / `=== RUN   TestSessionFieldGraphRevisionMarksImpactedFieldsNeedsAttention` / `=== RUN   TestValidatorEvaluateCommitGateBehavior` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	0.458s`
+  - `rg -n "huh|survey|stdin|bufio|os\\.Stdin" internal/refinement` -> no matches

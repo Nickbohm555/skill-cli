@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-01 Task 2 is verified; the next scoped run is the execution session for Task 3.
+- **Current focus:** Phase 3 Plan 03-01 Task 3 is implemented; the next scoped run is the verification session for Task 3.
 
 ## Current Position
 
 - **Current phase:** 3 - Interactive Refinement Loop
 - **Current plan:** 03-01
-- **Overall status:** Phases 1 and 2 are complete. Phase 2 Plan 02-03 Task 3 is verified, summarized, and Phase 2 is now marked complete; Phase 3 Plan 03-01 Task 2 is now verified and Task 3 is the next scoped execution target.
+- **Overall status:** Phases 1 and 2 are complete. Phase 2 Plan 02-03 Task 3 is verified, summarized, and Phase 2 is now marked complete; Phase 3 Plan 03-01 Task 3 is now implemented and its verification run is the next scoped target.
 - **Progress:** 2/6 phases complete
 - **Progress bar:** [##----] 33%
 
@@ -53,10 +53,13 @@
 - [`internal/refinement/clarity_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/clarity_test.go) now locks high-clarity, low-clarity, structured-example, escalation, and attempt-cap behavior so later validator work can consume the same policy without UI-specific branching.
 - Verification for Plan `03-01` Task `2` reran the full `internal/refinement` test suite cleanly, confirming the clarity/deepening policy remains deterministic alongside the existing session and field-graph tests.
 - Static verification confirmed `internal/refinement` still has no prompt-library or stdin usage; the only `prompt` match is a boundary comment in [`internal/refinement/session.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/session.go).
+- Plan `03-01` Task `3` now adds [`internal/refinement/validator.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/validator.go), which evaluates the required refinement fields in stable section order, combines completeness, clarity thresholds, and revision drift state into field-level readiness, and emits an overall fail-closed `CommitReady` gate for downstream review/commit orchestration.
+- [`internal/refinement/validator_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/validator_test.go) now locks the commit gate with table-driven coverage for missing required fields, low-clarity answers, revision-induced readiness drift, and fully-ready sessions.
+- Task 3 verification commands now pass cleanly, and a follow-up fixture adjustment clarified that the validator behavior was correct while one “ready” dependency example answer was still below the deterministic clarity threshold.
 
 ### Active Todos
 
-- Execute Plan `03-01` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`.
+- Verify Plan `03-01` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -65,12 +68,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `03-01` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md` within execution-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 41.
+- **Next command:** Verify Plan `03-01` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md` within verification-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 42.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-01
-- task=2
-- status=verified
+- task=3
+- status=implemented
