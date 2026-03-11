@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 4 Plan 04-01 Task 1 has been implemented, and the next scoped run is its verification session.
+- **Current focus:** Phase 4 Plan 04-01 Task 1 is verified, and the next scoped run is the execution session for Task 2.
 
 ## Current Position
 
 - **Current phase:** 4 - Validation & Quality Gates
 - **Current plan:** 04-01
-- **Overall status:** Phases 1, 2, and 3 are complete. Phase 4 is in progress, and Plan 04-01 Task 1 is implemented pending verification.
+- **Overall status:** Phases 1, 2, and 3 are complete. Phase 4 is in progress, Plan 04-01 Task 1 is verified, and Task 2 is the next scoped implementation target.
 - **Progress:** 3/6 phases complete
 - **Progress bar:** [###---] 50%
 
@@ -84,10 +84,11 @@
 - Plan `04-01` Task `1` now adds `internal/validation/model.go`, `internal/validation/parse_skill.go`, and `internal/validation/report.go`, establishing a normalized `CandidateSkill` contract, a goldmark/frontmatter-based `SKILL.md` parser that maps required headings into typed sections, and a deterministic validation issue report with stable severity ordering plus blocking helpers.
 - `internal/validation/validation_test.go` now locks Task 1 behavior with parser coverage for frontmatter plus required-section extraction, empty defaults for missing sections, deterministic issue ordering across repeated runs, and warning-only reports staying non-blocking.
 - Task 1 verification reran `go test ./internal/validation -v` and `go test ./...` cleanly after one parser finalization fix, confirming the new validation package compiles repo-wide and yields the same first blocking issue on repeated report sorts.
+- Verification for Plan `04-01` Task `1` reran the full `internal/validation` suite, the full repository suite, and a repeated deterministic-ordering run (`-count=5`) cleanly, confirming `HasBlockingIssues()` still blocks only on `Error` severity and the first blocking issue remains stable across repeated executions.
 
 ### Active Todos
 
-- Verify Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`.
+- Execute Plan `04-01` Task `2` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -96,12 +97,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 56.
+- **Next command:** Execute Plan `04-01` Task `2` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 57.
 
 ## Execution Tracking
 
 - phase=04-validation-quality-gates
 - plan=04-01
 - task=1
-- status=implemented
+- status=verified
