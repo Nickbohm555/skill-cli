@@ -1418,3 +1418,22 @@ Notes:
 - Verification run output:
   - `go fmt ./internal/overlap/...` -> `internal/overlap/decision_flow.go` / `internal/overlap/decision_flow_test.go`
   - `go test ./internal/overlap -run Decision -v` -> `=== RUN   TestDecisionFlowAcceptsExplicitChoice` / `=== RUN   TestDecisionFlowShortCircuitsWhenNoOverlapExists` / `=== RUN   TestDecisionFlowFallsBackToBlockingAbortOnInterruptedPrompt` / `=== RUN   TestDecisionFlowFallsBackToBlockingAbortOnInvalidSelection` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.601s`
+
+## Section 74 — 05-overlap-conflict-resolution — 05-02 — Task 1 (Verification)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 1 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-02` / `task=1` / `status=verified`.
+
+Notes:
+- Re-ran the focused decision-flow verification without expanding implementation scope because Section 74 is verification-only.
+- Repeated the same test selection with `-count=2` to confirm deterministic prompt and decision behavior across runs.
+- Static inspection confirmed overlap prompts still expose only the explicit overlap-resolution modes (`update_existing`, `merge_with_existing`, `abort`) for non-`none` severity, with `new_install` reserved for the no-overlap shortcut path.
+- No blockers came up; no code changes were required during verification.
+- Verification run output:
+  - `go test ./internal/overlap -run Decision -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)`
+  - `go test ./internal/overlap -run Decision -count=2` -> `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.617s`
+  - `rg -n "ResolutionUpdate|ResolutionMerge|ResolutionAbort|ResolutionNewInstall|explicitResolutionOptions|PromptDecision|DecisionPrompt" internal/overlap` -> prompt and decision-flow references remain centralized in `internal/overlap/decision_flow.go`, `internal/overlap/model.go`, `internal/overlap/report.go`, and related tests

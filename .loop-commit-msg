@@ -1,3 +1,3 @@
-Implement overlap decision flow with fail-closed abort handling
+verify overlap decision flow task 1
 
-Tested: go fmt ./internal/overlap/... && go test ./internal/overlap -run Decision -v
+Re-ran Phase 5 Plan 05-02 Task 1 verification with repeated decision-flow tests and confirmed explicit update/merge/abort prompt modes remain deterministic and fail-closed.
