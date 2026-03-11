@@ -1,5 +1,4 @@
-phase 5 task 3: gate overlap handoff on resolved decisions
+verify overlap gating and close phase 5
 
-Tested:
-- go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v
-- go test ./internal/overlap ./internal/app/generate -v
+- rerun overlap gate and decision verification suites
+- record phase 5 summary, roadmap/state completion, and next section handoff

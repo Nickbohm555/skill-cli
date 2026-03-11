@@ -3,22 +3,22 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 5 Plan 05-02 Task 3 is implemented; the next scoped run is Plan 05-02 Task 3 verification.
+- **Current focus:** Phase 5 Plan 05-02 is verified and complete; the next scoped run is Phase 6 Plan 06-01 Task 1 execution.
 
 ## Current Position
 
-- **Current phase:** 5 - Overlap & Conflict Resolution
-- **Current plan:** 05-02
-- **Overall status:** Phases 1, 2, 3, and 4 are complete. Phase 5 is in progress, with Plan 05-01 complete and Plan 05-02 Task 3 implemented.
-- **Progress:** 4/6 phases complete
-- **Progress bar:** [####--] 67%
+- **Current phase:** 6 - Approval-Gated Install & Activation
+- **Current plan:** 06-01
+- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plan 06-01 Task 1 as the next execution target.
+- **Progress:** 5/6 phases complete
+- **Progress bar:** [#####-] 83%
 
 ## Performance Metrics
 
 - **v1 requirements total:** 20
 - **Mapped to phases:** 20
 - **Coverage:** 100%
-- **Validated requirements complete:** 14
+- **Validated requirements complete:** 17
 
 ## Accumulated Context
 
@@ -132,10 +132,13 @@
 - Plan `05-02` Task `3` now extends [`internal/app/generate/overlap_stage.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage.go) into the actual pre-install gate, returning an explicit allow/block reason plus a Phase 06 handoff payload only when the overlap decision is fully resolved and non-blocking.
 - [`internal/app/generate/overlap_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/overlap_stage_test.go) now locks the gating boundary with no-overlap proceed, resolved-overlap proceed, missing-decision blocked, and abort blocked cases so no downstream install handoff can exist without an explicit resolved choice.
 - Task `3` verification in execution scope ran `go fmt ./internal/app/generate ./internal/overlap`, `go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v`, and `go test ./internal/overlap ./internal/app/generate -v` cleanly; static inspection also confirmed the prompt surface still exposes only `update`, `merge`, and `abort` choices, and the summary/pre-install status lines remain centralized.
+- Verification for Plan `05-02` Task `3` reran the focused overlap-gating suite, the full `internal/overlap` plus `internal/app/generate` suites, and the decision-flow suite with `-count=2` cleanly, confirming the gate still blocks missing or abort decisions and only hands off Phase 06 state for explicit resolved choices.
+- Static inspection confirmed the overlap prompt contract still exposes only `update_existing`, `merge_with_existing`, and `abort`, and that the dedicated resolution summary still surfaces the selected outcome, target skill, next-step line, and explicit pre-install status before any later phase handoff.
+- Phase 5 is now complete after writing `.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md`, marking the roadmap phase status complete, and advancing state to Phase `06` Plan `06-01` Task `1`.
 
 ### Active Todos
 
-- Verify Plan `05-02` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`.
+- Execute Plan `06-01` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -144,12 +147,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `05-02` Task `3` from `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 78.
+- **Next command:** Execute Plan `06-01` Task `1` from `.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 79.
 
 ## Execution Tracking
 
-- phase=05-overlap-conflict-resolution
-- plan=05-02
-- task=3
-- status=implemented
+- phase=06-approval-gated-install-activation
+- plan=06-01
+- task=1
+- status=ready_for_execution

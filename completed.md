@@ -1497,3 +1497,25 @@ Notes:
   - `go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v` -> `=== RUN   TestGateAllowsWarningOnlyReports` / `=== RUN   TestGateBlocksOnFirstErrorDeterministically` / `=== RUN   TestGateMatchesValidateCandidateProgressionPolicy` / `=== RUN   TestOverlapStageSummaryIncludesSelectedModeAndReadyStatus` / `=== RUN   TestOverlapStageSummaryStaysBlockedWhenDecisionIsMissing` / `=== RUN   TestOverlapStageGateAllowsNoOverlapNewInstallHandoff` / `=== RUN   TestOverlapStageGateBlocksAbortDecision` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.735s`
   - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.735s`
   - `rg -n "Update existing skill|Merge with existing skill|Abort|explicitResolutionOptions|ResolutionUpdate|ResolutionMerge|ResolutionAbort|Resolution Summary|Selected mode:|Target skill:|Status:|Proceed to Phase 06|BLOCKED before pre-install handoff|READY for pre-install handoff" internal/overlap internal/app/generate` -> explicit prompt options remain centralized in `internal/overlap/decision_flow.go`, and summary/status output remains centralized in `internal/overlap/resolution_summary.go` plus `internal/app/generate/overlap_stage.go`
+
+## Section 78 — 05-overlap-conflict-resolution — 05-02 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-02` / `task=3` / `status=verified`.
+4. Create `05-02-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+5. Update `.planning/ROADMAP.md` and `.planning/STATE.md` to mark the phase complete.
+
+Notes:
+- Re-ran the focused Task `3` overlap-gating verification in verification scope without expanding implementation scope because Section 78 is verification-only.
+- Broader package verification for `internal/overlap` and `internal/app/generate` stayed clean, and repeating the decision-flow suite with `-count=2` confirmed deterministic prompt and gate behavior across runs.
+- Static inspection confirmed the overlap prompt contract still exposes only `update_existing`, `merge_with_existing`, and `abort`, while the dedicated resolution summary continues to surface the selected outcome, target skill, next-step line, and explicit pre-install status before any Phase 06 handoff.
+- Created `.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md`, marked Phase 5 complete in `.planning/ROADMAP.md`, and advanced `.planning/STATE.md` to Phase `06` / Plan `06-01` / Task `1` as the next execution target. No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/app/generate -run "Overlap|Conflict|Gate" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
+  - `go test ./internal/overlap ./internal/app/generate -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
+  - `go test ./internal/overlap -run Decision -count=2 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.618s`
+  - `rg -n "Update existing skill|Merge with existing skill|Abort|Proceed to Phase 06 install approval|Resolution Summary|Selected mode|Status:" internal/overlap internal/app/generate` -> prompt options and summary/status lines remain centralized in `internal/overlap/decision_flow.go`, `internal/overlap/resolution_summary.go`, and `internal/app/generate/overlap_stage_test.go`
