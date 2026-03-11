@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-03 Task 2 is implemented, and the next scoped run is the verification session for that task.
+- **Current focus:** Phase 3 Plan 03-03 Task 2 is verified, and the next scoped run is the execution session for Task 3.
 
 ## Current Position
 
@@ -79,7 +79,7 @@
 
 ### Active Todos
 
-- Verify Plan `03-03` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
+- Execute Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -88,12 +88,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `03-03` Task `2` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within verification-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 52.
+- **Next command:** Execute Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 53.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-03
 - task=2
-- status=implemented
+- status=verified
