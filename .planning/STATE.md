@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-02 Task 3 is verified, Plan 03-02 is complete, and the next scoped run is the execution session for Plan 03-03 Task 1.
+- **Current focus:** Phase 3 Plan 03-03 Task 1 is implemented, and the next scoped run is the verification session for Plan 03-03 Task 1.
 
 ## Current Position
 
@@ -70,10 +70,13 @@
 - The prompt tests now also lock the `other` path safety contract by asserting blank custom detail is allowed for non-`other` selections, required for explicit `other` selections, and accepted when concrete custom detail is supplied.
 - Verification for Plan `03-02` Task `3` ran `go test ./internal/cli/prompts -v` cleanly, and static inspection still shows clarity thresholds/scoring live in [`internal/refinement/clarity.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/clarity.go) while the prompt package only consumes `ClarityPolicy`, `DeepeningDecision`, `ReadinessStatus`, and `ValidationReport`.
 - Phase 3 Plan `03-02` is now complete after verification confirmed the adaptive prompt and review layer still routes through refinement-domain policy outputs, and the plan summary was created at `.planning/phases/03-interactive-refinement-loop/03-02-SUMMARY.md`.
+- Plan `03-03` Task `1` now adds [`internal/refinement/flow.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go), introducing a deterministic runtime loop with explicit `collecting`, `review`, and `committed` states, summarize-first handoff signals/events before any deepening prompt, per-field deepening attempt accounting, and a validator-backed commit gate.
+- [`internal/refinement/flow_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go) now locks the Task 1 behavior with focused coverage for normal progression to review, summarize-first ordering before deepening, and capped deepening that leaves low-clarity fields blocked in review instead of looping indefinitely.
+- Verification for Plan `03-03` Task `1` ran `go test ./internal/refinement -run 'Flow|Handoff|Sequence' -v` cleanly after a small test-stub wiring fix in the call-sequence recorder; no production logic changes were required beyond the new flow runtime.
 
 ### Active Todos
 
-- Execute Plan `03-03` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
+- Verify Plan `03-03` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -82,12 +85,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `03-03` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within execution-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 49.
+- **Next command:** Verify Plan `03-03` Task `1` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within verification-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 50.
 
 ## Execution Tracking
 
 - phase=03-interactive-refinement-loop
 - plan=03-03
 - task=1
-- status=ready
+- status=implemented

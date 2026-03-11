@@ -1,3 +1,1 @@
-Verify adaptive prompt routing and advance Phase 3 plan state
-
-Tested: go test ./internal/cli/prompts -v
+Implement deterministic refinement flow with summarize-first handoff and scoped flow tests

@@ -925,3 +925,23 @@ Notes:
 - Verification run output:
   - `go test ./internal/cli/prompts -v` -> `=== RUN   TestPromptPrimaryPlansCoverRequiredFields` / `=== RUN   TestPromptDeepeningRoutingIsDeterministic` / `=== RUN   TestPromptDeepeningSkipsWhenClarityPasses` / `=== RUN   TestPromptStructuredChoiceOptionsStayStable` / `=== RUN   TestPromptBuildDeepeningFieldsSupportsOtherPath` / `=== RUN   TestPromptOtherPathValidationIsSafe` / `=== RUN   TestBuildReviewModelGroupsSectionsAndReadiness` / `=== RUN   TestRenderReviewIncludesGroupedSectionsStatusesAndRevisionHints` / `=== RUN   TestRenderReviewShowsReadySummaryWhenCommitGatePasses` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)`
   - `rg -n "DefaultClarityPolicy|DeepeningDecision|validator|ReviewReport|FieldStatus|CommitReady|clarity|readiness" internal/cli/prompts internal/refinement` -> `internal/cli/prompts` references refinement policy/report entry points only; thresholds/scoring stay in `internal/refinement/clarity.go` and commit/readiness evaluation stays in `internal/refinement/validator.go`
+
+## Section 49 — 03-interactive-refinement-loop — 03-03 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Implement deterministic refinement loop orchestration).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-03` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/refinement/flow.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow.go) with a transport-free refinement orchestrator that keeps explicit runtime states (`collecting`, `review`, `committed`), processes required fields in deterministic section order, marks fields ready only after clarity passes, and blocks commit unless the domain validator reports `CommitReady=true`.
+- The new flow encodes summarize-first as an explicit handoff signal and event before every targeted deepening prompt, records deepening attempts per field, and stops deepening once the capped fallback attempt is exhausted so the session can move to review with `needs_attention` instead of looping forever.
+- Added [`internal/refinement/flow_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/refinement/flow_test.go) with focused coverage for normal progression to review, summarize-first ordering before deepening, and capped deepening behavior that leaves low-clarity answers blocked at review time.
+- One test wiring issue surfaced on the first scoped run because the handoff stub was not recording into the call sequence trace; after fixing the stub setup, the plan verification command passed cleanly.
+- Verification run output:
+  - `go fmt ./internal/refinement` -> no output
+  - `go test ./internal/refinement -run 'Flow|Handoff|Sequence' -v` -> `=== RUN   TestFlowRunProgressesToCommitReadyReview` / `=== RUN   TestFlowHandoffOccursBeforeDeepeningSequence` / `=== RUN   TestFlowSequenceStopsAtDeepeningAttemptCap` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	0.483s`
