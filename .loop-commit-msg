@@ -1,3 +1,3 @@
-Verify Phase 2 chunking plan completion
+Implement chunk summarization with structured OpenAI output and deterministic fallback
 
-Tested `go test ./internal/content -v` and `go test ./...`; recorded Section 30, added the 02-02 summary, and advanced state to Plan 02-03 Task 1.
+Tested: go test ./internal/content -run Summarize -v

@@ -564,3 +564,24 @@ Notes:
 - Verification run output:
   - `go test ./internal/content -v` -> `=== RUN   TestBuildChunksDeterministicIDsAndOrder` / `=== RUN   TestBuildChunksEnforcesTokenCapGuardrails` / `=== RUN   TestBuildChunksPreservesTableAndCodeBoundaries` / `=== RUN   TestProcessToChunksRequiresAttributionForEveryChunk` / `=== RUN   TestAttributionRemainsUnchangedForDownstreamSummaryInput` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)`
   - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/cmd/cli-skill [no test files]` / `? github.com/Nickbohm555/skill-cli/internal/cli/command [no test files]` / `ok github.com/Nickbohm555/skill-cli/internal/content 1.755s` / `ok github.com/Nickbohm555/skill-cli/internal/crawl (cached)`
+
+## Section 31 — 02-content-processing-attribution — 02-03 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-03-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Implement schema-validated chunk summarization).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-03` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/content/summarize.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/summarize.go) with `SummarizeChunks`, `SummarizeChunksWithConfig`, `SummaryProvider`, and `OpenAISummaryProvider`, so attributed chunks now have a stable summarization path that prefers OpenAI Responses structured output with a JSON-schema contract when `OPENAI_API_KEY` is available.
+- The summarizer locally validates every provider result against the required contract (`chunk_id`, `source_url`, `summary`, optional `confidence` and `notes`) and preserves the original `ChunkAttribution` on the returned `ChunkSummary`, so downstream review code can trust attribution linkage without re-deriving it.
+- Added a deterministic fallback summarizer for provider-unavailable, API-error, or schema-mismatch cases; it emits a bounded 1-2 line gist from heading/title context plus cleaned chunk text, marks fallback usage, and keeps the pipeline inspectable instead of failing open on malformed summaries.
+- Added `github.com/openai/openai-go/v3 v3.26.0` to `go.mod` / `go.sum` to support the pinned structured-output SDK path required by the plan.
+- No blockers remained after fixing two implementation issues during the run: the Responses API `model` field takes a plain model value rather than an `Opt`, and Go's regexp engine does not support the original lookbehind-based sentence splitter used in the fallback summarizer.
+- Verification run output:
+  - `go fmt ./internal/content` -> no output
+  - `go test ./internal/content -run Summarize -v` -> `testing: warning: no tests to run` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.774s [no tests to run]`

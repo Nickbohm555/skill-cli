@@ -1,1 +1,1 @@
-ralph loop 30 (build): Verify Phase 2 chunking plan completion
+ralph loop 31 (build): Implement chunk summarization with structured OpenAI output and deterministic fallback
