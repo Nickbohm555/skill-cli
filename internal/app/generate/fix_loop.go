@@ -74,10 +74,14 @@ func (l FixLoop) Run(candidate validation.CandidateSkill) (FixLoopResult, error)
 		result.Report = report
 		result.ValidationPasses++
 
-		issue, ok := report.NextBlockingIssue()
-		if !ok {
+		decision := CanProceed(report)
+		if decision.Allowed {
 			return result, nil
 		}
+		if decision.BlockingIssue == nil {
+			return result, fmt.Errorf("progression gate blocked without blocking issue")
+		}
+		issue := *decision.BlockingIssue
 
 		prompt := validation.PromptForRule(issue.RuleID)
 		answer, err := l.Prompt(issue, prompt)

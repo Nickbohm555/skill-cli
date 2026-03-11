@@ -1241,3 +1241,24 @@ Notes:
 - No blockers came up during verification. The centralized progression gate remains the next planned implementation item in Section `65`, so this verification run did not advance into that future scope.
 - Verification run output:
   - `go test ./internal/validation ./internal/app/generate -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.607s` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.714s`
+
+## Section 65 — 04-validation-quality-gates — 04-02 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Centralize progression gate and enforce fail-closed policy).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-02` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/app/generate/gate.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/gate.go) with a centralized `CanProceed` gate that is now the single progression authority for validated generation output. It allows warning-only reports, blocks on the first deterministic error, and returns explicit blocked-state reason payloads alongside the validation report.
+- Updated [`internal/app/generate/fix_loop.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/fix_loop.go) to route its continue/stop decision through `CanProceed` instead of directly branching on report helpers, so generation-flow gating is fail-closed in one place while the loop still prompts against the selected blocking issue.
+- Added [`internal/app/generate/gate_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/gate_test.go) with task-scoped coverage for warning-only allow behavior, deterministic first-error blocking, and parity between the gate and `ValidateCandidate` on a semantically-invalid candidate.
+- No blockers came up. There was no existing generation command using this package yet, so the task-scoped replacement of ad hoc checks happened inside the current remediation flow implementation rather than a broader CLI integration path.
+- Verification run output:
+  - `go fmt ./internal/app/generate/... ./internal/validation/...` -> no output
+  - `go test ./internal/app/generate -run Gate -v` -> `=== RUN   TestGateAllowsWarningOnlyReports` / `=== RUN   TestGateBlocksOnFirstErrorDeterministically` / `=== RUN   TestGateMatchesValidateCandidateProgressionPolicy` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.545s`
+  - `go test ./internal/validation ./internal/app/generate -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.691s`
