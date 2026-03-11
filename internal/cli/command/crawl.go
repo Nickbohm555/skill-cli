@@ -18,7 +18,7 @@ func NewRootCommand() *cobra.Command {
 		SilenceErrors: true,
 	}
 
-	rootCmd.AddCommand(newCrawlCommand())
+	rootCmd.AddCommand(newCrawlCommand(), newProcessCommand())
 	return rootCmd
 }
 

@@ -92,6 +92,37 @@ func TestSummarizeChunksFallsBackWhenProviderUnavailable(t *testing.T) {
 	}
 }
 
+func TestSummarizeChunksBoundsProviderSummaryToTwoLines(t *testing.T) {
+	t.Parallel()
+
+	chunk := summaryTestChunk()
+	summaries, err := SummarizeChunksWithConfig(context.Background(), []AttributedChunk{chunk}, SummaryConfig{
+		Provider: stubSummaryProvider{
+			record: SummaryRecord{
+				ChunkID:   chunk.Attribution.ChunkID,
+				SourceURL: chunk.Attribution.SourceURL,
+				Summary: " Install the CLI before authenticating. \n\n" +
+					"Keep the generated token available for later commands.\n" +
+					"Ignore this third line.",
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("SummarizeChunksWithConfig() error = %v", err)
+	}
+
+	got := summaries[0]
+	if got.UsedFallback {
+		t.Fatal("summary unexpectedly used fallback for line normalization")
+	}
+	if countSummaryLines(got.Summary) != 2 {
+		t.Fatalf("summary line count = %d, want 2", countSummaryLines(got.Summary))
+	}
+	if strings.Contains(got.Summary, "Ignore this third line.") {
+		t.Fatalf("summary retained third line: %q", got.Summary)
+	}
+}
+
 func TestSummarizeChunksFallsBackWhenProviderReturnsInvalidRecord(t *testing.T) {
 	t.Parallel()
 
@@ -127,6 +158,37 @@ func TestSummarizeChunksFallsBackWhenProviderReturnsInvalidRecord(t *testing.T) 
 	}
 	if !strings.Contains(got.Notes, fallbackSummaryNote) {
 		t.Fatalf("fallback notes = %q, want fallback note", got.Notes)
+	}
+}
+
+func TestSummarizeChunksFallsBackWhenProviderOmitsSourceURL(t *testing.T) {
+	t.Parallel()
+
+	chunk := summaryTestChunk()
+	summaries, err := SummarizeChunksWithConfig(context.Background(), []AttributedChunk{chunk}, SummaryConfig{
+		Provider: stubSummaryProvider{
+			record: SummaryRecord{
+				ChunkID: chunk.Attribution.ChunkID,
+				Summary: "Install the CLI before authenticating.",
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("SummarizeChunksWithConfig() error = %v", err)
+	}
+
+	got := summaries[0]
+	if !got.UsedFallback {
+		t.Fatal("summary did not use fallback for schema validation error")
+	}
+	if got.FallbackReason != "summary validation failed" {
+		t.Fatalf("fallback reason = %q, want summary validation failed", got.FallbackReason)
+	}
+	if got.SourceURL != chunk.Attribution.SourceURL {
+		t.Fatalf("summary source_url = %q, want %q", got.SourceURL, chunk.Attribution.SourceURL)
+	}
+	if countSummaryLines(got.Summary) == 0 || countSummaryLines(got.Summary) > 2 {
+		t.Fatalf("fallback summary line count = %d, want 1 or 2", countSummaryLines(got.Summary))
 	}
 }
 

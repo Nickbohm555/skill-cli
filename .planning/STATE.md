@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 2 Plan 02-03 Task 2 is verified; the next scoped run is Task 3 execution.
+- **Current focus:** Phase 2 Plan 02-03 Task 3 is implemented; the next scoped run is Task 3 verification.
 
 ## Current Position
 
 - **Current phase:** 2 - Content Processing & Attribution
 - **Current plan:** 02-03
-- **Overall status:** Phase 1 is complete, and Phase 2 Plans 02-01 and 02-02 are verified and summarized. Plan 02-03 Task 2 is now verified, and Task 3 is the next execution target.
+- **Overall status:** Phase 1 is complete, and Phase 2 Plans 02-01 and 02-02 are verified and summarized. Plan 02-03 Task 3 is now implemented, and Task 3 verification is the next scoped run.
 - **Progress:** 1/6 phases complete
 - **Progress bar:** [#-----] 17%
 
@@ -41,10 +41,13 @@
 - Plan `02-03` Task `2` now adds `internal/content/review_view.go`, which projects `ChunkSummary` plus raw `AttributedChunk` inputs into summary-first review rows with explicit `ExpandTarget` lookup keys and a raw expansion table keyed by stable chunk/source identifiers.
 - The new review projection preserves per-chunk attribution on every row, keeps raw chunk text behind explicit expansion references instead of inline dumps, and supports multi-source review lists without collapsing provenance into page-level summaries.
 - Verification for Plan `02-03` Task `2` reran `go test ./...` plus the focused `ReviewView` suite cleanly, confirming every review row still carries `summary`, `source_url`, `chunk_id`, and an expansion key that resolves to the raw chunk text and attribution metadata.
+- Plan `02-03` Task `3` now adds `internal/cli/command/process.go`, wiring `cli-skill process --url ...` through crawl, fetch, extraction, normalization, conservative dedupe, chunking, summarization, and review rendering so the Phase 2 pipeline is visible as summary-first CLI output.
+- The new `process` command prints per-chunk `summary`, `source_url`, `expand_target`, and attribution reference by default, with `--include-raw` exposing raw chunk excerpts without replacing the concise review-first output.
+- `internal/content/summarize_test.go` now adds regression coverage for two-line summary bounding and schema-validation fallback when the provider omits required identifiers, alongside the existing provider-error fallback checks.
 
 ### Active Todos
 
-- Execute Plan `02-03` Task `3` from `.planning/phases/02-content-processing-attribution/02-03-PLAN.md`.
+- Verify Plan `02-03` Task `3` from `.planning/phases/02-content-processing-attribution/02-03-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -53,12 +56,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `02-03` Task `3` from `.planning/phases/02-content-processing-attribution/02-03-PLAN.md` within execution-only scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 35.
+- **Next command:** Verify Plan `02-03` Task `3` from `.planning/phases/02-content-processing-attribution/02-03-PLAN.md` within verification-only scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 36.
 
 ## Execution Tracking
 
 - phase=02-content-processing-attribution
 - plan=02-03
-- task=2
-- status=verified
+- task=3
+- status=implemented

@@ -643,3 +643,24 @@ Notes:
 - Verification run output:
   - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/cmd/cli-skill [no test files]` / `? github.com/Nickbohm555/skill-cli/internal/cli/command [no test files]` / `ok github.com/Nickbohm555/skill-cli/internal/content (cached)` / `ok github.com/Nickbohm555/skill-cli/internal/crawl (cached)`
   - `go test ./internal/content -run ReviewView -v` -> `=== RUN   TestBuildReviewViewIncludesSummaryAttributionAndExpansion` / `=== RUN   TestBuildReviewViewSupportsMultipleSourcesWithoutCollapsingProvenance` / `=== RUN   TestBuildReviewViewErrorsWhenRawExpansionIsMissing` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	0.801s`
+
+## Section 35 — 02-content-processing-attribution — 02-03 — Task 3 (Execution)
+Inputs:
+- Plan file: `.planning/phases/02-content-processing-attribution/02-03-PLAN.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-CONTEXT.md`
+- Reference: `.planning/phases/02-content-processing-attribution/02-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 3 (Task 3: Wire process command output and add summarization regression tests).
+2. Implement Task 3.
+3. Run Task 3 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=02-content-processing-attribution` / `plan=02-03` / `task=3` / `status=implemented`.
+
+Notes:
+- Added [`internal/cli/command/process.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/process.go) and wired it into the root command, so `cli-skill process --url ...` now runs the current Phase 1 crawl plus the existing Phase 2 extraction, normalization, conservative dedupe, chunking, summarization, and review projection pipeline end to end.
+- The new CLI output is summary-first by default and prints per-chunk `source_url`, `summary`, `expand_target`, and attribution `reference`, while `--include-raw` adds raw chunk excerpts without replacing the concise review surface.
+- Extended [`internal/content/summarize_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/content/summarize_test.go) with regression coverage for provider summary line bounding and schema-validation fallback when required identifiers are omitted, reusing the existing provider-error and attribution passthrough tests instead of duplicating logic.
+- No blockers came up. Because the crawl result model currently stores processed URLs rather than raw HTML payloads, the command re-fetches the accepted pages before running Phase 2 content processing; this keeps the implementation within the current architecture instead of widening Phase 1 contracts mid-task.
+- Verification run output:
+  - `go fmt ./...` -> no output
+  - `go test ./...` -> `? github.com/Nickbohm555/skill-cli/cmd/cli-skill [no test files]` / `? github.com/Nickbohm555/skill-cli/internal/cli/command [no test files]` / `ok github.com/Nickbohm555/skill-cli/internal/content 1.792s` / `ok github.com/Nickbohm555/skill-cli/internal/crawl (cached)`
+  - `go run ./cmd/cli-skill process --url http://127.0.0.1:8765/docs/index.html --include-raw` -> emitted summary-first review rows with per-chunk `source_url` attribution plus raw excerpts for two locally served docs pages
