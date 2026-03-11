@@ -1,4 +1,3 @@
-implement semantic scope validation
+verify validation plan 04-01 task 3
 
-- add deterministic VAL.SCOPE boundary checks for brief and vague in/out-of-scope entries
-- add semantic validation tests and run `go test ./internal/validation -run Semantic -v`
+Re-ran internal/validation verification, confirmed deterministic blocking order and warning-only non-blocking behavior, wrote the 04-01 summary, and advanced state to 04-02 task 1.

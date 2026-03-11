@@ -1142,3 +1142,22 @@ Notes:
 - Verification run output:
   - `go fmt ./...` -> no output
   - `go test ./internal/validation -run Semantic -v` -> `=== RUN   TestSemanticValidationAcceptsSpecificBoundaries` / `=== RUN   TestSemanticValidationRejectsBriefBoundaryEntries` / `=== RUN   TestSemanticValidationRejectsVagueCatchAllPhrasing` / `=== RUN   TestSemanticValidationOrderingIsDeterministic` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.589s`
+
+## Section 60 — 04-validation-quality-gates — 04-01 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-01` / `task=3` / `status=verified`.
+4. Create `04-01-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+
+Notes:
+- Re-ran the full `internal/validation` suite in verification scope and both structural and semantic validation tests passed together without code changes.
+- Repeated deterministic-ordering checks with `-count=5` stayed stable for report-level, structural, and semantic first-blocking-issue selection, and the warning-only gate test continued to prove `HasBlockingIssues()` ignores non-error reports.
+- Created `.planning/phases/04-validation-quality-gates/04-01-SUMMARY.md` and advanced `.planning/STATE.md` to Plan `04-02` / Task `1` as the next execution target.
+- Verification run output:
+  - `go test ./internal/validation -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.602s`
+  - `go test ./internal/validation -run 'Test(ValidationReportOrderingIsDeterministic|StructuralValidationOrderingIsDeterministic|SemanticValidationOrderingIsDeterministic|ValidationReportWarningsDoNotBlock)$' -count=5 -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.746s`
