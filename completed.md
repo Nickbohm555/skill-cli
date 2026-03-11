@@ -905,3 +905,23 @@ Notes:
   - `gofmt -w internal/cli/prompts/refinement_form_test.go` -> no output
   - `go test ./internal/cli/prompts -v` -> `=== RUN   TestPromptPrimaryPlansCoverRequiredFields` / `=== RUN   TestPromptDeepeningRoutingIsDeterministic` / `=== RUN   TestPromptDeepeningSkipsWhenClarityPasses` / `=== RUN   TestPromptStructuredChoiceOptionsStayStable` / `=== RUN   TestPromptBuildDeepeningFieldsSupportsOtherPath` / `=== RUN   TestPromptOtherPathValidationIsSafe` / `=== RUN   TestBuildReviewModelGroupsSectionsAndReadiness` / `=== RUN   TestRenderReviewIncludesGroupedSectionsStatusesAndRevisionHints` / `=== RUN   TestRenderReviewShowsReadySummaryWhenCommitGatePasses` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)`
   - `rg -n "DefaultClarityPolicy|DeepeningDecision|ClarityPolicy|ReadinessStatus|ValidationReport|threshold|score|ambigu|specific" internal/cli/prompts internal/refinement` -> thresholds/scoring remain in `internal/refinement/clarity.go`; `internal/cli/prompts` only references `ClarityPolicy`, `DeepeningDecision`, `ReadinessStatus`, and `ValidationReport`
+
+## Section 48 — 03-interactive-refinement-loop — 03-02 — Task 3 (Verification)
+Inputs:
+- Plan file: `.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md`
+- Reference: `.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md`
+Steps:
+1. Re-run verification for Task 3 (or broader checks if required).
+2. If fixes required, implement and rerun verification until clean.
+3. Update `.planning/STATE.md` with `phase=03-interactive-refinement-loop` / `plan=03-02` / `task=3` / `status=verified`.
+4. Create `03-02-SUMMARY.md` in the plan directory and update `.planning/STATE.md` to the next plan.
+
+Notes:
+- Re-ran the Task 3 verification within verification-only scope and no implementation fixes were required because the full `internal/cli/prompts` suite stayed green.
+- Confirmed the CLI prompt layer still consumes domain policy outputs instead of reimplementing them locally: `refinement_form.go` uses `refinement.ClarityPolicy` and `DeepeningDecision`, while `review_renderer.go` renders `refinement.ValidationReport` and `ReadinessStatus`.
+- Plan `03-02` is now complete, so this run also created the plan summary and advanced state to `03-03 / Task 1` per the guardrail.
+- No blockers came up during verification.
+- Verification run output:
+  - `go test ./internal/cli/prompts -v` -> `=== RUN   TestPromptPrimaryPlansCoverRequiredFields` / `=== RUN   TestPromptDeepeningRoutingIsDeterministic` / `=== RUN   TestPromptDeepeningSkipsWhenClarityPasses` / `=== RUN   TestPromptStructuredChoiceOptionsStayStable` / `=== RUN   TestPromptBuildDeepeningFieldsSupportsOtherPath` / `=== RUN   TestPromptOtherPathValidationIsSafe` / `=== RUN   TestBuildReviewModelGroupsSectionsAndReadiness` / `=== RUN   TestRenderReviewIncludesGroupedSectionsStatusesAndRevisionHints` / `=== RUN   TestRenderReviewShowsReadySummaryWhenCommitGatePasses` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)`
+  - `rg -n "DefaultClarityPolicy|DeepeningDecision|validator|ReviewReport|FieldStatus|CommitReady|clarity|readiness" internal/cli/prompts internal/refinement` -> `internal/cli/prompts` references refinement policy/report entry points only; thresholds/scoring stay in `internal/refinement/clarity.go` and commit/readiness evaluation stays in `internal/refinement/validator.go`
