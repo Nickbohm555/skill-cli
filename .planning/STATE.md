@@ -3,7 +3,7 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-02 Task 1 is verified; the next scoped run is Phase 6 Plan 06-02 Task 2 execution.
+- **Current focus:** Phase 6 Plan 06-02 Task 2 is implemented; the next scoped run is Phase 6 Plan 06-02 Task 2 verification.
 
 ## Current Position
 
@@ -150,10 +150,13 @@
 - Plan `06-02` Task `1` now adds [`internal/install/preview_diff.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preview_diff.go) and [`internal/install/preview_diff_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/preview_diff_test.go), introducing deterministic preview rendering for target path and key skill sections plus `go-diff` backed human-readable update diffs that remain read-only and approval-prep only.
 - Task `1` verification in execution scope ran `go test ./internal/install -run "Preview|Diff" -v` cleanly after normalizing ANSI-decorated pretty-diff assertions in the test suite; no production write path or filesystem mutation was introduced.
 - Verification for Plan `06-02` Task `1` reran the focused preview/diff suite plus the full `internal/install` package tests cleanly, and static inspection confirmed `internal/install` still has no production filesystem mutation path or `$CODEX_HOME/skills` write behavior, so preview rendering remains read-only and approval-prep only.
+- Plan `06-02` Task `2` now adds [`internal/install/transaction.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction.go), introducing an approval-gated install transaction that reuses preflight gates, stages `SKILL.md` under the target parent, verifies the staged artifact via `validation.ParseSkill`, and promotes it with same-parent rename semantics plus backup-and-restore on update failures.
+- [`internal/install/transaction_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/transaction_test.go) now locks create, update, rollback-on-activation-failure, and missing-approval blocked cases, including checks that stage and backup artifacts are cleaned up from the target root after each run.
+- Task `2` verification in execution scope ran `go test ./internal/install -run Transaction -v` cleanly; no blockers came up, and the only install-package mutation path now stays behind `Preflight(...)` plus explicit approval enforcement.
 
 ### Active Todos
 
-- Execute Plan `06-02` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`.
+- Verify Plan `06-02` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -162,12 +165,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `06-02` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 87.
+- **Next command:** Verify Plan `06-02` Task `2` from `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 88.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-02
-- task=1
-- status=verified
+- task=2
+- status=implemented

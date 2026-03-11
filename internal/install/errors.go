@@ -7,6 +7,7 @@ type ErrorCode string
 const (
 	ErrorBlockedValidation              ErrorCode = "install_blocked_validation"
 	ErrorBlockedConflict                ErrorCode = "install_blocked_conflict"
+	ErrorApprovalRequired               ErrorCode = "install_approval_required"
 	ErrorApprovalDeclined               ErrorCode = "install_approval_declined"
 	ErrorApprovalRequiredNonInteractive ErrorCode = "install_non_interactive_approval_required"
 )
@@ -40,6 +41,10 @@ var (
 		Code:    ErrorBlockedConflict,
 		Message: "install blocked: conflict resolution is unresolved or aborting",
 	}
+	ErrInstallApprovalRequired = &InstallError{
+		Code:    ErrorApprovalRequired,
+		Message: "install blocked: explicit approval is required before write",
+	}
 	ErrInstallDeclined = &InstallError{
 		Code:    ErrorApprovalDeclined,
 		Message: "install blocked: approval was declined",
@@ -68,6 +73,10 @@ func IsBlockedConflict(err error) bool {
 
 func IsApprovalDeclined(err error) bool {
 	return errors.Is(err, ErrInstallDeclined)
+}
+
+func IsApprovalRequired(err error) bool {
+	return errors.Is(err, ErrInstallApprovalRequired)
 }
 
 func IsApprovalRequiredNonInteractive(err error) bool {

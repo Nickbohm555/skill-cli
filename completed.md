@@ -1673,3 +1673,22 @@ Notes:
   - `go test ./internal/install -run "Preview|Diff" -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	(cached)`
   - `go test ./internal/install -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.608s`
   - `rg -n '\$CODEX_HOME/skills|os\.(WriteFile|Rename|Mkdir|MkdirAll|Create|OpenFile|Remove|RemoveAll)|afero\.|filepath\.Join\(.*skills' internal/install` -> no matches
+
+## Section 87 — 06-approval-gated-install-activation — 06-02 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md`
+- Reference: `.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Implement approval-gated atomic install transaction).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=06-approval-gated-install-activation` / `plan=06-02` / `task=2` / `status=implemented`.
+
+Notes:
+- Added `internal/install/transaction.go` with `InstallTransaction` and a reusable `TransactionExecutor` that enforces `Preflight(...)` plus explicit approval before any write, stages `SKILL.md` under the target parent, verifies the staged artifact with `validation.ParseSkill`, and promotes it with same-parent rename semantics.
+- Update installs now move the existing target aside to a same-parent backup path, rename the staged directory into place, and restore the previous install if activation fails; stage and backup artifacts are cleaned up on both success and failure paths.
+- Added `internal/install/transaction_test.go` covering approved create, approved update, rollback when the final activation rename fails, and missing-approval blocked behavior with no target directory created.
+- Added the typed `ErrInstallApprovalRequired` install error so write-entry rejection for unapproved requests is explicit and does not rely on the non-interactive approval sentinel.
+- No blockers came up. `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is still absent, so this run used the available plan, research, state, and install-package sources only.
+- Verification run output:
+  - `go test ./internal/install -run Transaction -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/install	0.788s`

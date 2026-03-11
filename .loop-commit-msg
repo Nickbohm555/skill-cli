@@ -1,7 +1,4 @@
-verify preview/diff install flow
+Implement atomic install transaction with approval gate
 
-Tested Section 86 verification for Phase 06 Plan 06-02 Task 1 with:
-- go test ./internal/install -run "Preview|Diff" -v
-- go test ./internal/install -v
-
-Confirmed preview/diff remains deterministic and read-only with no production install write path yet.
+Built the Phase 06-02 Task 2 write path in `internal/install/transaction.go`, including staged `SKILL.md` verification, same-parent promote/backup swap logic, rollback on activation failure, and explicit approval-required rejection.
+Tested with `go test ./internal/install -run Transaction -v`.
