@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "metadata",
+    "title",
+    "purpose_summary",
+    "primary_tasks",
+    "success_criteria",
+    "constraints",
+    "dependencies",
+    "example_requests",
+    "example_outputs",
+    "in_scope",
+    "out_of_scope"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "extra": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose_summary": {
+      "$ref": "#/$defs/textSection"
+    },
+    "primary_tasks": {
+      "$ref": "#/$defs/listSection"
+    },
+    "success_criteria": {
+      "$ref": "#/$defs/listSection"
+    },
+    "constraints": {
+      "$ref": "#/$defs/listSection"
+    },
+    "dependencies": {
+      "$ref": "#/$defs/listSection"
+    },
+    "example_requests": {
+      "$ref": "#/$defs/listSection"
+    },
+    "example_outputs": {
+      "$ref": "#/$defs/listSection"
+    },
+    "in_scope": {
+      "$ref": "#/$defs/listSection"
+    },
+    "out_of_scope": {
+      "$ref": "#/$defs/listSection"
+    }
+  },
+  "$defs": {
+    "textSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "heading",
+        "body"
+      ],
+      "properties": {
+        "heading": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "listSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "heading",
+        "items"
+      ],
+      "properties": {
+        "heading": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intro": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

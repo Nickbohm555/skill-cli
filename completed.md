@@ -1079,6 +1079,26 @@ Notes:
 - Confirmed `HasBlockingIssues()` and `NextBlockingIssue()` are defined only in [`internal/validation/report.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/report.go) and the current tests still show warning-only reports do not block.
 - No blockers surfaced. The next scoped run is the execution session for `04-01` Task `2`.
 - Verification run output:
-  - `go test ./internal/validation -v` -> `=== RUN   TestParseSkillNormalizesFrontmatterAndSections` / `=== RUN   TestParseSkillLeavesMissingSectionsEmpty` / `=== RUN   TestValidationReportOrderingIsDeterministic` / `=== RUN   TestValidationReportWarningsDoNotBlock` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	(cached)`
-  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/command	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	(cached)`
-  - `go test ./internal/validation -run TestValidationReportOrderingIsDeterministic -count=5 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.527s`
+- `go test ./internal/validation -v` -> `=== RUN   TestParseSkillNormalizesFrontmatterAndSections` / `=== RUN   TestParseSkillLeavesMissingSectionsEmpty` / `=== RUN   TestValidationReportOrderingIsDeterministic` / `=== RUN   TestValidationReportWarningsDoNotBlock` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	(cached)`
+- `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/command	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	(cached)`
+- `go test ./internal/validation -run TestValidationReportOrderingIsDeterministic -count=5 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.527s`
+
+## Section 57 — 04-validation-quality-gates — 04-01 — Task 2 (Execution)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 2 (Task 2: Implement strict structural/schema validation pass).
+2. Implement Task 2.
+3. Run Task 2 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-01` / `task=2` / `status=implemented`.
+
+Notes:
+- Added [`internal/validation/schema_validate.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/schema_validate.go) and embedded [`internal/validation/skill.schema.json`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/skill.schema.json) to compile a strict JSON Schema for `CandidateSkill`, validate the normalized payload fail-closed, and map schema failures into stable blocking `VAL.STRUCT.*` issues with deterministic priorities and paths.
+- Expanded [`internal/validation/validation_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/validation_test.go) with structural-only coverage for valid candidates, missing required sections, malformed values, and repeated-run ordering stability so the task-scoped `Structural` filter exercises the new pass directly.
+- Reused the existing parser/report contracts instead of introducing a second validation model, and added `github.com/santhosh-tekuri/jsonschema/v6@v6.0.2` to `go.mod` for the runtime schema compiler documented in the phase research.
+- One implementation bug surfaced during the first verification run: `jsonschema/v6` `AddResource` requires parsed JSON rather than an `io.Reader`. I fixed the loader to use `jsonschema.UnmarshalJSON`, after which the structural suite passed cleanly.
+- Verification run output:
+  - `go fmt ./...` -> `internal/validation/schema_validate.go`
+  - `go test ./internal/validation -run Structural -v` -> `=== RUN   TestStructuralValidationAcceptsValidCandidate` / `=== RUN   TestStructuralValidationFailsClosedOnMissingRequiredSections` / `=== RUN   TestStructuralValidationRejectsMalformedValues` / `=== RUN   TestStructuralValidationOrderingIsDeterministic` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.566s`

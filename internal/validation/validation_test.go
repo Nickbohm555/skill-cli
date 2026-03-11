@@ -173,3 +173,181 @@ func TestValidationReportWarningsDoNotBlock(t *testing.T) {
 		t.Fatal("NextBlockingIssue() returned issue for warning-only report")
 	}
 }
+
+func TestStructuralValidationAcceptsValidCandidate(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill(validSkillFixture())
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	report := ValidateStructural(candidate)
+	if report.HasBlockingIssues() {
+		t.Fatalf("ValidateStructural() blocking issues = %#v, want none", report.Issues)
+	}
+}
+
+func TestStructuralValidationFailsClosedOnMissingRequiredSections(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill([]byte(`---
+name: minimal
+description: minimal example
+---
+
+# Minimal Skill
+
+## Purpose
+
+Do one thing well.
+`))
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	report := ValidateStructural(candidate)
+	if !report.HasBlockingIssues() {
+		t.Fatal("ValidateStructural() blocking issues = false, want true")
+	}
+
+	next, ok := report.NextBlockingIssue()
+	if !ok {
+		t.Fatal("NextBlockingIssue() = none, want first blocking issue")
+	}
+	if next.RuleID != "VAL.STRUCT.PRIMARY_TASKS_REQUIRED" {
+		t.Fatalf("NextBlockingIssue().RuleID = %q, want %q", next.RuleID, "VAL.STRUCT.PRIMARY_TASKS_REQUIRED")
+	}
+}
+
+func TestStructuralValidationRejectsMalformedValues(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill(validSkillFixture())
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	candidate.Metadata.Name = ""
+	candidate.PrimaryTasks.Items = []string{"ship the skill", ""}
+
+	report := ValidateStructural(candidate)
+	if !report.HasBlockingIssues() {
+		t.Fatal("ValidateStructural() blocking issues = false, want true")
+	}
+
+	want := []ValidationIssue{
+		{
+			RuleID:   "VAL.STRUCT.METADATA_NAME_REQUIRED",
+			Severity: SeverityError,
+			Path:     "metadata.name",
+			Message:  "metadata.name must not be blank.",
+			Priority: 10,
+		},
+		{
+			RuleID:   "VAL.STRUCT.PRIMARY_TASKS_REQUIRED",
+			Severity: SeverityError,
+			Path:     "sections.primary_tasks.items[1]",
+			Message:  "Primary Tasks entries must not be blank.",
+			Priority: 50,
+		},
+	}
+
+	for _, wantIssue := range want {
+		if !containsIssue(report.Issues, wantIssue) {
+			t.Fatalf("ValidateStructural() issues = %#v, want %#v present", report.Issues, wantIssue)
+		}
+	}
+}
+
+func TestStructuralValidationOrderingIsDeterministic(t *testing.T) {
+	t.Parallel()
+
+	candidate, err := ParseSkill(validSkillFixture())
+	if err != nil {
+		t.Fatalf("ParseSkill returned error: %v", err)
+	}
+
+	candidate.Metadata.Description = ""
+	candidate.OutOfScope.Items = nil
+
+	const runs = 5
+	var first []ValidationIssue
+	for i := 0; i < runs; i++ {
+		report := ValidateStructural(candidate)
+		next, ok := report.NextBlockingIssue()
+		if !ok {
+			t.Fatal("NextBlockingIssue() = none, want first blocking issue")
+		}
+		if next.RuleID != "VAL.STRUCT.METADATA_DESCRIPTION_REQUIRED" {
+			t.Fatalf("NextBlockingIssue().RuleID = %q, want %q", next.RuleID, "VAL.STRUCT.METADATA_DESCRIPTION_REQUIRED")
+		}
+
+		if i == 0 {
+			first = append([]ValidationIssue(nil), report.Issues...)
+			continue
+		}
+		if !reflect.DeepEqual(report.Issues, first) {
+			t.Fatalf("ordered issues run %d = %#v, want %#v", i, report.Issues, first)
+		}
+	}
+}
+
+func containsIssue(issues []ValidationIssue, want ValidationIssue) bool {
+	for _, issue := range issues {
+		if reflect.DeepEqual(issue, want) {
+			return true
+		}
+	}
+	return false
+}
+
+func validSkillFixture() []byte {
+	return []byte(`---
+name: go-docs-skill
+description: Turn one Go docs URL into a scoped Codex skill.
+metadata:
+  short-description: Go docs skill
+---
+
+# Go Docs Skill
+
+## Purpose
+
+Generate a Codex skill from one docs URL and keep the result installable.
+
+## Primary Tasks
+
+- Fetch the docs page.
+- Extract the instructions.
+
+## Success Criteria
+
+- The skill stays focused on one docs source.
+
+## Constraints
+
+- Use one source URL only.
+
+## Dependencies
+
+- Go 1.25.x
+- OpenAI Codex
+
+## Example Requests
+
+- Build a Go docs skill from https://go.dev/doc/
+
+## Example Outputs
+
+- A SKILL.md with install steps and scope limits.
+
+## In Scope
+
+- Extracting instructions from the chosen docs source.
+
+## Out of Scope
+
+- Mixing unrelated documentation sets.
+`)
+}
