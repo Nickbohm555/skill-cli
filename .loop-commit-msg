@@ -1,5 +1,3 @@
-Verify overlap detection plan 05-01 and advance to 05-02
+Implement overlap decision flow with fail-closed abort handling
 
-- ran go test ./internal/overlap -v
-- reran detect tests with -count=2 for determinism
-- confirmed production overlap package remains read-only
+Tested: go fmt ./internal/overlap/... && go test ./internal/overlap -run Decision -v

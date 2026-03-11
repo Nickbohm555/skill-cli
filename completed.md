@@ -1399,3 +1399,22 @@ Notes:
   - `go test ./internal/overlap -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.760s`
   - `go test ./internal/overlap -run Detect -count=2 -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.583s`
   - `rg -n "os\\.(WriteFile|Create|Mkdir|MkdirAll|Remove|RemoveAll|Rename)|afero\\.(WriteFile|Create|Mkdir|MkdirAll|Remove|RemoveAll|Rename)|filepath\\.WalkDir|os\\.OpenFile" internal/overlap` -> production code matches only `filepath.WalkDir` in `internal/overlap/index_installed.go`; write APIs appear only in `internal/overlap/index_installed_test.go`
+
+## Section 73 — 05-overlap-conflict-resolution — 05-02 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Implement explicit decision flow with safe interruption behavior).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-02` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/overlap/decision_flow.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/decision_flow.go) with a typed decision-flow boundary that shortcuts to `new_install` only when the overlap report severity is `none`, otherwise builds an explicit `update_existing` / `merge_with_existing` / `abort` prompt contract and writes the selected outcome back into `ConflictResolutionDecision`.
+- Added [`internal/overlap/decision_flow_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/decision_flow_test.go) with focused coverage for explicit-choice persistence, no-overlap shortcut messaging, interrupted prompt fallback to blocking abort, and invalid-selection fallback so the overlap stage fails closed before any later install handoff exists.
+- Reused the existing overlap report ordering and decision contract instead of adding parallel resolution types; the prompt target is derived from the highest-priority sorted finding, and interrupted or missing choice paths intentionally leave `SelectedAt` unset while marking `Blocking=true`.
+- No blockers came up during implementation; the package did not yet have any overlap decision UX, so this run introduced the prompt contract and fail-closed decision policy from the Phase 05 research notes.
+- Verification run output:
+  - `go fmt ./internal/overlap/...` -> `internal/overlap/decision_flow.go` / `internal/overlap/decision_flow_test.go`
+  - `go test ./internal/overlap -run Decision -v` -> `=== RUN   TestDecisionFlowAcceptsExplicitChoice` / `=== RUN   TestDecisionFlowShortCircuitsWhenNoOverlapExists` / `=== RUN   TestDecisionFlowFallsBackToBlockingAbortOnInterruptedPrompt` / `=== RUN   TestDecisionFlowFallsBackToBlockingAbortOnInvalidSelection` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.601s`
