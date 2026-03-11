@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 4 Plan 04-02 Task 1 is implemented, and the next scoped run is Task 1 verification.
+- **Current focus:** Phase 4 Plan 04-02 Task 1 is verified, and the next scoped run is Task 2 execution.
 
 ## Current Position
 
 - **Current phase:** 4 - Validation & Quality Gates
 - **Current plan:** 04-02
-- **Overall status:** Phases 1, 2, and 3 are complete. Phase 4 is in progress, Plan 04-01 is complete, and Plan 04-02 Task 1 is implemented pending verification.
+- **Overall status:** Phases 1, 2, and 3 are complete. Phase 4 is in progress, Plan 04-01 is complete, and Plan 04-02 Task 1 is verified with Task 2 next.
 - **Progress:** 3/6 phases complete
 - **Progress bar:** [###---] 50%
 
@@ -97,10 +97,11 @@
 - Plan `04-02` Task `1` now adds `internal/validation/followup_prompt.go`, introducing deterministic follow-up questions for every current blocking `VAL.STRUCT.*` and `VAL.SCOPE.*` rule plus a stable fallback prompt for unknown rule IDs.
 - `internal/validation/validation_test.go` now adds prompt-mapping coverage that proves all current blocking Phase 4 rules resolve to non-empty targeted prompts and that unknown rules always fall back to the same fail-closed default prompt.
 - Task `1` verification in execution scope ran `go fmt ./...` and `go test ./...` cleanly with no blockers; the new mapping remains isolated to `internal/validation` until the next plan task wires it into remediation flow.
+- Verification for Plan `04-02` Task `1` reran `go test ./...` plus the focused `PromptForRule`, `Structural`, `Semantic`, and `ValidationReport` suites cleanly, confirming every current blocking Phase 4 rule still resolves to a targeted prompt and the fallback prompt remains deterministic for unknown rule IDs.
 
 ### Active Todos
 
-- Verify Plan `04-02` Task `1` from `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md`.
+- Execute Plan `04-02` Task `2` from `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -109,12 +110,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `04-02` Task `1` from `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 62.
+- **Next command:** Execute Plan `04-02` Task `2` from `.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 63.
 
 ## Execution Tracking
 
 - phase=04-validation-quality-gates
 - plan=04-02
 - task=1
-- status=implemented
+- status=verified
