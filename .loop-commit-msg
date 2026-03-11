@@ -1,5 +1,1 @@
-wire refine CLI flow and commit gate
-
-- add cli-skill refine command with prompt-adapter-driven Q&A, review mode, revise handling, and committed payload output
-- add scripted command tests and run go test ./...
-- smoke test go run ./cmd/cli-skill refine for blocked commit after revision and successful final commit
+verify phase 3 refine commit gate and close phase summary

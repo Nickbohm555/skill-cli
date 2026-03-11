@@ -2,7 +2,7 @@ Tasks are in **required implementation order** (1...n). Each section = one conte
 
 Goal: mimic `/gsd-execute-phase` sequentially across phases 1–6. Each plan is executed task-by-task. Each task has a follow-up verification session in the next run.
 
-Current section to work on: section 54. (move +1 after each turn)
+Current section to work on: section 55. (move +1 after each turn)
 
 ---
 

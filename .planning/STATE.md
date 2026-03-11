@@ -3,22 +3,22 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 Plan 03-03 Task 3 is implemented, and the next scoped run is the verification session for Task 3.
+- **Current focus:** Phase 3 is complete, and the next scoped run is Phase 4 Plan 04-01 Task 1 execution.
 
 ## Current Position
 
-- **Current phase:** 3 - Interactive Refinement Loop
-- **Current plan:** 03-03
-- **Overall status:** Phases 1 and 2 are complete. Phase 2 Plan 02-03 Task 3 is verified, summarized, and Phase 2 is now marked complete; Phase 3 Plans 03-01 and 03-02 are now verified and summarized.
-- **Progress:** 2/6 phases complete
-- **Progress bar:** [##----] 33%
+- **Current phase:** 4 - Validation & Quality Gates
+- **Current plan:** 04-01
+- **Overall status:** Phases 1, 2, and 3 are complete. Phase 3 Plan 03-03 Task 3 is now verified, summarized, and the phase is marked complete.
+- **Progress:** 3/6 phases complete
+- **Progress bar:** [###---] 50%
 
 ## Performance Metrics
 
 - **v1 requirements total:** 20
 - **Mapped to phases:** 20
 - **Coverage:** 100%
-- **Validated requirements complete:** 8
+- **Validated requirements complete:** 11
 
 ## Accumulated Context
 
@@ -79,10 +79,12 @@
 - Plan `03-03` Task `3` now adds [`internal/cli/command/refine.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine.go), wiring `cli-skill refine` to the refinement domain flow with prompt-adapter-driven questioning, sectioned review rendering, `revise <field>` handling in review mode, and a fail-closed final commit path that delegates to `flow.Commit()` instead of CLI-side readiness checks.
 - [`internal/cli/command/refine_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/cli/command/refine_test.go) now locks the command behavior with scripted stdin/stdout coverage for summarize-first follow-up prompting, blocked commit after revision impact drift, and deterministic committed payload emission once all required fields return to ready.
 - Manual smoke verification for Task `3` confirmed `go run ./cmd/cli-skill refine` renders grouped review output, blocks `commit` after a revision reopens impacted fields, accepts a follow-up `revise example_outputs`, and emits a deterministic JSON refinement payload only after readiness is fully green.
+- Verification for Plan `03-03` Task `3` re-ran `go test ./...` cleanly and repeated the scripted `go run ./cmd/cli-skill refine` smoke path, confirming the review/commit loop stays fail-closed after revision drift and the committed payload remains deterministic for Phase 4 input.
+- Phase 3 Plan `03-03` is now complete after writing `.planning/phases/03-interactive-refinement-loop/03-03-SUMMARY.md`, and Phase 3 is marked complete in `.planning/ROADMAP.md`.
 
 ### Active Todos
 
-- Verify Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md`.
+- Execute Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -91,12 +93,12 @@
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `03-03` Task `3` from `.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 54.
+- **Next command:** Execute Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md` within execution scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 55.
 
 ## Execution Tracking
 
-- phase=03-interactive-refinement-loop
-- plan=03-03
-- task=3
-- status=implemented
+- phase=04-validation-quality-gates
+- plan=04-01
+- task=1
+- status=ready
