@@ -1,5 +1,3 @@
-verify phase-4 remediation gate and advance to phase 5
+build overlap Task 1 contracts and report schema
 
-Tested:
-- go test ./internal/validation ./internal/app/generate -v
-- go test ./internal/app/generate -run 'TestFixLoopPromptsOneBlockingIssuePerIteration|TestFixLoopReturnsUserCanceledAfterFirstBlockingIssue|TestGateAllowsWarningOnlyReports|TestGateBlocksOnFirstErrorDeterministically|TestGateMatchesValidateCandidateProgressionPolicy' -v
+Tested: go test ./internal/overlap -run "Model|Report" -v

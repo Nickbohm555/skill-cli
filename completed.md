@@ -1283,3 +1283,22 @@ Notes:
 - Verification run output:
   - `go test ./internal/validation ./internal/app/generate -v` -> `ok  	github.com/Nickbohm555/skill-cli/internal/validation	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	(cached)`
   - `go test ./internal/app/generate -run 'TestFixLoopPromptsOneBlockingIssuePerIteration|TestFixLoopReturnsUserCanceledAfterFirstBlockingIssue|TestGateAllowsWarningOnlyReports|TestGateBlocksOnFirstErrorDeterministically|TestGateMatchesValidateCandidateProgressionPolicy' -v` -> `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/app/generate	0.543s`
+
+## Section 67 — 05-overlap-conflict-resolution — 05-01 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md`
+- Reference: `.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Define overlap domain contracts and report schema).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=05-overlap-conflict-resolution` / `plan=05-01` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/overlap/model.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/model.go) and [`internal/overlap/report.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/report.go) with typed overlap contracts for `SkillProfile`, `OverlapFinding`, `OverlapReport`, `ResolutionMode`, and `ConflictResolutionDecision`, including stable JSON field names and explicit Phase 06 handoff fields (`TargetSkillID`, `Mode`, `Blocking`, `SelectedAt`) plus explanation metadata.
+- Added [`internal/overlap/model_report_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/overlap/model_report_test.go) to lock report/decision serialization shape, deterministic finding ordering, severity aggregation, and install-handoff resolution semantics without introducing any write behavior.
+- Reused the existing validation/generation conventions for stable JSON tags and fail-closed helpers, and kept this stage read-only so later indexing/detection tasks can build on the contracts without reinterpretation.
+- No blockers came up; the repository did not have an `internal/overlap` package yet, so this run created the initial contract surface from the phase research and downstream handoff requirements.
+- Verification run output:
+  - `go fmt ./internal/overlap/...` -> `internal/overlap/model.go` / `internal/overlap/report.go`
+  - `go test ./internal/overlap -run "Model|Report" -v` -> `=== RUN   TestModelOverlapContractsJSON` / `=== RUN   TestReportSortFindingsDeterministically` / `=== RUN   TestModelConflictResolutionDecisionResolutionState` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/overlap	0.731s`
