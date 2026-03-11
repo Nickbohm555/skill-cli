@@ -1041,3 +1041,24 @@ Notes:
 - Verification run output:
   - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/command	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)`
   - `go run ./cmd/cli-skill refine` (scripted stdin smoke) -> initial review was `ready`, `revise purpose_summary` re-opened `example_outputs` and blocked `commit`, `revise example_outputs` restored readiness, and the command printed a committed JSON payload with all required answers marked `ready`
+
+## Section 55 — 04-validation-quality-gates — 04-01 — Task 1 (Execution)
+Inputs:
+- Plan file: `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-CONTEXT.md`
+- Reference: `.planning/phases/04-validation-quality-gates/04-RESEARCH.md`
+Steps:
+1. Read plan frontmatter + Task 1 (Task 1: Create normalized skill model, markdown parser, and issue report contract).
+2. Implement Task 1.
+3. Run Task 1 verification steps from the plan.
+4. Update `.planning/STATE.md` with `phase=04-validation-quality-gates` / `plan=04-01` / `task=1` / `status=implemented`.
+
+Notes:
+- Added [`internal/validation/model.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/model.go), [`internal/validation/parse_skill.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/parse_skill.go), and [`internal/validation/report.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/report.go) to establish a normalized `CandidateSkill` contract, a structured goldmark/frontmatter parser for `SKILL.md`, and a deterministic issue report model with stable severity ordering plus `HasBlockingIssues()` and `NextBlockingIssue()`.
+- Added [`internal/validation/validation_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/validation/validation_test.go) with task-scoped coverage for frontmatter/heading extraction, empty defaults for missing sections, repeated-run issue ordering stability, and warning-only reports staying non-blocking.
+- Reused the phase research stack directly by pinning `github.com/yuin/goldmark@v1.7.16`, `go.abhg.dev/goldmark/frontmatter@v0.3.0`, and `gopkg.in/yaml.v3@v3.0.1`; `go mod tidy` also promoted already-used direct dependencies that were previously only indirect in `go.mod`.
+- One parser bug surfaced during implementation: section content was being applied before the H2 body blocks were accumulated. I fixed the parser to finalize sections only when the next heading or end-of-document is reached.
+- Verification run output:
+  - `go fmt ./internal/validation/...` -> no output
+  - `go test ./internal/validation -v` -> `=== RUN   TestParseSkillNormalizesFrontmatterAndSections` / `=== RUN   TestParseSkillLeavesMissingSectionsEmpty` / `=== RUN   TestValidationReportOrderingIsDeterministic` / `=== RUN   TestValidationReportWarningsDoNotBlock` / `PASS` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.512s`
+  - `go test ./...` -> `?   	github.com/Nickbohm555/skill-cli/cmd/cli-skill	[no test files]` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/command	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/cli/prompts	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/content	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/crawl	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/refinement	(cached)` / `ok  	github.com/Nickbohm555/skill-cli/internal/validation	0.480s`

@@ -3,20 +3,24 @@ module github.com/Nickbohm555/skill-cli
 go 1.25.8
 
 require (
+	charm.land/huh/v2 v2.0.3
 	codeberg.org/readeck/go-readability/v2 v2.1.1
 	github.com/JohannesKaufmann/html-to-markdown/v2 v2.5.0
 	github.com/gocolly/colly/v2 v2.3.0
+	github.com/openai/openai-go/v3 v3.26.0
 	github.com/pkoukk/tiktoken-go v0.1.8
 	github.com/spf13/cobra v1.10.2
 	github.com/tmc/langchaingo v0.1.14
+	github.com/yuin/goldmark v1.7.16
+	go.abhg.dev/goldmark/frontmatter v0.3.0
 	golang.org/x/net v0.47.0
 )
 
 require (
 	charm.land/bubbles/v2 v2.0.0 // indirect
 	charm.land/bubbletea/v2 v2.0.2 // indirect
-	charm.land/huh/v2 v2.0.3 // indirect
 	charm.land/lipgloss/v2 v2.0.1 // indirect
+	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/JohannesKaufmann/dom v0.2.0 // indirect
 	github.com/PuerkitoBio/goquery v1.11.0 // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
@@ -52,7 +56,6 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/nlnwa/whatwg-url v0.6.2 // indirect
-	github.com/openai/openai-go/v3 v3.26.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/saintfish/chardet v0.0.0-20230101081208-5e3ef4b5456d // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
@@ -72,4 +75,5 @@ require (
 	golang.org/x/text v0.31.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

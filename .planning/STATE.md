@@ -3,13 +3,13 @@
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 3 is complete, and the next scoped run is Phase 4 Plan 04-01 Task 1 execution.
+- **Current focus:** Phase 4 Plan 04-01 Task 1 has been implemented, and the next scoped run is its verification session.
 
 ## Current Position
 
 - **Current phase:** 4 - Validation & Quality Gates
 - **Current plan:** 04-01
-- **Overall status:** Phases 1, 2, and 3 are complete. Phase 3 Plan 03-03 Task 3 is now verified, summarized, and the phase is marked complete.
+- **Overall status:** Phases 1, 2, and 3 are complete. Phase 4 is in progress, and Plan 04-01 Task 1 is implemented pending verification.
 - **Progress:** 3/6 phases complete
 - **Progress bar:** [###---] 50%
 
@@ -81,10 +81,13 @@
 - Manual smoke verification for Task `3` confirmed `go run ./cmd/cli-skill refine` renders grouped review output, blocks `commit` after a revision reopens impacted fields, accepts a follow-up `revise example_outputs`, and emits a deterministic JSON refinement payload only after readiness is fully green.
 - Verification for Plan `03-03` Task `3` re-ran `go test ./...` cleanly and repeated the scripted `go run ./cmd/cli-skill refine` smoke path, confirming the review/commit loop stays fail-closed after revision drift and the committed payload remains deterministic for Phase 4 input.
 - Phase 3 Plan `03-03` is now complete after writing `.planning/phases/03-interactive-refinement-loop/03-03-SUMMARY.md`, and Phase 3 is marked complete in `.planning/ROADMAP.md`.
+- Plan `04-01` Task `1` now adds `internal/validation/model.go`, `internal/validation/parse_skill.go`, and `internal/validation/report.go`, establishing a normalized `CandidateSkill` contract, a goldmark/frontmatter-based `SKILL.md` parser that maps required headings into typed sections, and a deterministic validation issue report with stable severity ordering plus blocking helpers.
+- `internal/validation/validation_test.go` now locks Task 1 behavior with parser coverage for frontmatter plus required-section extraction, empty defaults for missing sections, deterministic issue ordering across repeated runs, and warning-only reports staying non-blocking.
+- Task 1 verification reran `go test ./internal/validation -v` and `go test ./...` cleanly after one parser finalization fix, confirming the new validation package compiles repo-wide and yields the same first blocking issue on repeated report sorts.
 
 ### Active Todos
 
-- Execute Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`.
+- Verify Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md`.
 - Continue keeping phase progress and requirement status in sync during delivery.
 
 ### Blockers
@@ -93,12 +96,12 @@
 
 ## Session Continuity
 
-- **Next command:** Execute Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md` within execution scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 55.
+- **Next command:** Verify Plan `04-01` Task `1` from `.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md` within verification scope.
+- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 56.
 
 ## Execution Tracking
 
 - phase=04-validation-quality-gates
 - plan=04-01
 - task=1
-- status=ready
+- status=implemented
