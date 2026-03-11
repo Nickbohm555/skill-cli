@@ -5,46 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>cli-skill Documentation</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+
     :root {
-      --bg: #f7f4ef;
-      --panel: #ffffff;
-      --ink: #1a1a1a;
-      --muted: #6b6b6b;
-      --accent: #0f4c5c;
-      --accent-2: #9a031e;
-      --border: #e1ddd6;
-      --code-bg: #0b0b0b;
-      --code-ink: #f2f2f2;
+      --bg: #0f1115;
+      --panel: #151924;
+      --panel-2: #11141d;
+      --panel-3: #0b0e15;
+      --ink: #e6e8ee;
+      --muted: #9aa3b2;
+      --accent: #4dd1c7;
+      --accent-2: #ffb347;
+      --border: rgba(255,255,255,0.08);
+      --code-bg: #0a0c12;
+      --code-ink: #e9ecf2;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      font-family: "Space Grotesk", "Avenir Next", "Futura", sans-serif;
       color: var(--ink);
-      background: linear-gradient(135deg, #fdfaf5 0%, #f3efe8 100%);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(77, 209, 199, 0.12), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(255, 179, 71, 0.08), transparent 55%),
+        linear-gradient(180deg, #0d0f14 0%, #0a0c10 100%);
     }
     header {
-      padding: 32px 24px 24px 24px;
-      border-bottom: 2px solid var(--border);
-      background: var(--panel);
+      padding: 28px 28px 20px 28px;
+      background: rgba(15, 17, 21, 0.9);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
+    }
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      align-items: center;
+      justify-content: space-between;
     }
     header h1 {
-      margin: 0 0 8px 0;
-      font-size: 28px;
-      letter-spacing: 0.3px;
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: 0.4px;
     }
     header p {
-      margin: 0;
+      margin: 6px 0 0 0;
       color: var(--muted);
+      font-size: 14px;
+    }
+    .search-wrap {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      min-width: 240px;
+    }
+    .search-wrap input {
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      width: 100%;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+    .search-wrap span {
+      color: var(--muted);
+      font-size: 12px;
     }
     main {
       display: grid;
-      grid-template-columns: minmax(220px, 320px) 1fr;
-      gap: 24px;
-      padding: 24px;
+      grid-template-columns: minmax(240px, 320px) 1fr;
+      gap: 28px;
+      padding: 28px;
     }
     nav {
       position: sticky;
@@ -52,21 +92,27 @@
       align-self: start;
       background: var(--panel);
       border: 1px solid var(--border);
-      padding: 16px;
-      border-radius: 12px;
+      padding: 18px;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      max-height: calc(100vh - 150px);
+      overflow: auto;
     }
     nav h2 {
       margin: 0 0 12px 0;
-      font-size: 18px;
+      font-size: 16px;
       color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     nav ol {
       margin: 0;
       padding-left: 18px;
     }
     nav li {
-      margin: 6px 0;
-      line-height: 1.3;
+      margin: 8px 0;
+      line-height: 1.35;
+      font-size: 14px;
     }
     nav a {
       color: var(--ink);
@@ -75,21 +121,45 @@
     nav a:hover {
       color: var(--accent-2);
     }
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
     section {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
     }
-    section h2 {
-      margin: 0 0 6px 0;
-      color: var(--accent);
+    details {
+      padding: 0;
     }
-    .meta {
-      margin: 0 0 14px 0;
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 16px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 12px;
+      align-items: center;
+      background: linear-gradient(120deg, rgba(77, 209, 199, 0.08), rgba(255, 179, 71, 0.05));
+      border-bottom: 1px solid var(--border);
+    }
+    summary::-webkit-details-marker { display: none; }
+    .summary-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .summary-path {
+      font-size: 12px;
       color: var(--muted);
-      font-size: 13px;
+      justify-self: end;
+    }
+    .section-body {
+      padding: 18px;
+      background: var(--panel-3);
     }
     pre {
       margin: 0;
@@ -99,11 +169,30 @@
       border-radius: 12px;
       overflow: auto;
       font-size: 13px;
-      line-height: 1.45;
-      font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+      line-height: 1.55;
+      font-family: "Source Code Pro", "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
     code {
-      font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+      font-family: "Source Code Pro", "SFMono-Regular", "Consolas", "Liberation Mono", "Menlo", monospace;
+    }
+    .empty {
+      display: none;
+      padding: 24px;
+      border-radius: 16px;
+      background: var(--panel);
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      text-align: center;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
     }
     @media (max-width: 900px) {
       main {
@@ -111,28 +200,51 @@
       }
       nav {
         position: static;
+        max-height: none;
+      }
+      summary {
+        grid-template-columns: 1fr;
+      }
+      .summary-path {
+        justify-self: start;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>cli-skill Documentation</h1>
-    <p>Single-source compilation of application docs. Generated 2026-03-10 23:44:16.</p>
+    <div class="header-top">
+      <div>
+        <h1>cli-skill Documentation</h1>
+        <p>Single-source compilation of application docs. Generated 2026-03-10 23:48:58.</p>
+        <div class="meta-row">
+          <span>Total sections: 59</span>
+          <span>Included: README, planning, phases, research</span>
+        </div>
+      </div>
+      <label class="search-wrap">
+        <input id="search" type="search" placeholder="Filter by title, path, or content..." />
+        <span>⌘K</span>
+      </label>
+    </div>
   </header>
   <main>
     <nav>
       <h2>Contents</h2>
-      <ol>
-        <li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-README.md">Skill Weaver (cli-skill)</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-PROJECT.md">Skill Weaver</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-REQUIREMENTS.md">Requirements: Skill Weaver</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-ROADMAP.md">Roadmap: Skill Weaver</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-STATE.md">STATE: Skill Weaver</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-ARCHITECTURE.md">Architecture</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONCERNS.md">Codebase Concerns</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONVENTIONS.md">Coding Conventions</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-INTEGRATIONS.md">External Integrations</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STACK.md">Technology Stack</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STRUCTURE.md">Codebase Structure</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-TESTING.md">Testing Patterns</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-PLAN.md">01-01-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-SUMMARY.md">Summary: 01-01 Crawl Contracts and Normalization Foundation</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-PLAN.md">01-02-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-SUMMARY.md">Summary: 01-02 Docs-Root and Classification Heuristics</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-PLAN.md">01-03-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-SUMMARY.md">Summary: 01-03 Runnable Crawl Command and Transparent Reporting</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-CONTEXT.md">Phase 1: Crawl &amp; Ingestion Foundation - Context</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-RESEARCH.md">Phase 01: Crawl &amp; Ingestion Foundation - Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-PLAN.md">02-01-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-SUMMARY.md">Summary: 02-01 Content Extraction, Normalization, and Conservative Dedupe</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-PLAN.md">02-02-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-SUMMARY.md">Summary: 02-02 Chunking and Attribution Pipeline</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-PLAN.md">02-03-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-SUMMARY.md">Summary: 02-03 Summarization and Review Surface</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-CONTEXT.md">Phase 2: Content Processing &amp; Attribution - Context</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-RESEARCH.md">Phase 2: Content Processing &amp; Attribution - Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-PLAN.md">03-01-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-SUMMARY.md">Summary: 03-01 Deterministic Refinement Domain Core</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-PLAN.md">03-02-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-SUMMARY.md">Summary: 03-02 Adaptive Prompt And Review Presentation</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-PLAN.md">03-03-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-SUMMARY.md">Summary: 03-03 Refinement Loop Runtime And CLI Commit Gate</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-CONTEXT.md">Phase 3: Interactive Refinement Loop - Context</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-RESEARCH.md">Phase 3: Interactive Refinement Loop - Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-SUMMARY.md">Summary: 04-01 Core Validator Contracts</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-core-validator-contracts-PLAN.md">Section 1: Core validator contracts - strict structural and semantic checks</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-SUMMARY.md">Summary: 04-02 Guided Fix Loop And Progression Gate</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-guided-fix-loop-gating-PLAN.md">Section 2: Guided remediation and progression gate wiring</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-CONTEXT.md">Phase 4: Validation &amp; Quality Gates - Context</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-RESEARCH.md">Phase 04: Validation &amp; Quality Gates - Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-PLAN.md">05-01-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-SUMMARY.md">Summary: 05-01 Overlap Detection Core</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-PLAN.md">05-02-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-SUMMARY.md">Summary: 05-02 Conflict Resolution Gating</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-RESEARCH.md">Phase 05: Overlap &amp; Conflict Resolution - Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-PLAN.md">06-01-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-SUMMARY.md">Summary: 06-01 Install Contracts And Approval Gates</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-PLAN.md">06-02-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-SUMMARY.md">Summary: 06-02 Preview Diff And Transactional Install</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-03-PLAN.md">06-03-PLAN.md</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-RESEARCH.md">Phase 06: Approval-Gated Install &amp; Activation - Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-ARCHITECTURE.md">Architecture Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-FEATURES.md">Feature Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-PITFALLS.md">Pitfalls Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-STACK.md">Stack Research</a></li><li><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-SUMMARY.md">Project Research Summary</a></li>
+      <ol id="toc">
+        <li data-title="skill weaver (cli-skill)" data-path="readme.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-README.md">Skill Weaver (cli-skill)</a></li><li data-title="skill weaver" data-path=".planning/project.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-PROJECT.md">Skill Weaver</a></li><li data-title="requirements: skill weaver" data-path=".planning/requirements.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-REQUIREMENTS.md">Requirements: Skill Weaver</a></li><li data-title="roadmap: skill weaver" data-path=".planning/roadmap.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-ROADMAP.md">Roadmap: Skill Weaver</a></li><li data-title="state: skill weaver" data-path=".planning/state.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-STATE.md">STATE: Skill Weaver</a></li><li data-title="architecture" data-path=".planning/codebase/architecture.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-ARCHITECTURE.md">Architecture</a></li><li data-title="codebase concerns" data-path=".planning/codebase/concerns.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONCERNS.md">Codebase Concerns</a></li><li data-title="coding conventions" data-path=".planning/codebase/conventions.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONVENTIONS.md">Coding Conventions</a></li><li data-title="external integrations" data-path=".planning/codebase/integrations.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-INTEGRATIONS.md">External Integrations</a></li><li data-title="technology stack" data-path=".planning/codebase/stack.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STACK.md">Technology Stack</a></li><li data-title="codebase structure" data-path=".planning/codebase/structure.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STRUCTURE.md">Codebase Structure</a></li><li data-title="testing patterns" data-path=".planning/codebase/testing.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-TESTING.md">Testing Patterns</a></li><li data-title="01-01-plan.md" data-path=".planning/phases/01-crawl-ingestion-foundation/01-01-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-PLAN.md">01-01-PLAN.md</a></li><li data-title="summary: 01-01 crawl contracts and normalization foundation" data-path=".planning/phases/01-crawl-ingestion-foundation/01-01-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-SUMMARY.md">Summary: 01-01 Crawl Contracts and Normalization Foundation</a></li><li data-title="01-02-plan.md" data-path=".planning/phases/01-crawl-ingestion-foundation/01-02-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-PLAN.md">01-02-PLAN.md</a></li><li data-title="summary: 01-02 docs-root and classification heuristics" data-path=".planning/phases/01-crawl-ingestion-foundation/01-02-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-SUMMARY.md">Summary: 01-02 Docs-Root and Classification Heuristics</a></li><li data-title="01-03-plan.md" data-path=".planning/phases/01-crawl-ingestion-foundation/01-03-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-PLAN.md">01-03-PLAN.md</a></li><li data-title="summary: 01-03 runnable crawl command and transparent reporting" data-path=".planning/phases/01-crawl-ingestion-foundation/01-03-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-SUMMARY.md">Summary: 01-03 Runnable Crawl Command and Transparent Reporting</a></li><li data-title="phase 1: crawl &amp; ingestion foundation - context" data-path=".planning/phases/01-crawl-ingestion-foundation/01-context.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-CONTEXT.md">Phase 1: Crawl &amp; Ingestion Foundation - Context</a></li><li data-title="phase 01: crawl &amp; ingestion foundation - research" data-path=".planning/phases/01-crawl-ingestion-foundation/01-research.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-RESEARCH.md">Phase 01: Crawl &amp; Ingestion Foundation - Research</a></li><li data-title="02-01-plan.md" data-path=".planning/phases/02-content-processing-attribution/02-01-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-PLAN.md">02-01-PLAN.md</a></li><li data-title="summary: 02-01 content extraction, normalization, and conservative dedupe" data-path=".planning/phases/02-content-processing-attribution/02-01-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-SUMMARY.md">Summary: 02-01 Content Extraction, Normalization, and Conservative Dedupe</a></li><li data-title="02-02-plan.md" data-path=".planning/phases/02-content-processing-attribution/02-02-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-PLAN.md">02-02-PLAN.md</a></li><li data-title="summary: 02-02 chunking and attribution pipeline" data-path=".planning/phases/02-content-processing-attribution/02-02-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-SUMMARY.md">Summary: 02-02 Chunking and Attribution Pipeline</a></li><li data-title="02-03-plan.md" data-path=".planning/phases/02-content-processing-attribution/02-03-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-PLAN.md">02-03-PLAN.md</a></li><li data-title="summary: 02-03 summarization and review surface" data-path=".planning/phases/02-content-processing-attribution/02-03-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-SUMMARY.md">Summary: 02-03 Summarization and Review Surface</a></li><li data-title="phase 2: content processing &amp; attribution - context" data-path=".planning/phases/02-content-processing-attribution/02-context.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-CONTEXT.md">Phase 2: Content Processing &amp; Attribution - Context</a></li><li data-title="phase 2: content processing &amp; attribution - research" data-path=".planning/phases/02-content-processing-attribution/02-research.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-RESEARCH.md">Phase 2: Content Processing &amp; Attribution - Research</a></li><li data-title="03-01-plan.md" data-path=".planning/phases/03-interactive-refinement-loop/03-01-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-PLAN.md">03-01-PLAN.md</a></li><li data-title="summary: 03-01 deterministic refinement domain core" data-path=".planning/phases/03-interactive-refinement-loop/03-01-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-SUMMARY.md">Summary: 03-01 Deterministic Refinement Domain Core</a></li><li data-title="03-02-plan.md" data-path=".planning/phases/03-interactive-refinement-loop/03-02-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-PLAN.md">03-02-PLAN.md</a></li><li data-title="summary: 03-02 adaptive prompt and review presentation" data-path=".planning/phases/03-interactive-refinement-loop/03-02-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-SUMMARY.md">Summary: 03-02 Adaptive Prompt And Review Presentation</a></li><li data-title="03-03-plan.md" data-path=".planning/phases/03-interactive-refinement-loop/03-03-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-PLAN.md">03-03-PLAN.md</a></li><li data-title="summary: 03-03 refinement loop runtime and cli commit gate" data-path=".planning/phases/03-interactive-refinement-loop/03-03-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-SUMMARY.md">Summary: 03-03 Refinement Loop Runtime And CLI Commit Gate</a></li><li data-title="phase 3: interactive refinement loop - context" data-path=".planning/phases/03-interactive-refinement-loop/03-context.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-CONTEXT.md">Phase 3: Interactive Refinement Loop - Context</a></li><li data-title="phase 3: interactive refinement loop - research" data-path=".planning/phases/03-interactive-refinement-loop/03-research.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-RESEARCH.md">Phase 3: Interactive Refinement Loop - Research</a></li><li data-title="summary: 04-01 core validator contracts" data-path=".planning/phases/04-validation-quality-gates/04-01-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-SUMMARY.md">Summary: 04-01 Core Validator Contracts</a></li><li data-title="section 1: core validator contracts - strict structural and semantic checks" data-path=".planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-core-validator-contracts-PLAN.md">Section 1: Core validator contracts - strict structural and semantic checks</a></li><li data-title="summary: 04-02 guided fix loop and progression gate" data-path=".planning/phases/04-validation-quality-gates/04-02-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-SUMMARY.md">Summary: 04-02 Guided Fix Loop And Progression Gate</a></li><li data-title="section 2: guided remediation and progression gate wiring" data-path=".planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-guided-fix-loop-gating-PLAN.md">Section 2: Guided remediation and progression gate wiring</a></li><li data-title="phase 4: validation &amp; quality gates - context" data-path=".planning/phases/04-validation-quality-gates/04-context.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-CONTEXT.md">Phase 4: Validation &amp; Quality Gates - Context</a></li><li data-title="phase 04: validation &amp; quality gates - research" data-path=".planning/phases/04-validation-quality-gates/04-research.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-RESEARCH.md">Phase 04: Validation &amp; Quality Gates - Research</a></li><li data-title="05-01-plan.md" data-path=".planning/phases/05-overlap-conflict-resolution/05-01-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-PLAN.md">05-01-PLAN.md</a></li><li data-title="summary: 05-01 overlap detection core" data-path=".planning/phases/05-overlap-conflict-resolution/05-01-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-SUMMARY.md">Summary: 05-01 Overlap Detection Core</a></li><li data-title="05-02-plan.md" data-path=".planning/phases/05-overlap-conflict-resolution/05-02-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-PLAN.md">05-02-PLAN.md</a></li><li data-title="summary: 05-02 conflict resolution gating" data-path=".planning/phases/05-overlap-conflict-resolution/05-02-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-SUMMARY.md">Summary: 05-02 Conflict Resolution Gating</a></li><li data-title="phase 05: overlap &amp; conflict resolution - research" data-path=".planning/phases/05-overlap-conflict-resolution/05-research.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-RESEARCH.md">Phase 05: Overlap &amp; Conflict Resolution - Research</a></li><li data-title="06-01-plan.md" data-path=".planning/phases/06-approval-gated-install-activation/06-01-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-PLAN.md">06-01-PLAN.md</a></li><li data-title="summary: 06-01 install contracts and approval gates" data-path=".planning/phases/06-approval-gated-install-activation/06-01-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-SUMMARY.md">Summary: 06-01 Install Contracts And Approval Gates</a></li><li data-title="06-02-plan.md" data-path=".planning/phases/06-approval-gated-install-activation/06-02-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-PLAN.md">06-02-PLAN.md</a></li><li data-title="summary: 06-02 preview diff and transactional install" data-path=".planning/phases/06-approval-gated-install-activation/06-02-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-SUMMARY.md">Summary: 06-02 Preview Diff And Transactional Install</a></li><li data-title="06-03-plan.md" data-path=".planning/phases/06-approval-gated-install-activation/06-03-plan.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-03-PLAN.md">06-03-PLAN.md</a></li><li data-title="summary: 06-03 install activation end-to-end verification" data-path=".planning/phases/06-approval-gated-install-activation/06-03-summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-03-SUMMARY.md">Summary: 06-03 Install Activation End-To-End Verification</a></li><li data-title="phase 06: approval-gated install &amp; activation - research" data-path=".planning/phases/06-approval-gated-install-activation/06-research.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-RESEARCH.md">Phase 06: Approval-Gated Install &amp; Activation - Research</a></li><li data-title="architecture research" data-path=".planning/research/architecture.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-ARCHITECTURE.md">Architecture Research</a></li><li data-title="feature research" data-path=".planning/research/features.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-FEATURES.md">Feature Research</a></li><li data-title="pitfalls research" data-path=".planning/research/pitfalls.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-PITFALLS.md">Pitfalls Research</a></li><li data-title="stack research" data-path=".planning/research/stack.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-STACK.md">Stack Research</a></li><li data-title="project research summary" data-path=".planning/research/summary.md"><a href="#-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-SUMMARY.md">Project Research Summary</a></li>
       </ol>
     </nav>
-    <div>
+    <div class="content" id="content">
       
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-README.md">
-      <h2>Skill Weaver (cli-skill)</h2>
-      <p class="meta">Source: <code>README.md</code></p>
-      <pre><code>&lt;div align=&quot;center&quot;&gt;
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-README.md" data-title="skill weaver (cli-skill)" data-path="readme.md">
+      <details>
+        <summary>
+          <span class="summary-title">Skill Weaver (cli-skill)</span>
+          <span class="summary-path">README.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>&lt;div align=&quot;center&quot;&gt;
   &lt;img src=&quot;assets/skill-weaver-banner.svg&quot; alt=&quot;Skill Weaver banner&quot; width=&quot;100%&quot; /&gt;
 &lt;/div&gt;
 
@@ -297,12 +409,18 @@ go install ./cmd/cli-skill
 - The project name in planning docs is Skill Weaver; both refer to the same tool.
 - The pipeline is intentionally bounded in v1 to keep outputs deterministic and audit-friendly.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-PROJECT.md">
-      <h2>Skill Weaver</h2>
-      <p class="meta">Source: <code>.planning/PROJECT.md</code></p>
-      <pre><code># Skill Weaver
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-PROJECT.md" data-title="skill weaver" data-path=".planning/project.md">
+      <details>
+        <summary>
+          <span class="summary-title">Skill Weaver</span>
+          <span class="summary-path">.planning/PROJECT.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Skill Weaver
 
 ## What This Is
 
@@ -361,12 +479,18 @@ This project starts greenfield in an empty repository. The desired user experien
 ---
 *Last updated: 2026-03-10 after initialization*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-REQUIREMENTS.md">
-      <h2>Requirements: Skill Weaver</h2>
-      <p class="meta">Source: <code>.planning/REQUIREMENTS.md</code></p>
-      <pre><code># Requirements: Skill Weaver
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-REQUIREMENTS.md" data-title="requirements: skill weaver" data-path=".planning/requirements.md">
+      <details>
+        <summary>
+          <span class="summary-title">Requirements: Skill Weaver</span>
+          <span class="summary-path">.planning/REQUIREMENTS.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Requirements: Skill Weaver
 
 **Defined:** 2026-03-10
 **Core Value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
@@ -485,12 +609,18 @@ Which phases cover which requirements. Updated during roadmap creation.
 *Requirements defined: 2026-03-10*
 *Last updated: 2026-03-10 after roadmap creation*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-ROADMAP.md">
-      <h2>Roadmap: Skill Weaver</h2>
-      <p class="meta">Source: <code>.planning/ROADMAP.md</code></p>
-      <pre><code># Roadmap: Skill Weaver
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-ROADMAP.md" data-title="roadmap: skill weaver" data-path=".planning/roadmap.md">
+      <details>
+        <summary>
+          <span class="summary-title">Roadmap: Skill Weaver</span>
+          <span class="summary-path">.planning/ROADMAP.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Roadmap: Skill Weaver
 
 ## Overview
 
@@ -607,7 +737,7 @@ This roadmap delivers Skill Weaver as a quality-gated, local-first CLI that turn
 | 3 | Interactive Refinement Loop | Complete | 3 |
 | 4 | Validation &amp; Quality Gates | Complete | 3 |
 | 5 | Overlap &amp; Conflict Resolution | Complete | 3 |
-| 6 | Approval-Gated Install &amp; Activation | Pending | 4 |
+| 6 | Approval-Gated Install &amp; Activation | Complete | 4 |
 
 ## Coverage Check
 
@@ -618,32 +748,38 @@ This roadmap delivers Skill Weaver as a quality-gated, local-first CLI that turn
 
 Coverage is complete.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-STATE.md">
-      <h2>STATE: Skill Weaver</h2>
-      <p class="meta">Source: <code>.planning/STATE.md</code></p>
-      <pre><code># STATE: Skill Weaver
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-STATE.md" data-title="state: skill weaver" data-path=".planning/state.md">
+      <details>
+        <summary>
+          <span class="summary-title">STATE: Skill Weaver</span>
+          <span class="summary-path">.planning/STATE.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># STATE: Skill Weaver
 
 ## Project Reference
 
 - **Core value:** Generate a skill that is actually usable in Codex, with clear scope and correct installation, in one guided flow.
-- **Current focus:** Phase 6 Plan 06-03 Task 3 is implemented; the next scoped run is Phase 6 Plan 06-03 Task 3 verification.
+- **Current focus:** Phase 6 Plan 06-03 Task 3 is verified, and all roadmap phases are complete.
 
 ## Current Position
 
 - **Current phase:** 6 - Approval-Gated Install &amp; Activation
 - **Current plan:** 06-03
-- **Overall status:** Phases 1, 2, 3, 4, and 5 are complete. Phase 6 is now in progress, with Plans 06-01 and 06-02 complete.
-- **Progress:** 5/6 phases complete
-- **Progress bar:** [#####-] 83%
+- **Overall status:** Phases 1, 2, 3, 4, 5, and 6 are complete.
+- **Progress:** 6/6 phases complete
+- **Progress bar:** [######] 100%
 
 ## Performance Metrics
 
 - **v1 requirements total:** 20
 - **Mapped to phases:** 20
 - **Coverage:** 100%
-- **Validated requirements complete:** 18
+- **Validated requirements complete:** 20
 
 ## Accumulated Context
 
@@ -795,11 +931,12 @@ Coverage is complete.
 - Plan `06-03` Task `3` now adds explicit Phase 06 acceptance coverage in [`internal/app/generate/install_stage_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage_test.go) and [`internal/install/activate_verify_test.go`](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go), mapping `INST-01..INST-04` to deterministic end-to-end test cases for preview-before-approval, no-write-without-explicit-approval, unresolved validation/conflict blocking, immediate-usability success, and exceptional restart fallback guidance.
 - The new acceptance tests reuse the real install-stage and activation path where it matters, while stubbing only the approval edge needed to prove preview/diff happen before a blocked no-write outcome; fixture updates also make the real-path candidate structurally valid for post-install verification.
 - Task `3` verification in execution scope ran `go test ./internal/install ./internal/app/generate -run &quot;InstallStage|Activate|INST&quot; -v` cleanly after correcting the initial test fixture gap where the real install-stage activation path surfaced missing required sections in the candidate skill.
+- Verification for Plan `06-03` Task `3` reran the full `internal/install` and `internal/app/generate` package suites cleanly, confirming the acceptance coverage still enforces preview-before-approval, no-write-without-explicit-approval, unresolved validation/conflict blocking, immediate-usability success, and exceptional restart fallback guidance with no code changes required.
+- Phase 6 Plan `06-03` is now complete after writing `.planning/phases/06-approval-gated-install-activation/06-03-SUMMARY.md`, and Phase 6 is marked complete in `.planning/ROADMAP.md`.
 
 ### Active Todos
 
-- Verify Plan `06-03` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md`.
-- Continue keeping phase progress and requirement status in sync during delivery.
+- None. The current roadmap is complete.
 
 ### Blockers
 
@@ -807,22 +944,28 @@ Coverage is complete.
 
 ## Session Continuity
 
-- **Next command:** Verify Plan `06-03` Task `3` from `.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md` within verification scope.
-- **When resuming:** Continue from `IMPLEMENTATION_PLAN.md` Section 96.
+- **Next command:** None. All planned phases and plan summaries are complete.
+- **When resuming:** Start from a new user-scoped task; `IMPLEMENTATION_PLAN.md` has been advanced past the final section.
 
 ## Execution Tracking
 
 - phase=06-approval-gated-install-activation
 - plan=06-03
 - task=3
-- status=implemented
+- status=verified
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-ARCHITECTURE.md">
-      <h2>Architecture</h2>
-      <p class="meta">Source: <code>.planning/codebase/ARCHITECTURE.md</code></p>
-      <pre><code># Architecture
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-ARCHITECTURE.md" data-title="architecture" data-path=".planning/codebase/architecture.md">
+      <details>
+        <summary>
+          <span class="summary-title">Architecture</span>
+          <span class="summary-path">.planning/codebase/ARCHITECTURE.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Architecture
 
 **Analysis Date:** 2026-03-10
 
@@ -991,12 +1134,18 @@ Coverage is complete.
 
 *Architecture analysis: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONCERNS.md">
-      <h2>Codebase Concerns</h2>
-      <p class="meta">Source: <code>.planning/codebase/CONCERNS.md</code></p>
-      <pre><code># Codebase Concerns
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONCERNS.md" data-title="codebase concerns" data-path=".planning/codebase/concerns.md">
+      <details>
+        <summary>
+          <span class="summary-title">Codebase Concerns</span>
+          <span class="summary-path">.planning/codebase/CONCERNS.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Codebase Concerns
 
 **Analysis Date:** 2026-03-10
 
@@ -1128,12 +1277,18 @@ Coverage is complete.
 
 *Concerns audit: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONVENTIONS.md">
-      <h2>Coding Conventions</h2>
-      <p class="meta">Source: <code>.planning/codebase/CONVENTIONS.md</code></p>
-      <pre><code># Coding Conventions
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-CONVENTIONS.md" data-title="coding conventions" data-path=".planning/codebase/conventions.md">
+      <details>
+        <summary>
+          <span class="summary-title">Coding Conventions</span>
+          <span class="summary-path">.planning/codebase/CONVENTIONS.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Coding Conventions
 
 **Analysis Date:** 2026-03-10
 
@@ -1226,12 +1381,18 @@ Coverage is complete.
 
 *Convention analysis: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-INTEGRATIONS.md">
-      <h2>External Integrations</h2>
-      <p class="meta">Source: <code>.planning/codebase/INTEGRATIONS.md</code></p>
-      <pre><code># External Integrations
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-INTEGRATIONS.md" data-title="external integrations" data-path=".planning/codebase/integrations.md">
+      <details>
+        <summary>
+          <span class="summary-title">External Integrations</span>
+          <span class="summary-path">.planning/codebase/INTEGRATIONS.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># External Integrations
 
 **Analysis Date:** 2026-03-10
 
@@ -1304,12 +1465,18 @@ Coverage is complete.
 
 *Integration audit: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STACK.md">
-      <h2>Technology Stack</h2>
-      <p class="meta">Source: <code>.planning/codebase/STACK.md</code></p>
-      <pre><code># Technology Stack
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STACK.md" data-title="technology stack" data-path=".planning/codebase/stack.md">
+      <details>
+        <summary>
+          <span class="summary-title">Technology Stack</span>
+          <span class="summary-path">.planning/codebase/STACK.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Technology Stack
 
 **Analysis Date:** 2026-03-10
 
@@ -1379,12 +1546,18 @@ Coverage is complete.
 
 *Stack analysis: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STRUCTURE.md">
-      <h2>Codebase Structure</h2>
-      <p class="meta">Source: <code>.planning/codebase/STRUCTURE.md</code></p>
-      <pre><code># Codebase Structure
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-STRUCTURE.md" data-title="codebase structure" data-path=".planning/codebase/structure.md">
+      <details>
+        <summary>
+          <span class="summary-title">Codebase Structure</span>
+          <span class="summary-path">.planning/codebase/STRUCTURE.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Codebase Structure
 
 **Analysis Date:** 2026-03-10
 
@@ -1561,12 +1734,18 @@ cli-skill/
 
 *Structure analysis: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-TESTING.md">
-      <h2>Testing Patterns</h2>
-      <p class="meta">Source: <code>.planning/codebase/TESTING.md</code></p>
-      <pre><code># Testing Patterns
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-codebase-TESTING.md" data-title="testing patterns" data-path=".planning/codebase/testing.md">
+      <details>
+        <summary>
+          <span class="summary-title">Testing Patterns</span>
+          <span class="summary-path">.planning/codebase/TESTING.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Testing Patterns
 
 **Analysis Date:** 2026-03-10
 
@@ -1734,12 +1913,18 @@ if !strings.Contains(err.Error(), &quot;activate staged install&quot;) {
 
 *Testing analysis: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-PLAN.md">
-      <h2>01-01-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-PLAN.md" data-title="01-01-plan.md" data-path=".planning/phases/01-crawl-ingestion-foundation/01-01-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">01-01-PLAN.md</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-01-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 01-crawl-ingestion-foundation
 plan: 01
 type: execute
@@ -1840,12 +2025,18 @@ Output: Core crawl types, skip reason constants, URL normalization/canonicalizat
 After completion, create `.planning/phases/01-crawl-ingestion-foundation/01-01-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-SUMMARY.md">
-      <h2>Summary: 01-01 Crawl Contracts and Normalization Foundation</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-01-SUMMARY.md</code></p>
-      <pre><code># Summary: 01-01 Crawl Contracts and Normalization Foundation
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-01-SUMMARY.md" data-title="summary: 01-01 crawl contracts and normalization foundation" data-path=".planning/phases/01-crawl-ingestion-foundation/01-01-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 01-01 Crawl Contracts and Normalization Foundation</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-01-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 01-01 Crawl Contracts and Normalization Foundation
 
 ## Completed
 
@@ -1864,12 +2055,18 @@ After completion, create `.planning/phases/01-crawl-ingestion-foundation/01-01-S
 - No blockers came up during this plan.
 - Plan `01-01` is complete and the next implementation target is `01-02 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-PLAN.md">
-      <h2>01-02-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-PLAN.md" data-title="01-02-plan.md" data-path=".planning/phases/01-crawl-ingestion-foundation/01-02-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">01-02-PLAN.md</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-02-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 01-crawl-ingestion-foundation
 plan: 02
 type: execute
@@ -1967,12 +2164,18 @@ Output: Classifier logic, docs-root normalization heuristics, and unit tests tha
 After completion, create `.planning/phases/01-crawl-ingestion-foundation/01-02-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-SUMMARY.md">
-      <h2>Summary: 01-02 Docs-Root and Classification Heuristics</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-02-SUMMARY.md</code></p>
-      <pre><code># Summary: 01-02 Docs-Root and Classification Heuristics
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-02-SUMMARY.md" data-title="summary: 01-02 docs-root and classification heuristics" data-path=".planning/phases/01-crawl-ingestion-foundation/01-02-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 01-02 Docs-Root and Classification Heuristics</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-02-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 01-02 Docs-Root and Classification Heuristics
 
 ## Completed
 
@@ -1990,12 +2193,18 @@ After completion, create `.planning/phases/01-crawl-ingestion-foundation/01-02-S
 - No blockers came up during this plan.
 - Plan `01-02` is complete and the next implementation target is `01-03 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-PLAN.md">
-      <h2>01-03-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-PLAN.md" data-title="01-03-plan.md" data-path=".planning/phases/01-crawl-ingestion-foundation/01-03-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">01-03-PLAN.md</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-03-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 01-crawl-ingestion-foundation
 plan: 03
 type: execute
@@ -2107,12 +2316,18 @@ Output: Crawl engine orchestration, command wiring, and tests proving cap and su
 After completion, create `.planning/phases/01-crawl-ingestion-foundation/01-03-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-SUMMARY.md">
-      <h2>Summary: 01-03 Runnable Crawl Command and Transparent Reporting</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-03-SUMMARY.md</code></p>
-      <pre><code># Summary: 01-03 Runnable Crawl Command and Transparent Reporting
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-03-SUMMARY.md" data-title="summary: 01-03 runnable crawl command and transparent reporting" data-path=".planning/phases/01-crawl-ingestion-foundation/01-03-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 01-03 Runnable Crawl Command and Transparent Reporting</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-03-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 01-03 Runnable Crawl Command and Transparent Reporting
 
 ## Completed
 
@@ -2131,12 +2346,18 @@ After completion, create `.planning/phases/01-crawl-ingestion-foundation/01-03-S
 - No code changes were required during the verification run; the implementation from Task 3 held cleanly.
 - Phase `01-crawl-ingestion-foundation` is complete. The next implementation target is `02-01 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-CONTEXT.md">
-      <h2>Phase 1: Crawl &amp; Ingestion Foundation - Context</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md</code></p>
-      <pre><code># Phase 1: Crawl &amp; Ingestion Foundation - Context
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-CONTEXT.md" data-title="phase 1: crawl &amp; ingestion foundation - context" data-path=".planning/phases/01-crawl-ingestion-foundation/01-context.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 1: Crawl &amp; Ingestion Foundation - Context</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-CONTEXT.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 1: Crawl &amp; Ingestion Foundation - Context
 
 **Gathered:** 2026-03-10
 **Status:** Ready for planning
@@ -2180,12 +2401,18 @@ None - discussion stayed within phase scope.
 *Phase: 01-crawl-ingestion-foundation*
 *Context gathered: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-RESEARCH.md">
-      <h2>Phase 01: Crawl &amp; Ingestion Foundation - Research</h2>
-      <p class="meta">Source: <code>.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md</code></p>
-      <pre><code># Phase 01: Crawl &amp; Ingestion Foundation - Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-01-crawl-ingestion-foundation-01-RESEARCH.md" data-title="phase 01: crawl &amp; ingestion foundation - research" data-path=".planning/phases/01-crawl-ingestion-foundation/01-research.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 01: Crawl &amp; Ingestion Foundation - Research</span>
+          <span class="summary-path">.planning/phases/01-crawl-ingestion-foundation/01-RESEARCH.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 01: Crawl &amp; Ingestion Foundation - Research
 
 **Researched:** 2026-03-10
 **Domain:** Same-domain documentation crawl foundation for Go CLI
@@ -2441,12 +2668,18 @@ u.RawQuery = q.Encode()
 **Research date:** 2026-03-10
 **Valid until:** 2026-04-09
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-PLAN.md">
-      <h2>02-01-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-01-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-PLAN.md" data-title="02-01-plan.md" data-path=".planning/phases/02-content-processing-attribution/02-01-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">02-01-PLAN.md</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-01-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 02-content-processing-attribution
 plan: 01
 type: execute
@@ -2555,12 +2788,18 @@ Output: Content types, extract/normalize/dedupe pipeline functions, and test cov
 After completion, create `.planning/phases/02-content-processing-attribution/02-01-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-SUMMARY.md">
-      <h2>Summary: 02-01 Content Extraction, Normalization, and Conservative Dedupe</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-01-SUMMARY.md</code></p>
-      <pre><code># Summary: 02-01 Content Extraction, Normalization, and Conservative Dedupe
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-01-SUMMARY.md" data-title="summary: 02-01 content extraction, normalization, and conservative dedupe" data-path=".planning/phases/02-content-processing-attribution/02-01-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 02-01 Content Extraction, Normalization, and Conservative Dedupe</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-01-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 02-01 Content Extraction, Normalization, and Conservative Dedupe
 
 ## Completed
 
@@ -2579,12 +2818,18 @@ After completion, create `.planning/phases/02-content-processing-attribution/02-
 - No code changes were required during the verification run.
 - Plan `02-01` is complete. The next implementation target is `02-02 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-PLAN.md">
-      <h2>02-02-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-02-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-PLAN.md" data-title="02-02-plan.md" data-path=".planning/phases/02-content-processing-attribution/02-02-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">02-02-PLAN.md</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-02-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 02-content-processing-attribution
 plan: 02
 type: execute
@@ -2691,12 +2936,18 @@ Output: Chunk builder, attribution metadata path, orchestration pipeline, and re
 After completion, create `.planning/phases/02-content-processing-attribution/02-02-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-SUMMARY.md">
-      <h2>Summary: 02-02 Chunking and Attribution Pipeline</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-02-SUMMARY.md</code></p>
-      <pre><code># Summary: 02-02 Chunking and Attribution Pipeline
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-02-SUMMARY.md" data-title="summary: 02-02 chunking and attribution pipeline" data-path=".planning/phases/02-content-processing-attribution/02-02-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 02-02 Chunking and Attribution Pipeline</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-02-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 02-02 Chunking and Attribution Pipeline
 
 ## Completed
 
@@ -2715,12 +2966,18 @@ After completion, create `.planning/phases/02-content-processing-attribution/02-
 - No code changes were required during the verification run.
 - Plan `02-02` is complete. The next implementation target is `02-03 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-PLAN.md">
-      <h2>02-03-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-03-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-PLAN.md" data-title="02-03-plan.md" data-path=".planning/phases/02-content-processing-attribution/02-03-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">02-03-PLAN.md</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-03-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 02-content-processing-attribution
 plan: 03
 type: execute
@@ -2828,12 +3085,18 @@ Output: Summarization module, review view model, process command output path, an
 After completion, create `.planning/phases/02-content-processing-attribution/02-03-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-SUMMARY.md">
-      <h2>Summary: 02-03 Summarization and Review Surface</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-03-SUMMARY.md</code></p>
-      <pre><code># Summary: 02-03 Summarization and Review Surface
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-03-SUMMARY.md" data-title="summary: 02-03 summarization and review surface" data-path=".planning/phases/02-content-processing-attribution/02-03-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 02-03 Summarization and Review Surface</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-03-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 02-03 Summarization and Review Surface
 
 ## Completed
 
@@ -2853,12 +3116,18 @@ After completion, create `.planning/phases/02-content-processing-attribution/02-
 - No code changes were required during the verification run.
 - Phase `02-content-processing-attribution` is complete. The next implementation target is `03-01 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-CONTEXT.md">
-      <h2>Phase 2: Content Processing &amp; Attribution - Context</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-CONTEXT.md</code></p>
-      <pre><code># Phase 2: Content Processing &amp; Attribution - Context
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-CONTEXT.md" data-title="phase 2: content processing &amp; attribution - context" data-path=".planning/phases/02-content-processing-attribution/02-context.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 2: Content Processing &amp; Attribution - Context</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-CONTEXT.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 2: Content Processing &amp; Attribution - Context
 
 **Gathered:** 2026-03-10
 **Status:** Ready for planning
@@ -2920,12 +3189,18 @@ None - discussion stayed within phase scope.
 *Phase: 02-content-processing-attribution*
 *Context gathered: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-RESEARCH.md">
-      <h2>Phase 2: Content Processing &amp; Attribution - Research</h2>
-      <p class="meta">Source: <code>.planning/phases/02-content-processing-attribution/02-RESEARCH.md</code></p>
-      <pre><code># Phase 2: Content Processing &amp; Attribution - Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-02-content-processing-attribution-02-RESEARCH.md" data-title="phase 2: content processing &amp; attribution - research" data-path=".planning/phases/02-content-processing-attribution/02-research.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 2: Content Processing &amp; Attribution - Research</span>
+          <span class="summary-path">.planning/phases/02-content-processing-attribution/02-RESEARCH.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 2: Content Processing &amp; Attribution - Research
 
 **Researched:** 2026-03-10
 **Domain:** Go content normalization, chunk summarization, and source attribution pipeline
@@ -3194,12 +3469,18 @@ resp, err := client.Responses.New(ctx, responses.ResponseNewParams{
 **Research date:** 2026-03-10
 **Valid until:** 2026-04-09
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-PLAN.md">
-      <h2>03-01-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-PLAN.md" data-title="03-01-plan.md" data-path=".planning/phases/03-interactive-refinement-loop/03-01-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">03-01-PLAN.md</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-01-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 03-interactive-refinement-loop
 plan: 01
 type: execute
@@ -3303,12 +3584,18 @@ Output: Session state contracts, dependency graph logic, clarity scoring rules, 
 After completion, create `.planning/phases/03-interactive-refinement-loop/03-01-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-SUMMARY.md">
-      <h2>Summary: 03-01 Deterministic Refinement Domain Core</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-01-SUMMARY.md</code></p>
-      <pre><code># Summary: 03-01 Deterministic Refinement Domain Core
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-01-SUMMARY.md" data-title="summary: 03-01 deterministic refinement domain core" data-path=".planning/phases/03-interactive-refinement-loop/03-01-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 03-01 Deterministic Refinement Domain Core</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-01-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 03-01 Deterministic Refinement Domain Core
 
 ## Completed
 
@@ -3326,12 +3613,18 @@ After completion, create `.planning/phases/03-interactive-refinement-loop/03-01-
 - No code changes were required during the verification run.
 - Plan `03-01` is complete. The next implementation target is `03-02 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-PLAN.md">
-      <h2>03-02-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-PLAN.md" data-title="03-02-plan.md" data-path=".planning/phases/03-interactive-refinement-loop/03-02-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">03-02-PLAN.md</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-02-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 03-interactive-refinement-loop
 plan: 02
 type: execute
@@ -3431,12 +3724,18 @@ Output: Prompt adapters with deepening/fallback paths, sectioned review renderin
 After completion, create `.planning/phases/03-interactive-refinement-loop/03-02-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-SUMMARY.md">
-      <h2>Summary: 03-02 Adaptive Prompt And Review Presentation</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-02-SUMMARY.md</code></p>
-      <pre><code># Summary: 03-02 Adaptive Prompt And Review Presentation
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-02-SUMMARY.md" data-title="summary: 03-02 adaptive prompt and review presentation" data-path=".planning/phases/03-interactive-refinement-loop/03-02-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 03-02 Adaptive Prompt And Review Presentation</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-02-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 03-02 Adaptive Prompt And Review Presentation
 
 ## Completed
 
@@ -3454,12 +3753,18 @@ After completion, create `.planning/phases/03-interactive-refinement-loop/03-02-
 - No code changes were required during the verification run.
 - Plan `03-02` is complete. The next implementation target is `03-03 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-PLAN.md">
-      <h2>03-03-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-PLAN.md" data-title="03-03-plan.md" data-path=".planning/phases/03-interactive-refinement-loop/03-03-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">03-03-PLAN.md</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-03-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 03-interactive-refinement-loop
 plan: 03
 type: execute
@@ -3578,12 +3883,18 @@ Output: Refinement loop engine, `revise &lt;field&gt;` handling, command integra
 After completion, create `.planning/phases/03-interactive-refinement-loop/03-03-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-SUMMARY.md">
-      <h2>Summary: 03-03 Refinement Loop Runtime And CLI Commit Gate</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-03-SUMMARY.md</code></p>
-      <pre><code># Summary: 03-03 Refinement Loop Runtime And CLI Commit Gate
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-03-SUMMARY.md" data-title="summary: 03-03 refinement loop runtime and cli commit gate" data-path=".planning/phases/03-interactive-refinement-loop/03-03-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 03-03 Refinement Loop Runtime And CLI Commit Gate</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-03-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 03-03 Refinement Loop Runtime And CLI Commit Gate
 
 ## Completed
 
@@ -3601,12 +3912,18 @@ After completion, create `.planning/phases/03-interactive-refinement-loop/03-03-
 - No code changes were required during the verification run.
 - Plan `03-03` is complete and Phase `03` is now complete. The next implementation target is `04-01 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-CONTEXT.md">
-      <h2>Phase 3: Interactive Refinement Loop - Context</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md</code></p>
-      <pre><code># Phase 3: Interactive Refinement Loop - Context
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-CONTEXT.md" data-title="phase 3: interactive refinement loop - context" data-path=".planning/phases/03-interactive-refinement-loop/03-context.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 3: Interactive Refinement Loop - Context</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-CONTEXT.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 3: Interactive Refinement Loop - Context
 
 **Gathered:** 2026-03-10
 **Status:** Ready for planning
@@ -3665,12 +3982,18 @@ None — discussion stayed within phase scope.
 *Phase: 03-interactive-refinement-loop*
 *Context gathered: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-RESEARCH.md">
-      <h2>Phase 3: Interactive Refinement Loop - Research</h2>
-      <p class="meta">Source: <code>.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md</code></p>
-      <pre><code># Phase 3: Interactive Refinement Loop - Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-03-interactive-refinement-loop-03-RESEARCH.md" data-title="phase 3: interactive refinement loop - research" data-path=".planning/phases/03-interactive-refinement-loop/03-research.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 3: Interactive Refinement Loop - Research</span>
+          <span class="summary-path">.planning/phases/03-interactive-refinement-loop/03-RESEARCH.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 3: Interactive Refinement Loop - Research
 
 **Researched:** 2026-03-10
 **Domain:** Go CLI adaptive conversation and revision loop
@@ -3929,12 +4252,18 @@ flow := fsm.NewFSM(
 **Research date:** 2026-03-10
 **Valid until:** 2026-04-09
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-SUMMARY.md">
-      <h2>Summary: 04-01 Core Validator Contracts</h2>
-      <p class="meta">Source: <code>.planning/phases/04-validation-quality-gates/04-01-SUMMARY.md</code></p>
-      <pre><code># Summary: 04-01 Core Validator Contracts
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-SUMMARY.md" data-title="summary: 04-01 core validator contracts" data-path=".planning/phases/04-validation-quality-gates/04-01-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 04-01 Core Validator Contracts</span>
+          <span class="summary-path">.planning/phases/04-validation-quality-gates/04-01-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 04-01 Core Validator Contracts
 
 ## Completed
 
@@ -3952,12 +4281,18 @@ flow := fsm.NewFSM(
 - No code changes were required during the verification run.
 - The next implementation target is `04-02 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-core-validator-contracts-PLAN.md">
-      <h2>Section 1: Core validator contracts - strict structural and semantic checks</h2>
-      <p class="meta">Source: <code>.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-01-core-validator-contracts-PLAN.md" data-title="section 1: core validator contracts - strict structural and semantic checks" data-path=".planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">Section 1: Core validator contracts - strict structural and semantic checks</span>
+          <span class="summary-path">.planning/phases/04-validation-quality-gates/04-01-core-validator-contracts-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 04-validation-quality-gates
 plan: 01
 type: execute
@@ -4098,12 +4433,18 @@ After completion, create `.planning/phases/04-validation-quality-gates/04-01-SUM
 
 **How to test:** Run `go test ./internal/validation -v` and verify failing fixtures return explicit blocking errors while valid fixtures pass both validation passes.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-SUMMARY.md">
-      <h2>Summary: 04-02 Guided Fix Loop And Progression Gate</h2>
-      <p class="meta">Source: <code>.planning/phases/04-validation-quality-gates/04-02-SUMMARY.md</code></p>
-      <pre><code># Summary: 04-02 Guided Fix Loop And Progression Gate
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-SUMMARY.md" data-title="summary: 04-02 guided fix loop and progression gate" data-path=".planning/phases/04-validation-quality-gates/04-02-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 04-02 Guided Fix Loop And Progression Gate</span>
+          <span class="summary-path">.planning/phases/04-validation-quality-gates/04-02-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 04-02 Guided Fix Loop And Progression Gate
 
 ## Completed
 
@@ -4121,12 +4462,18 @@ After completion, create `.planning/phases/04-validation-quality-gates/04-01-SUM
 - No code changes were required during the verification run.
 - Phase `04-validation-quality-gates` is complete. The next implementation target is `05-01 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-guided-fix-loop-gating-PLAN.md">
-      <h2>Section 2: Guided remediation and progression gate wiring</h2>
-      <p class="meta">Source: <code>.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-02-guided-fix-loop-gating-PLAN.md" data-title="section 2: guided remediation and progression gate wiring" data-path=".planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">Section 2: Guided remediation and progression gate wiring</span>
+          <span class="summary-path">.planning/phases/04-validation-quality-gates/04-02-guided-fix-loop-gating-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 04-validation-quality-gates
 plan: 02
 type: execute
@@ -4263,12 +4610,18 @@ After completion, create `.planning/phases/04-validation-quality-gates/04-02-SUM
 
 **How to test:** Run `go test ./internal/app/generate -v` and manually validate that failing candidates trigger one targeted prompt per loop iteration until blocking errors are cleared.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-CONTEXT.md">
-      <h2>Phase 4: Validation &amp; Quality Gates - Context</h2>
-      <p class="meta">Source: <code>.planning/phases/04-validation-quality-gates/04-CONTEXT.md</code></p>
-      <pre><code># Phase 4: Validation &amp; Quality Gates - Context
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-CONTEXT.md" data-title="phase 4: validation &amp; quality gates - context" data-path=".planning/phases/04-validation-quality-gates/04-context.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 4: Validation &amp; Quality Gates - Context</span>
+          <span class="summary-path">.planning/phases/04-validation-quality-gates/04-CONTEXT.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 4: Validation &amp; Quality Gates - Context
 
 **Gathered:** 2026-03-10
 **Status:** Ready for planning
@@ -4319,12 +4672,18 @@ None — discussion stayed within phase scope.
 *Phase: 04-validation-quality-gates*
 *Context gathered: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-RESEARCH.md">
-      <h2>Phase 04: Validation &amp; Quality Gates - Research</h2>
-      <p class="meta">Source: <code>.planning/phases/04-validation-quality-gates/04-RESEARCH.md</code></p>
-      <pre><code># Phase 04: Validation &amp; Quality Gates - Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-04-validation-quality-gates-04-RESEARCH.md" data-title="phase 04: validation &amp; quality gates - research" data-path=".planning/phases/04-validation-quality-gates/04-research.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 04: Validation &amp; Quality Gates - Research</span>
+          <span class="summary-path">.planning/phases/04-validation-quality-gates/04-RESEARCH.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 04: Validation &amp; Quality Gates - Research
 
 **Researched:** 2026-03-10
 **Domain:** Strict validation gates for generated Codex skills in Go CLI
@@ -4600,12 +4959,18 @@ if err := validate.Struct(scope); err != nil {
 **Research date:** 2026-03-10
 **Valid until:** 2026-04-09
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-PLAN.md">
-      <h2>05-01-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-PLAN.md" data-title="05-01-plan.md" data-path=".planning/phases/05-overlap-conflict-resolution/05-01-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">05-01-PLAN.md</span>
+          <span class="summary-path">.planning/phases/05-overlap-conflict-resolution/05-01-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 05-overlap-conflict-resolution
 plan: 01
 type: execute
@@ -4715,12 +5080,18 @@ Output: Typed overlap contracts, installed-skill indexing, layered detection/cla
 After completion, create `.planning/phases/05-overlap-conflict-resolution/05-01-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-SUMMARY.md">
-      <h2>Summary: 05-01 Overlap Detection Core</h2>
-      <p class="meta">Source: <code>.planning/phases/05-overlap-conflict-resolution/05-01-SUMMARY.md</code></p>
-      <pre><code># Summary: 05-01 Overlap Detection Core
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-01-SUMMARY.md" data-title="summary: 05-01 overlap detection core" data-path=".planning/phases/05-overlap-conflict-resolution/05-01-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 05-01 Overlap Detection Core</span>
+          <span class="summary-path">.planning/phases/05-overlap-conflict-resolution/05-01-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 05-01 Overlap Detection Core
 
 ## Completed
 
@@ -4739,12 +5110,18 @@ After completion, create `.planning/phases/05-overlap-conflict-resolution/05-01-
 - No code changes were required during the verification run.
 - Plan `05-01` is complete. The next implementation target is `05-02 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-PLAN.md">
-      <h2>05-02-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-PLAN.md" data-title="05-02-plan.md" data-path=".planning/phases/05-overlap-conflict-resolution/05-02-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">05-02-PLAN.md</span>
+          <span class="summary-path">.planning/phases/05-overlap-conflict-resolution/05-02-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 05-overlap-conflict-resolution
 plan: 02
 type: execute
@@ -4852,12 +5229,18 @@ Output: Decision prompt flow, resolution summary renderer, overlap-stage integra
 After completion, create `.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-SUMMARY.md">
-      <h2>Summary: 05-02 Conflict Resolution Gating</h2>
-      <p class="meta">Source: <code>.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md</code></p>
-      <pre><code># Summary: 05-02 Conflict Resolution Gating
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-02-SUMMARY.md" data-title="summary: 05-02 conflict resolution gating" data-path=".planning/phases/05-overlap-conflict-resolution/05-02-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 05-02 Conflict Resolution Gating</span>
+          <span class="summary-path">.planning/phases/05-overlap-conflict-resolution/05-02-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 05-02 Conflict Resolution Gating
 
 ## Completed
 
@@ -4877,12 +5260,18 @@ After completion, create `.planning/phases/05-overlap-conflict-resolution/05-02-
 - No code changes were required during the verification run.
 - Phase 5 is complete. The next implementation target is `06-01 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-RESEARCH.md">
-      <h2>Phase 05: Overlap &amp; Conflict Resolution - Research</h2>
-      <p class="meta">Source: <code>.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md</code></p>
-      <pre><code># Phase 05: Overlap &amp; Conflict Resolution - Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-05-overlap-conflict-resolution-05-RESEARCH.md" data-title="phase 05: overlap &amp; conflict resolution - research" data-path=".planning/phases/05-overlap-conflict-resolution/05-research.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 05: Overlap &amp; Conflict Resolution - Research</span>
+          <span class="summary-path">.planning/phases/05-overlap-conflict-resolution/05-RESEARCH.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 05: Overlap &amp; Conflict Resolution - Research
 
 **Researched:** 2026-03-10
 **Domain:** Overlap detection and explicit conflict-resolution UX for generated Codex skills
@@ -5304,12 +5693,18 @@ if cmp.Equal(candidateProfile, existingProfile) {
 **Research date:** 2026-03-10
 **Valid until:** 2026-04-09
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-PLAN.md">
-      <h2>06-01-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-PLAN.md" data-title="06-01-plan.md" data-path=".planning/phases/06-approval-gated-install-activation/06-01-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">06-01-PLAN.md</span>
+          <span class="summary-path">.planning/phases/06-approval-gated-install-activation/06-01-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 06-approval-gated-install-activation
 plan: 01
 type: execute
@@ -5418,12 +5813,18 @@ Output: Install domain types, typed errors, preflight gate checks, explicit appr
 After completion, create `.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-SUMMARY.md">
-      <h2>Summary: 06-01 Install Contracts And Approval Gates</h2>
-      <p class="meta">Source: <code>.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md</code></p>
-      <pre><code># Summary: 06-01 Install Contracts And Approval Gates
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-01-SUMMARY.md" data-title="summary: 06-01 install contracts and approval gates" data-path=".planning/phases/06-approval-gated-install-activation/06-01-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 06-01 Install Contracts And Approval Gates</span>
+          <span class="summary-path">.planning/phases/06-approval-gated-install-activation/06-01-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 06-01 Install Contracts And Approval Gates
 
 ## Completed
 
@@ -5443,12 +5844,18 @@ After completion, create `.planning/phases/06-approval-gated-install-activation/
 - `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is referenced by the plan index but is not present in the repository; available plan, research, state, and source files were sufficient to complete verification.
 - Phase 6 remains in progress. The next implementation target is `06-02 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-PLAN.md">
-      <h2>06-02-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-PLAN.md" data-title="06-02-plan.md" data-path=".planning/phases/06-approval-gated-install-activation/06-02-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">06-02-PLAN.md</span>
+          <span class="summary-path">.planning/phases/06-approval-gated-install-activation/06-02-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 06-approval-gated-install-activation
 plan: 02
 type: execute
@@ -5555,12 +5962,18 @@ Output: Preview/diff renderer, approval-gated atomic transaction installer, and 
 After completion, create `.planning/phases/06-approval-gated-install-activation/06-02-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-SUMMARY.md">
-      <h2>Summary: 06-02 Preview Diff And Transactional Install</h2>
-      <p class="meta">Source: <code>.planning/phases/06-approval-gated-install-activation/06-02-SUMMARY.md</code></p>
-      <pre><code># Summary: 06-02 Preview Diff And Transactional Install
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-02-SUMMARY.md" data-title="summary: 06-02 preview diff and transactional install" data-path=".planning/phases/06-approval-gated-install-activation/06-02-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 06-02 Preview Diff And Transactional Install</span>
+          <span class="summary-path">.planning/phases/06-approval-gated-install-activation/06-02-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 06-02 Preview Diff And Transactional Install
 
 ## Completed
 
@@ -5581,12 +5994,18 @@ After completion, create `.planning/phases/06-approval-gated-install-activation/
 - `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is referenced by the plan index but is not present in the repository; available plan, research, state, and install-package sources were sufficient to complete verification.
 - Phase 6 remains in progress. The next implementation target is `06-03 / Task 1`.
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-03-PLAN.md">
-      <h2>06-03-PLAN.md</h2>
-      <p class="meta">Source: <code>.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md</code></p>
-      <pre><code>---
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-03-PLAN.md" data-title="06-03-plan.md" data-path=".planning/phases/06-approval-gated-install-activation/06-03-plan.md">
+      <details>
+        <summary>
+          <span class="summary-title">06-03-PLAN.md</span>
+          <span class="summary-path">.planning/phases/06-approval-gated-install-activation/06-03-PLAN.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code>---
 phase: 06-approval-gated-install-activation
 plan: 03
 type: execute
@@ -5696,12 +6115,47 @@ Output: Activation verification module, generate-stage orchestration, and integr
 After completion, create `.planning/phases/06-approval-gated-install-activation/06-03-SUMMARY.md`
 &lt;/output&gt;
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-RESEARCH.md">
-      <h2>Phase 06: Approval-Gated Install &amp; Activation - Research</h2>
-      <p class="meta">Source: <code>.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md</code></p>
-      <pre><code># Phase 06: Approval-Gated Install &amp; Activation - Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-03-SUMMARY.md" data-title="summary: 06-03 install activation end-to-end verification" data-path=".planning/phases/06-approval-gated-install-activation/06-03-summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Summary: 06-03 Install Activation End-To-End Verification</span>
+          <span class="summary-path">.planning/phases/06-approval-gated-install-activation/06-03-SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Summary: 06-03 Install Activation End-To-End Verification
+
+## Completed
+
+- Verified the end-to-end Phase 06 acceptance coverage in [install_stage_test.go](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage_test.go) and [activate_verify_test.go](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go), confirming `INST-01` preview-before-approval sequencing, `INST-02` no-write-without-explicit-approval, `INST-03` unresolved validation/conflict blocking, and `INST-04` immediate-usability success plus exceptional restart fallback guidance.
+- Confirmed the strict install orchestration in [install_stage.go](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage.go) still routes through `Preflight -&gt; RenderPreview/RenderDiff -&gt; RequestApproval -&gt; ExecuteTransaction -&gt; VerifyInstalledSkill` with no bypass path.
+- Completed Plan `06-03`, which completes Phase 6 and the full roadmap.
+
+## Verification
+
+- `go test ./internal/install ./internal/app/generate -v` passed.
+- The blocked install scenarios are assertion-backed in [install_stage_test.go](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/app/generate/install_stage_test.go), and the success/fallback activation scenarios are assertion-backed in [activate_verify_test.go](/Users/nickbohm/Desktop/Tinkering/cli-skill/internal/install/activate_verify_test.go).
+
+## Notes
+
+- No code changes were required during the verification run.
+- `.planning/phases/06-approval-gated-install-activation/06-CONTEXT.md` is referenced by the plan index but is not present in the repository; the available plan, research, state, and source files were sufficient to complete verification.
+</code></pre>
+        </div>
+      </details>
+    </section>
+    
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-phases-06-approval-gated-install-activation-06-RESEARCH.md" data-title="phase 06: approval-gated install &amp; activation - research" data-path=".planning/phases/06-approval-gated-install-activation/06-research.md">
+      <details>
+        <summary>
+          <span class="summary-title">Phase 06: Approval-Gated Install &amp; Activation - Research</span>
+          <span class="summary-path">.planning/phases/06-approval-gated-install-activation/06-RESEARCH.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Phase 06: Approval-Gated Install &amp; Activation - Research
 
 **Researched:** 2026-03-10
 **Domain:** Safe approval-gated installation and immediate activation of generated Codex skills in a Go CLI
@@ -5970,12 +6424,18 @@ if err := os.Rename(stagePath, finalPath); err != nil {
 **Research date:** 2026-03-10
 **Valid until:** 2026-04-09
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-ARCHITECTURE.md">
-      <h2>Architecture Research</h2>
-      <p class="meta">Source: <code>.planning/research/ARCHITECTURE.md</code></p>
-      <pre><code># Architecture Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-ARCHITECTURE.md" data-title="architecture research" data-path=".planning/research/architecture.md">
+      <details>
+        <summary>
+          <span class="summary-title">Architecture Research</span>
+          <span class="summary-path">.planning/research/ARCHITECTURE.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Architecture Research
 
 **Domain:** Go CLI skill generator (single-user, local-first)
 **Researched:** 2026-03-10
@@ -6274,12 +6734,18 @@ State transitions are append-only in memory and mirrored to local JSONL logs for
 *Architecture research for: CLI skill generator domain (Skill Weaver)*
 *Researched: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-FEATURES.md">
-      <h2>Feature Research</h2>
-      <p class="meta">Source: <code>.planning/research/FEATURES.md</code></p>
-      <pre><code># Feature Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-FEATURES.md" data-title="feature research" data-path=".planning/research/features.md">
+      <details>
+        <summary>
+          <span class="summary-title">Feature Research</span>
+          <span class="summary-path">.planning/research/FEATURES.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Feature Research
 
 **Domain:** CLI tool that converts a documentation URL into an installable Codex skill
 **Researched:** 2026-03-10
@@ -6434,12 +6900,18 @@ Features to defer until product-market fit is established.
 *Feature research for: CLI skill generator (Skill Weaver)*
 *Researched: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-PITFALLS.md">
-      <h2>Pitfalls Research</h2>
-      <p class="meta">Source: <code>.planning/research/PITFALLS.md</code></p>
-      <pre><code># Pitfalls Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-PITFALLS.md" data-title="pitfalls research" data-path=".planning/research/pitfalls.md">
+      <details>
+        <summary>
+          <span class="summary-title">Pitfalls Research</span>
+          <span class="summary-path">.planning/research/PITFALLS.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Pitfalls Research
 
 **Domain:** CLI that generates Codex `SKILL.md` artifacts from single-page docs URLs
 **Researched:** 2026-03-10
@@ -6707,12 +7179,18 @@ Shortcuts that feel fast early but become expensive quickly.
 *Pitfalls research for: Skill Weaver (CLI skill generator)*
 *Researched: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-STACK.md">
-      <h2>Stack Research</h2>
-      <p class="meta">Source: <code>.planning/research/STACK.md</code></p>
-      <pre><code># Stack Research
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-STACK.md" data-title="stack research" data-path=".planning/research/stack.md">
+      <details>
+        <summary>
+          <span class="summary-title">Stack Research</span>
+          <span class="summary-path">.planning/research/STACK.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Stack Research
 
 **Domain:** Go CLI tool that generates Codex skills from one docs URL
 **Researched:** 2026-03-10
@@ -6838,12 +7316,18 @@ go install gotest.tools/gotestsum@latest
 *Stack research for: Skill Weaver (CLI skill generation)*
 *Researched: 2026-03-10*
 </code></pre>
+        </div>
+      </details>
     </section>
     
-    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-SUMMARY.md">
-      <h2>Project Research Summary</h2>
-      <p class="meta">Source: <code>.planning/research/SUMMARY.md</code></p>
-      <pre><code># Project Research Summary
+    <section id="-Users-nickbohm-Desktop-Tinkering-cli-skill-.planning-research-SUMMARY.md" data-title="project research summary" data-path=".planning/research/summary.md">
+      <details>
+        <summary>
+          <span class="summary-title">Project Research Summary</span>
+          <span class="summary-path">.planning/research/SUMMARY.md</span>
+        </summary>
+        <div class="section-body">
+          <pre><code># Project Research Summary
 
 **Project:** Skill Weaver
 **Domain:** Local-first Go CLI that generates installable Codex skills from a single docs URL
@@ -7015,9 +7499,53 @@ Phases with standard patterns (skip research-phase):
 *Research completed: 2026-03-10*
 *Ready for roadmap: yes*
 </code></pre>
+        </div>
+      </details>
     </section>
     
+      <div class="empty" id="empty">No matches. Try a different filter.</div>
     </div>
   </main>
+  <script>
+    const search = document.getElementById('search');
+    const toc = document.getElementById('toc');
+    const sections = Array.from(document.querySelectorAll('section'));
+    const tocItems = Array.from(toc.querySelectorAll('li'));
+    const empty = document.getElementById('empty');
+
+    const normalize = (value) => value.toLowerCase();
+
+    const update = () => {
+      const query = normalize(search.value.trim());
+      let visible = 0;
+
+      sections.forEach((section) => {
+        const title = section.dataset.title || '';
+        const path = section.dataset.path || '';
+        const text = normalize(section.textContent || '');
+        const match = !query || title.includes(query) || path.includes(query) || text.includes(query);
+        section.style.display = match ? '' : 'none';
+        if (match) visible += 1;
+      });
+
+      tocItems.forEach((item) => {
+        const title = item.dataset.title || '';
+        const path = item.dataset.path || '';
+        const match = !query || title.includes(query) || path.includes(query);
+        item.style.display = match ? '' : 'none';
+      });
+
+      empty.style.display = visible === 0 ? 'block' : 'none';
+    };
+
+    search.addEventListener('input', update);
+
+    window.addEventListener('keydown', (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        search.focus();
+      }
+    });
+  </script>
 </body>
 </html>
