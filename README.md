@@ -7,7 +7,7 @@
 Drop a link into the grid. I map the signal, interrogate the gaps, and only then mint a validated, conflict-checked skill—installed after explicit approval and nothing earlier.
 
 **Project Description**
-Skill Weaver is a Go CLI that converts a single documentation URL into a Codex skill scaffold using a gated pipeline: bounded crawl, structured processing, adaptive refinement, strict validation, conflict resolution, and approval-only installation. It is built to keep every skill atomic, auditable, and immediately usable without surprise writes.
+Skill Weaver is a Go CLI that turns API documentation into structured Codex skills using a gated pipeline: bounded crawl, structured processing, adaptive refinement, strict validation, conflict resolution, and approval-only installation. It is built to reduce the need for MCP layers like Context7 by turning raw docs into atomic, auditable, directly usable skills.
 
 **How To Use In Codex**
 1. Set `CODEX_HOME` to your Codex home directory.
